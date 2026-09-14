@@ -45,6 +45,10 @@ type Provider struct {
 }
 
 func New(d registry.Deps) transit.Provider {
+	return newProvider(d)
+}
+
+func newProvider(d registry.Deps) transit.Provider {
 	key := d.KeyFor(keyEnv)
 	h := httpx.New(info.ID, d.HTTP)
 	h.Query = url.Values{"key": {key}, "version": {"4"}, "appVersion": {"eta-cli"}}
