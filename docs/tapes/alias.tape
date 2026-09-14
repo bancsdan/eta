@@ -7,17 +7,17 @@ Set Height 520
 Set TypingSpeed 80ms
 Set Padding 20
 
-Env XDG_CONFIG_HOME "/var/folders/6j/d9n2w9517054qf04h473g0200000gn/T/tmp.64ZB95xoku"
+Env XDG_CONFIG_HOME "docs/tapes/config"
 
 Type "cat $XDG_CONFIG_HOME/eta/config"
 Sleep 0.3s
 Enter
 Sleep 2s
-Type "./eta"
+Type "eta"
 Sleep 0.3s
 Enter
 Sleep 3s
-Type "./eta work -c 2"
+Type "eta work -c 2"
 Sleep 0.3s
 Enter
 Sleep 5s

@@ -7,7 +7,7 @@ Set Height 800
 Set TypingSpeed 80ms
 Set Padding 20
 
-Type './eta bergen "bergen busstasjon" -c 1'
+Type 'eta bergen "bergen busstasjon" -c 1'
 Sleep 0.3s
 Enter
 Sleep 6s

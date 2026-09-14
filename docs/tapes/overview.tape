@@ -7,12 +7,7 @@ Set Height 600
 Set TypingSpeed 80ms
 Set Padding 20
 
-Type "./eta cities"
-Sleep 0.3s
-Enter
-Sleep 3s
-
-Type "./eta london Central bank -c 3 -t"
+Type "eta oslo 2 holmen -t"
 Sleep 0.3s
 Enter
 Sleep 5s

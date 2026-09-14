@@ -7,7 +7,7 @@ Set Height 420
 Set TypingSpeed 80ms
 Set Padding 20
 
-Type './eta boston Red "park street" -c 3 -t'
+Type 'eta boston Red "park street" -c 3 -t'
 Sleep 0.3s
 Enter
 Sleep 6s

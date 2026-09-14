@@ -7,7 +7,7 @@ Set Height 420
 Set TypingSpeed 80ms
 Set Padding 20
 
-Type "./eta stavanger 1 hillevåg -w --every 5"
+Type "eta stavanger 1 hillevåg -w --every 5"
 Sleep 0.3s
 Enter
 Sleep 12s

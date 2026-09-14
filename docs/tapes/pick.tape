@@ -7,7 +7,7 @@ Set Height 420
 Set TypingSpeed 80ms
 Set Padding 20
 
-Type "./eta oslo grorud -c 2"
+Type "eta oslo grorud -c 2"
 Sleep 0.3s
 Enter
 Sleep 3s

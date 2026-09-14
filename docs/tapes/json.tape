@@ -7,7 +7,7 @@ Set Height 620
 Set TypingSpeed 80ms
 Set Padding 20
 
-Type "./eta trondheim 3 dragvoll -j -c 2"
+Type "eta trondheim 3 dragvoll -j -c 2"
 Sleep 0.3s
 Enter
 Sleep 6s

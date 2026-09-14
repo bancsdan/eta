@@ -49,6 +49,7 @@ Print the next departures at a stop: every line, or just one route.
       --every N   refresh interval in seconds for -w
   -a, --aliases   show the configured aliases and exit
       --setup     prompt for the city's API key and save it
+      --version   print the version and exit
   -h, --help      show this help
 
 Times are real-time predictions; ~ marks schedule-only entries. When a stop
@@ -67,6 +68,13 @@ and aliases, one per line as "name = args"; "default" runs with no args:
   home         = M4 alexanderplatz -c 3
   work         = budapest 4 moricz
   default      = home`
+)
+
+// Set by GoReleaser through -ldflags "-X main.version=..."; "dev" for local builds.
+var (
+	version = "dev"
+	commit  = ""
+	date    = ""
 )
 
 const (
@@ -95,7 +103,7 @@ func run(args []string) error {
 	if len(args) > 0 && args[0] == "cities" {
 		return runCities(args[1:], os.Stdout)
 	}
-	cfg, err := config.Load(config.File())
+	cfg, err := config.Load(config.ConfigFile())
 	if err != nil {
 		return err
 	}
@@ -244,6 +252,18 @@ func runSetup(info transit.Info, in io.Reader, out io.Writer) error {
 	return nil
 }
 
+func versionString() string {
+	s := "eta " + version
+	if commit != "" {
+		s += " (" + commit
+		if date != "" {
+			s += ", " + date
+		}
+		s += ")"
+	}
+	return s
+}
+
 func isTTY(f *os.File) bool {
 	fi, err := f.Stat()
 	return err == nil && fi.Mode()&os.ModeCharDevice != 0
@@ -292,7 +312,7 @@ func parseArgs(args []string, cfg *config.Config) (*cliOptions, error) {
 		} else if cfg.DefaultCity != "" {
 			o.City = cfg.DefaultCity
 		} else {
-			return nil, &app.UsageError{Msg: fmt.Sprintf("unknown city %q (run \"eta cities\", or set default_city in %s)\n%s", pos[0], config.File(), usage)}
+			return nil, &app.UsageError{Msg: fmt.Sprintf("unknown city %q (run \"eta cities\", or set default_city in %s)\n%s", pos[0], config.ConfigFile(), usage)}
 		}
 	}
 	if o.setup {
@@ -324,6 +344,9 @@ func parseOnce(args []string) (*cliOptions, []string, error) {
 		switch name {
 		case "-h", "--help":
 			fmt.Println(usage)
+			return nil, nil, nil
+		case "--version":
+			fmt.Println(versionString())
 			return nil, nil, nil
 		case "-a", "--aliases":
 			printAliases()
@@ -390,7 +413,7 @@ func removeFirst(args []string, tok string) []string {
 }
 
 func printAliases() {
-	path := config.File()
+	path := config.ConfigFile()
 	cfg, err := config.Load(path)
 	if err != nil {
 		fmt.Println(err)

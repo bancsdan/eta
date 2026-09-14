@@ -118,6 +118,20 @@ func TestRunSetupWritesKeys(t *testing.T) {
 	}
 }
 
+func TestVersionString(t *testing.T) {
+	if got := versionString(); got != "eta dev" {
+		t.Errorf("default = %q", got)
+	}
+	version, commit, date = "1.2.3", "abc1234", "2026-09-14"
+	t.Cleanup(func() { version, commit, date = "dev", "", "" })
+	if got := versionString(); got != "eta 1.2.3 (abc1234, 2026-09-14)" {
+		t.Errorf("got %q", got)
+	}
+	if o, err := parseArgs([]string{"--version"}, &config.Config{}); o != nil || err != nil {
+		t.Errorf("--version should be handled like --help, got %+v %v", o, err)
+	}
+}
+
 func TestCitiesTable(t *testing.T) {
 	var sb strings.Builder
 	if err := runCities(nil, &sb); err != nil {

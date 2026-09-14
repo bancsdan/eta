@@ -1,0 +1,61 @@
+name: Demo GIFs
+
+# Re-records docs/assets/*.gif from docs/tapes/*.tape with the freshly built
+# eta. Every tape uses a keyless city, so no secrets are needed.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "docs/tapes/**"
+      - "cmd/**"
+      - "internal/**"
+
+permissions:
+  contents: write
+
+jobs:
+  record:
+    name: Record
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+      - name: Install eta and zsh (the tapes' shell)
+        run: |
+          go install ./cmd/eta
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+          sudo apt-get update -q && sudo apt-get install -y -q zsh
+      - name: Smoke test the live APIs the tapes depend on
+        run: eta cities --check
+      - uses: charmbracelet/vhs-action@v2
+        with:
+          path: docs/tapes/overview.tape
+      - uses: charmbracelet/vhs-action@v2
+        with:
+          path: docs/tapes/board.tape
+      - uses: charmbracelet/vhs-action@v2
+        with:
+          path: docs/tapes/route.tape
+      - uses: charmbracelet/vhs-action@v2
+        with:
+          path: docs/tapes/list.tape
+      - uses: charmbracelet/vhs-action@v2
+        with:
+          path: docs/tapes/pick.tape
+      - uses: charmbracelet/vhs-action@v2
+        with:
+          path: docs/tapes/watch.tape
+      - uses: charmbracelet/vhs-action@v2
+        with:
+          path: docs/tapes/json.tape
+      - uses: charmbracelet/vhs-action@v2
+        with:
+          path: docs/tapes/alias.tape
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs(demo): re-record gifs"
+          file_pattern: docs/assets/*.gif

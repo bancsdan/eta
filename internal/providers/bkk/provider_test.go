@@ -35,7 +35,7 @@ func newTestProvider(base, key string) *Provider {
 	p := newProvider(registry.Deps{
 		Key: func(string) string { return key },
 		Now: func() time.Time { return fixtureNow },
-	})
+	}).(*Provider)
 	p.BaseURL = base
 	return p
 }

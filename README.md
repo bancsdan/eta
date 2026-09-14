@@ -123,11 +123,19 @@ eta budapest --setup
 
 ## Install
 
-Requires Go 1.26+.
+Homebrew (macOS and Linux):
+
+```sh
+brew install bancsdan/tap/eta
+```
+
+Prebuilt binaries for macOS, Linux and Windows are attached to every [GitHub release](https://github.com/bancsdan/eta/releases). With Go 1.26+ installed:
 
 ```sh
 go install github.com/bancsdan/eta/cmd/eta@latest
 ```
+
+`eta --version` prints the version, commit and build date of the binary you have.
 
 ## Usage
 

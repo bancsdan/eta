@@ -1,0 +1,4 @@
+default_city = oslo
+home = 31 jernbanetorget -c 2
+work = london Central bank -t
+default = home

@@ -7,7 +7,7 @@ Set Height 700
 Set TypingSpeed 80ms
 Set Padding 20
 
-Type "./eta london Central -l | head -30"
+Type "eta london Central -l | head -30"
 Sleep 0.3s
 Enter
 Sleep 6s
