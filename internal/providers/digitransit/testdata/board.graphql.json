@@ -1,0 +1,96 @@
+{
+ "data": {
+  "stops": [
+   {
+    "gtfsId": "HSL:1174501",
+    "stoptimesWithoutPatterns": [
+     {
+      "serviceDay": 1789419600,
+      "scheduledDeparture": 32700,
+      "realtimeDeparture": 32820,
+      "realtime": true,
+      "realtimeState": "UPDATED",
+      "headsign": "Westendinasema",
+      "trip": {
+       "gtfsId": "HSL:2550_20260915_Ma_1_0905",
+       "directionId": "0",
+       "route": {
+        "gtfsId": "HSL:2550",
+        "shortName": "550"
+       }
+      },
+      "stop": {
+       "gtfsId": "HSL:1174501",
+       "platformCode": "1"
+      }
+     },
+     {
+      "serviceDay": 1789419600,
+      "scheduledDeparture": 33600,
+      "realtimeDeparture": 33600,
+      "realtime": false,
+      "realtimeState": "SCHEDULED",
+      "headsign": "Westendinasema",
+      "trip": {
+       "gtfsId": "HSL:2550_20260915_Ma_1_0920",
+       "directionId": "0",
+       "route": {
+        "gtfsId": "HSL:2550",
+        "shortName": "550"
+       }
+      },
+      "stop": {
+       "gtfsId": "HSL:1174501",
+       "platformCode": "1"
+      }
+     }
+    ]
+   },
+   {
+    "gtfsId": "HSL:1174502",
+    "stoptimesWithoutPatterns": [
+     {
+      "serviceDay": 1789419600,
+      "scheduledDeparture": 32580,
+      "realtimeDeparture": 32580,
+      "realtime": true,
+      "realtimeState": "CANCELED",
+      "headsign": "It\u00e4keskus",
+      "trip": {
+       "gtfsId": "HSL:2550_20260915_Ma_2_0903",
+       "directionId": "1",
+       "route": {
+        "gtfsId": "HSL:2550",
+        "shortName": "550"
+       }
+      },
+      "stop": {
+       "gtfsId": "HSL:1174502",
+       "platformCode": "2"
+      }
+     },
+     {
+      "serviceDay": 1789419600,
+      "scheduledDeparture": 33120,
+      "realtimeDeparture": 33240,
+      "realtime": true,
+      "realtimeState": "UPDATED",
+      "headsign": "It\u00e4keskus",
+      "trip": {
+       "gtfsId": "HSL:2550_20260915_Ma_2_0912",
+       "directionId": "1",
+       "route": {
+        "gtfsId": "HSL:2550",
+        "shortName": "550"
+       }
+      },
+      "stop": {
+       "gtfsId": "HSL:1174502",
+       "platformCode": "2"
+      }
+     }
+    ]
+   }
+  ]
+ }
+}

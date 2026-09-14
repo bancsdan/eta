@@ -1,0 +1,362 @@
+{
+  "departures": [
+    {
+      "destination": "Hässelby strand",
+      "direction_code": 1,
+      "direction": "Hässelby strand",
+      "state": "EXPECTED",
+      "display": "Nu",
+      "scheduled": "2026-09-14T22:01:48",
+      "expected": "2026-09-14T22:01:59",
+      "journey": {
+        "id": 2026091411192,
+        "state": "NORMALPROGRESS",
+        "prediction_state": "NORMAL"
+      },
+      "stop_area": {
+        "id": 1011,
+        "name": "Slussen",
+        "type": "METROSTN"
+      },
+      "stop_point": {
+        "id": 1011,
+        "name": "Slussen",
+        "designation": "1"
+      },
+      "line": {
+        "id": 19,
+        "designation": "19",
+        "transport_authority_id": 1,
+        "transport_mode": "METRO",
+        "group_of_lines": "Tunnelbanans gröna linje"
+      },
+      "deviations": []
+    },
+    {
+      "destination": "Skarpnäck",
+      "direction_code": 2,
+      "direction": "Skarpnäck",
+      "state": "ATSTOP",
+      "display": "Nu",
+      "scheduled": "2026-09-14T22:02:06",
+      "expected": "2026-09-14T22:02:06",
+      "journey": {
+        "id": 2026091411172,
+        "state": "NORMALPROGRESS",
+        "prediction_state": "NORMAL"
+      },
+      "stop_area": {
+        "id": 1011,
+        "name": "Slussen",
+        "type": "METROSTN"
+      },
+      "stop_point": {
+        "id": 1012,
+        "name": "Slussen",
+        "designation": "4"
+      },
+      "line": {
+        "id": 17,
+        "designation": "17",
+        "transport_authority_id": 1,
+        "transport_mode": "METRO",
+        "group_of_lines": "Tunnelbanans gröna linje"
+      },
+      "deviations": []
+    },
+    {
+      "destination": "Sofia",
+      "direction_code": 1,
+      "direction": "Sofia",
+      "state": "EXPECTED",
+      "display": "1 min",
+      "scheduled": "2026-09-14T22:02:00",
+      "expected": "2026-09-14T22:03:05",
+      "journey": {
+        "id": 2026091400320,
+        "state": "NORMALPROGRESS",
+        "prediction_state": "NORMAL"
+      },
+      "stop_area": {
+        "id": 11002,
+        "name": "Slussen",
+        "type": "BUSTERM"
+      },
+      "stop_point": {
+        "id": 11016,
+        "name": "Slussen",
+        "designation": "F"
+      },
+      "line": {
+        "id": 2,
+        "designation": "2",
+        "transport_authority_id": 1,
+        "transport_mode": "BUS",
+        "group_of_lines": "Blåbuss"
+      },
+      "deviations": []
+    },
+    {
+      "destination": "Hagsätra",
+      "direction_code": 2,
+      "direction": "Hagsätra",
+      "state": "EXPECTED",
+      "display": "3 min",
+      "scheduled": "2026-09-14T22:05:36",
+      "expected": "2026-09-14T22:05:36",
+      "journey": {
+        "id": 2026091411209,
+        "state": "NORMALPROGRESS",
+        "prediction_state": "NORMAL"
+      },
+      "stop_area": {
+        "id": 1011,
+        "name": "Slussen",
+        "type": "METROSTN"
+      },
+      "stop_point": {
+        "id": 1012,
+        "name": "Slussen",
+        "designation": "4"
+      },
+      "line": {
+        "id": 19,
+        "designation": "19",
+        "transport_authority_id": 1,
+        "transport_mode": "METRO",
+        "group_of_lines": "Tunnelbanans gröna linje"
+      },
+      "deviations": []
+    },
+    {
+      "destination": "Odenplan",
+      "direction_code": 1,
+      "direction": "Hässelby strand",
+      "state": "CANCELLED",
+      "display": "22:11",
+      "scheduled": "2026-09-14T22:11:48",
+      "expected": "2026-09-14T22:12:01",
+      "journey": {
+        "id": 2026091411208,
+        "state": "NORMALPROGRESS",
+        "prediction_state": "NORMAL"
+      },
+      "stop_area": {
+        "id": 1011,
+        "name": "Slussen",
+        "type": "METROSTN"
+      },
+      "stop_point": {
+        "id": 1011,
+        "name": "Slussen",
+        "designation": "1"
+      },
+      "line": {
+        "id": 17,
+        "designation": "17",
+        "transport_authority_id": 1,
+        "transport_mode": "METRO",
+        "group_of_lines": "Tunnelbanans gröna linje"
+      },
+      "deviations": [
+        {
+          "importance_level": 7,
+          "consequence": "CANCELLED",
+          "message": "Inställd"
+        }
+      ]
+    },
+    {
+      "destination": "Norrtull",
+      "direction_code": 2,
+      "direction": "Norrtull",
+      "state": "EXPECTED",
+      "display": "10 min",
+      "scheduled": "2026-09-14T22:11:00",
+      "expected": "2026-09-14T22:12:04",
+      "journey": {
+        "id": 2026091400431,
+        "state": "NORMALPROGRESS",
+        "prediction_state": "NORMAL"
+      },
+      "stop_area": {
+        "id": 11002,
+        "name": "Slussen",
+        "type": "BUSTERM"
+      },
+      "stop_point": {
+        "id": 11017,
+        "name": "Slussen",
+        "designation": "G"
+      },
+      "line": {
+        "id": 2,
+        "designation": "2",
+        "transport_authority_id": 1,
+        "transport_mode": "BUS",
+        "group_of_lines": "Blåbuss"
+      },
+      "deviations": []
+    },
+    {
+      "destination": "Hagsätra",
+      "direction_code": 2,
+      "direction": "Hagsätra",
+      "state": "EXPECTED",
+      "display": "12 min",
+      "scheduled": "2026-09-14T22:14:36",
+      "expected": "2026-09-14T22:14:36",
+      "journey": {
+        "id": 2026091411224,
+        "state": "EXPECTED"
+      },
+      "stop_area": {
+        "id": 1011,
+        "name": "Slussen",
+        "type": "METROSTN"
+      },
+      "stop_point": {
+        "id": 1012,
+        "name": "Slussen",
+        "designation": "4"
+      },
+      "line": {
+        "id": 19,
+        "designation": "19",
+        "transport_authority_id": 1,
+        "transport_mode": "METRO",
+        "group_of_lines": "Tunnelbanans gröna linje"
+      },
+      "deviations": []
+    },
+    {
+      "destination": "Odenplan",
+      "direction_code": 1,
+      "direction": "Hässelby strand",
+      "state": "CANCELLED",
+      "display": "22:11",
+      "scheduled": "2026-09-14T22:11:48",
+      "expected": "2026-09-14T22:12:01",
+      "journey": {
+        "id": 2026091411208,
+        "state": "NORMALPROGRESS",
+        "prediction_state": "NORMAL"
+      },
+      "stop_area": {
+        "id": 1011,
+        "name": "Slussen",
+        "type": "METROSTN"
+      },
+      "stop_point": {
+        "id": 1011,
+        "name": "Slussen",
+        "designation": "1"
+      },
+      "line": {
+        "id": 17,
+        "designation": "17",
+        "transport_authority_id": 1,
+        "transport_mode": "METRO",
+        "group_of_lines": "Tunnelbanans gröna linje"
+      },
+      "deviations": [
+        {
+          "importance_level": 7,
+          "consequence": "CANCELLED",
+          "message": "Inställd"
+        }
+      ]
+    }
+  ],
+  "stop_deviations": [
+    {
+      "id": 12545782,
+      "importance_level": 2,
+      "message": "Extrainsatta avgångar från Globen mot innerstan ca kl. 20:45 till 22:15 p.g.a. evenemang.",
+      "scope": {
+        "stop_points": [
+          {
+            "id": 1011,
+            "href": "null/stop-points/1011",
+            "name": "Slussen",
+            "designation": "1"
+          },
+          {
+            "id": 1021,
+            "href": "null/stop-points/1021",
+            "name": "Gamla stan",
+            "designation": "1"
+          },
+          {
+            "id": 1111,
+            "href": "null/stop-points/1111",
+            "name": "Hötorget",
+            "designation": "1"
+          },
+          {
+            "id": 1511,
+            "href": "null/stop-points/1511",
+            "name": "Medborgarplatsen",
+            "designation": "1"
+          },
+          {
+            "id": 1521,
+            "href": "null/stop-points/1521",
+            "name": "Skanstull",
+            "designation": "1"
+          },
+          {
+            "id": 1551,
+            "href": "null/stop-points/1551",
+            "name": "Gullmarsplan",
+            "designation": "1"
+          },
+          {
+            "id": 1611,
+            "href": "null/stop-points/1611",
+            "name": "Globen",
+            "designation": "1"
+          },
+          {
+            "id": 2051,
+            "href": "null/stop-points/2051",
+            "name": "T-Centralen",
+            "designation": "1"
+          },
+          {
+            "id": 8103,
+            "href": "null/stop-points/8103",
+            "name": "Gullmarsplan",
+            "designation": "2"
+          }
+        ],
+        "lines": [
+          {
+            "id": 17,
+            "href": "null/transport-authorities/1/lines/17",
+            "designation": "17",
+            "transport_authority_id": 1,
+            "transport_mode": "METRO",
+            "group_of_lines": "Tunnelbanans gröna linje"
+          },
+          {
+            "id": 18,
+            "href": "null/transport-authorities/1/lines/18",
+            "designation": "18",
+            "transport_authority_id": 1,
+            "transport_mode": "METRO",
+            "group_of_lines": "Tunnelbanans gröna linje"
+          },
+          {
+            "id": 19,
+            "href": "null/transport-authorities/1/lines/19",
+            "designation": "19",
+            "transport_authority_id": 1,
+            "transport_mode": "METRO",
+            "group_of_lines": "Tunnelbanans gröna linje"
+          }
+        ]
+      }
+    }
+  ]
+}
