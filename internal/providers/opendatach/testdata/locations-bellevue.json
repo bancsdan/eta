@@ -1,0 +1,64 @@
+{
+  "stations": [
+    {
+      "id": "8576193",
+      "name": "Zürich, Bellevue",
+      "score": null,
+      "coordinate": {
+        "type": "WGS84",
+        "x": 47.36708,
+        "y": 8.545112
+      },
+      "distance": null,
+      "icon": "tram"
+    },
+    {
+      "id": "8501021",
+      "name": "Genthod-Bellevue",
+      "score": null,
+      "coordinate": {
+        "type": "WGS84",
+        "x": 46.256747,
+        "y": 6.153947
+      },
+      "distance": null,
+      "icon": "train"
+    },
+    {
+      "id": "8592645",
+      "name": "Bellevue GE, Ermitage",
+      "score": null,
+      "coordinate": {
+        "type": "WGS84",
+        "x": 46.250187,
+        "y": 6.13024
+      },
+      "distance": null,
+      "icon": "bus"
+    },
+    {
+      "id": "8772619",
+      "name": "Saint-Étienne Bellevue",
+      "score": null,
+      "coordinate": {
+        "type": "WGS84",
+        "x": 45.41691,
+        "y": 4.392922
+      },
+      "distance": null,
+      "icon": "train"
+    },
+    {
+      "id": "8587048",
+      "name": "Bellevue GE, Colovrex",
+      "score": null,
+      "coordinate": {
+        "type": "WGS84",
+        "x": 46.256168,
+        "y": 6.133222
+      },
+      "distance": null,
+      "icon": "bus"
+    }
+  ]
+}

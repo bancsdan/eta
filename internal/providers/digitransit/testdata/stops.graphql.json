@@ -1,0 +1,30 @@
+{
+ "data": {
+  "stops": [
+   {
+    "gtfsId": "HSL:1174501",
+    "name": "Pasila",
+    "lat": 60.199,
+    "lon": 24.933,
+    "platformCode": "1",
+    "parentStation": null
+   },
+   {
+    "gtfsId": "HSL:1174502",
+    "name": "Pasila",
+    "lat": 60.199,
+    "lon": 24.933,
+    "platformCode": "2",
+    "parentStation": null
+   },
+   {
+    "gtfsId": "tampere:0001",
+    "name": "Pasilankatu",
+    "lat": 61.5,
+    "lon": 23.8,
+    "platformCode": null,
+    "parentStation": null
+   }
+  ]
+ }
+}

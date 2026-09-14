@@ -57,10 +57,19 @@ Cities are grouped by the data provider that serves them; one provider package c
 | Bergen | `bergen` (`skyss`) | `entur` | none | yes | yes | routes scoped to Skyss |
 | Trondheim | `trondheim` (`atb`) | `entur` | none | yes | yes | routes scoped to AtB |
 | Stavanger | `stavanger` (`kolumbus`) | `entur` | none | yes | yes | routes scoped to Kolumbus |
+| Stockholm | `stockholm` (`sl`) | `sl`, [SL Transport](https://www.trafiklab.se/api/our-apis/sl/transport/) | none | yes | no | stop list downloaded on first run; stop search only |
+| Zürich | `zurich` (`ch`, `switzerland`) | `opendatach`, [transport.opendata.ch](https://transport.opendata.ch) | none | yes | no | whole of Switzerland; stop search only |
+| Bern | `bern` | `opendatach` | none | yes | no | |
+| Basel | `basel` | `opendatach` | none | yes | no | |
+| Geneva | `geneva` (`geneve`, `genf`) | `opendatach` | none | yes | no | |
+| Lausanne | `lausanne` | `opendatach` | none | yes | no | |
+| Helsinki | `helsinki` (`hsl`) | `digitransit`, [Digitransit](https://digitransit.fi/en/developers/) | `ETA_DIGITRANSIT_API_KEY`, required | yes | yes | not yet verified against the live API |
+| Tampere | `tampere` (`nysse`) | `digitransit` (Waltti router) | `ETA_DIGITRANSIT_API_KEY`, required | yes | yes | not yet verified against the live API |
+| Turku | `turku` (`foli`) | `digitransit` (Waltti router) | `ETA_DIGITRANSIT_API_KEY`, required | yes | yes | not yet verified against the live API |
 
 `eta cities` prints this table for the build you have, with the live key status. `eta cities --check` additionally makes one real request per city.
 
-Planned next: Zurich/Switzerland, Stockholm, Helsinki, Paris, Prague, Washington DC, Chicago, Portland, Vancouver, Singapore, Melbourne, Tokyo, New York, Sydney, SF Bay Area, Los Angeles.
+Planned next: Paris, Prague, Washington DC, Chicago, Portland, Vancouver, Singapore, Melbourne, Tokyo, New York, Sydney, SF Bay Area, Los Angeles.
 
 ## Features
 
@@ -144,7 +153,7 @@ eta cities --check
 eta budapest --setup
 ```
 
-## Install
+## Installation
 
 Homebrew (macOS and Linux):
 
@@ -225,6 +234,9 @@ If both set, the environment variable wins. Providers with several keys use `ETA
 | `bkk` | Budapest | `ETA_BKK_API_KEY` | `bkk` | required | https://opendata.bkk.hu |
 | `tfl` | London | `ETA_TFL_API_KEY` | `tfl` | optional | https://api-portal.tfl.gov.uk |
 | `entur` | Oslo, Bergen, Trondheim, Stavanger | none | | no | |
+| `sl` | Stockholm | none | | no | |
+| `opendatach` | Zürich, Bern, Basel, Geneva, Lausanne | none | | no | |
+| `digitransit` | Helsinki, Tampere, Turku | `ETA_DIGITRANSIT_API_KEY` | `digitransit` | required | https://portal-api.digitransit.fi |
 
 ## Config and aliases
 
@@ -274,8 +286,8 @@ $ eta berlin M4 "alexanderplatz bhf" -j -c 2
 
 ## How it works
 
-1. **Route resolution.** With a route, providers whose API can list a route's stops (`RouteLister`: `bkk`, `tfl`, `entur`, `mbta`) resolve the short name, fetch the stops per direction (cached 24h under `~/.cache/eta/<city>`), and fuzzy-match your query locally, exactly like GoKK.
-2. **Stop search.** Without a route, or with providers lacking that call (`StopSearcher`: `bvg`, and all of the above), stops are searched by name through the API. With a route, ambiguous hits are probed with one departures call each and only stops actually served by the route survive.
+1. **Route resolution.** With a route, providers whose API can list a route's stops (`RouteLister`: `bkk`, `tfl`, `entur`, `mbta`, `digitransit`) resolve the short name, fetch the stops per direction (cached 24h under `~/.cache/eta/<city>`), and fuzzy-match your query locally, exactly like GoKK.
+2. **Stop search.** Without a route, or with providers lacking that call (`StopSearcher`: `bvg`, `sl`, `opendatach`, and all of the above), stops are searched by name through the API or a cached stop list. With a route, ambiguous hits are probed with one departures call each and only stops actually served by the route survive.
 3. **One departures call** for the matched stop, filtered by route client-side when one was given, grouped by line, direction and headsign, `count` per group.
 
 Live departures are never cached. Every invocation has a 10 s budget. Each data provider lives in `internal/providers/<provider>` and registers every city it serves (Entur registers Oslo, Bergen, Trondheim and Stavanger with their operator scoping); the shared pieces are `internal/transit` (domain model and interfaces), `internal/app` (resolution, grouping, rendering), `internal/httpx`, `internal/cache`, `internal/match` and `internal/xutil`.

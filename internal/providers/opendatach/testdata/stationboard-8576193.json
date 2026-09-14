@@ -1,0 +1,438 @@
+{
+  "station": {
+    "id": "8576193",
+    "name": "Zürich, Bellevue",
+    "score": null,
+    "coordinate": {
+      "type": "WGS84",
+      "x": 47.36708,
+      "y": 8.545112
+    },
+    "distance": null
+  },
+  "stationboard": [
+    {
+      "stop": {
+        "station": {
+          "id": "8576193",
+          "name": "Zürich, Bellevue",
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": 47.36708,
+            "y": 8.545112
+          },
+          "distance": null
+        },
+        "arrival": null,
+        "arrivalTimestamp": null,
+        "departure": "2026-09-14T22:00:00+0200",
+        "departureTimestamp": 1789416000,
+        "delay": null,
+        "platform": "F",
+        "prognosis": {
+          "platform": null,
+          "arrival": "2026-09-14T22:03:21+0200",
+          "departure": null
+        },
+        "realtimeAvailability": null,
+        "location": {
+          "id": "8591230",
+          "name": null,
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": null,
+            "y": null
+          },
+          "distance": null
+        }
+      },
+      "name": "047928",
+      "category": "T",
+      "subcategory": null,
+      "categoryCode": null,
+      "number": "8",
+      "operator": "VBZ    F",
+      "to": "Zürich, Kirche Fluntern",
+      "capacity1st": null,
+      "capacity2nd": null
+    },
+    {
+      "stop": {
+        "station": {
+          "id": "8576193",
+          "name": "Zürich, Bellevue",
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": 47.36708,
+            "y": 8.545112
+          },
+          "distance": null
+        },
+        "arrival": null,
+        "arrivalTimestamp": null,
+        "departure": "2026-09-14T22:02:00+0200",
+        "departureTimestamp": 1789416120,
+        "delay": 2,
+        "platform": "F",
+        "prognosis": {
+          "platform": null,
+          "arrival": "2026-09-14T22:02:21+0200",
+          "departure": "2026-09-14T22:02:00+0200"
+        },
+        "realtimeAvailability": null,
+        "location": {
+          "id": "8591194",
+          "name": null,
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": null,
+            "y": null
+          },
+          "distance": null
+        }
+      },
+      "name": "048340",
+      "category": "T",
+      "subcategory": null,
+      "categoryCode": null,
+      "number": "9",
+      "operator": "VBZ    F",
+      "to": "Zürich, Hirzenbach",
+      "capacity1st": null,
+      "capacity2nd": null
+    },
+    {
+      "stop": {
+        "station": {
+          "id": "8576193",
+          "name": "Zürich, Bellevue",
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": 47.36708,
+            "y": 8.545112
+          },
+          "distance": null
+        },
+        "arrival": null,
+        "arrivalTimestamp": null,
+        "departure": "2026-09-14T22:02:00+0200",
+        "departureTimestamp": 1789416120,
+        "delay": 1,
+        "platform": "A",
+        "prognosis": {
+          "platform": null,
+          "arrival": "2026-09-14T22:03:21+0200",
+          "departure": "2026-09-14T22:03:00+0200"
+        },
+        "realtimeAvailability": null,
+        "location": {
+          "id": "8591067",
+          "name": null,
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": null,
+            "y": null
+          },
+          "distance": null
+        }
+      },
+      "name": "048499",
+      "category": "T",
+      "subcategory": null,
+      "categoryCode": null,
+      "number": "4",
+      "operator": "VBZ    F",
+      "to": "Zürich, Bahnhofstrasse/HB",
+      "capacity1st": null,
+      "capacity2nd": null
+    },
+    {
+      "stop": {
+        "station": {
+          "id": "8576193",
+          "name": "Zürich, Bellevue",
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": 47.36708,
+            "y": 8.545112
+          },
+          "distance": null
+        },
+        "arrival": null,
+        "arrivalTimestamp": null,
+        "departure": "2026-09-14T22:03:00+0200",
+        "departureTimestamp": 1789416180,
+        "delay": 0,
+        "platform": "C",
+        "prognosis": {
+          "platform": null,
+          "arrival": "2026-09-14T22:02:21+0200",
+          "departure": "2026-09-14T22:03:00+0200"
+        },
+        "realtimeAvailability": null,
+        "location": {
+          "id": "8576182",
+          "name": null,
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": null,
+            "y": null
+          },
+          "distance": null
+        }
+      },
+      "name": "048669",
+      "category": "T",
+      "subcategory": null,
+      "categoryCode": null,
+      "number": "11",
+      "operator": "VBZ    F",
+      "to": "Zürich Tiefenbrunnen, Bahnhof",
+      "capacity1st": null,
+      "capacity2nd": null
+    },
+    {
+      "stop": {
+        "station": {
+          "id": "8576193",
+          "name": "Zürich, Bellevue",
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": 47.36708,
+            "y": 8.545112
+          },
+          "distance": null
+        },
+        "arrival": null,
+        "arrivalTimestamp": null,
+        "departure": "2026-09-14T22:03:00+0200",
+        "departureTimestamp": 1789416180,
+        "delay": 0,
+        "platform": "D",
+        "prognosis": {
+          "platform": null,
+          "arrival": "2026-09-14T22:02:21+0200",
+          "departure": "2026-09-14T22:03:00+0200"
+        },
+        "realtimeAvailability": null,
+        "location": {
+          "id": "8591067",
+          "name": null,
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": null,
+            "y": null
+          },
+          "distance": null
+        }
+      },
+      "name": "048713",
+      "category": "T",
+      "subcategory": null,
+      "categoryCode": null,
+      "number": "11",
+      "operator": "VBZ    F",
+      "to": "Zürich, Bahnhofstrasse/HB",
+      "capacity1st": null,
+      "capacity2nd": null
+    },
+    {
+      "stop": {
+        "station": {
+          "id": "8576193",
+          "name": "Zürich, Bellevue",
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": 47.36708,
+            "y": 8.545112
+          },
+          "distance": null
+        },
+        "arrival": null,
+        "arrivalTimestamp": null,
+        "departure": "2026-09-14T22:05:00+0200",
+        "departureTimestamp": 1789416300,
+        "delay": 0,
+        "platform": "B",
+        "prognosis": {
+          "platform": null,
+          "arrival": "2026-09-14T22:02:21+0200",
+          "departure": "2026-09-14T22:05:00+0200"
+        },
+        "realtimeAvailability": null,
+        "location": {
+          "id": "8591315",
+          "name": null,
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": null,
+            "y": null
+          },
+          "distance": null
+        }
+      },
+      "name": "048849",
+      "category": "T",
+      "subcategory": null,
+      "categoryCode": null,
+      "number": "4",
+      "operator": "VBZ    F",
+      "to": "Zürich, Rehalp",
+      "capacity1st": null,
+      "capacity2nd": null
+    },
+    {
+      "stop": {
+        "station": {
+          "id": "8576193",
+          "name": "Zürich, Bellevue",
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": 47.36708,
+            "y": 8.545112
+          },
+          "distance": null
+        },
+        "arrival": null,
+        "arrivalTimestamp": null,
+        "departure": "2026-09-14T22:05:00+0200",
+        "departureTimestamp": 1789416300,
+        "delay": 0,
+        "platform": null,
+        "prognosis": {
+          "platform": null,
+          "arrival": null,
+          "departure": "2026-09-14T22:05:00+0200"
+        },
+        "realtimeAvailability": null,
+        "location": {
+          "id": "8576215",
+          "name": null,
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": null,
+            "y": null
+          },
+          "distance": null
+        }
+      },
+      "name": "057475",
+      "category": "B",
+      "subcategory": null,
+      "categoryCode": null,
+      "number": "912",
+      "operator": "VBZ",
+      "to": "Itschnach, Fallacher",
+      "capacity1st": null,
+      "capacity2nd": null
+    },
+    {
+      "stop": {
+        "station": {
+          "id": "8576193",
+          "name": "Zürich, Bellevue",
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": 47.36708,
+            "y": 8.545112
+          },
+          "distance": null
+        },
+        "arrival": null,
+        "arrivalTimestamp": null,
+        "departure": "2026-09-14T22:06:00+0200",
+        "departureTimestamp": 1789416360,
+        "delay": 0,
+        "platform": "A",
+        "prognosis": {
+          "platform": null,
+          "arrival": "2026-09-14T22:02:21+0200",
+          "departure": "2026-09-14T22:06:00+0200"
+        },
+        "realtimeAvailability": null,
+        "location": {
+          "id": "8591067",
+          "name": null,
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": null,
+            "y": null
+          },
+          "distance": null
+        }
+      },
+      "name": "048644",
+      "category": "T",
+      "subcategory": null,
+      "categoryCode": null,
+      "number": "4",
+      "operator": "VBZ    F",
+      "to": "Zürich, Bahnhofstrasse/HB",
+      "capacity1st": null,
+      "capacity2nd": null
+    },
+    {
+      "stop": {
+        "station": {
+          "id": "8576193",
+          "name": "Zürich, Bellevue",
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": 47.36708,
+            "y": 8.545112
+          },
+          "distance": null
+        },
+        "arrival": null,
+        "arrivalTimestamp": null,
+        "departure": "2026-09-14T22:06:00+0200",
+        "departureTimestamp": 1789416360,
+        "delay": 0,
+        "platform": "D",
+        "prognosis": {
+          "platform": null,
+          "arrival": "2026-09-14T22:02:21+0200",
+          "departure": "2026-09-14T22:06:00+0200"
+        },
+        "realtimeAvailability": null,
+        "location": {
+          "id": "8596007",
+          "name": null,
+          "score": null,
+          "coordinate": {
+            "type": "WGS84",
+            "x": null,
+            "y": null
+          },
+          "distance": null
+        }
+      },
+      "name": "048813",
+      "category": "T",
+      "subcategory": null,
+      "categoryCode": null,
+      "number": "2",
+      "operator": "VBZ    F",
+      "to": "Schlieren, Geissweid",
+      "capacity1st": null,
+      "capacity2nd": null
+    }
+  ]
+}

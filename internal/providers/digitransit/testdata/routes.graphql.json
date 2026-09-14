@@ -1,0 +1,18 @@
+{
+ "data": {
+  "routes": [
+   {
+    "gtfsId": "HSL:2550",
+    "shortName": "550",
+    "longName": "It\u00e4keskus - Westendinasema",
+    "mode": "BUS"
+   },
+   {
+    "gtfsId": "HSL:2551",
+    "shortName": "551",
+    "longName": "Some other",
+    "mode": "BUS"
+   }
+  ]
+ }
+}
