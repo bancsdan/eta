@@ -118,6 +118,79 @@ func TestRunSetupWritesKeys(t *testing.T) {
 	}
 }
 
+func TestSaveFlagAndAliasValue(t *testing.T) {
+	cfg := &config.Config{}
+	got, err := parseArgs([]string{"stubcity", "Red", "park", "street", "-c", "2", "-t", "--save", "home"}, cfg)
+	if err != nil || got.save != "home" {
+		t.Fatalf("parse: %+v %v", got, err)
+	}
+	if v := aliasValue(got); v != "stubcity Red 'park street' -c 2 -t" {
+		t.Errorf("aliasValue = %q", v)
+	}
+	got, _ = parseArgs([]string{"stubcity", "alex", "-j", "--save=board"}, cfg)
+	if v := aliasValue(got); v != "stubcity alex -j" {
+		t.Errorf("board aliasValue = %q", v)
+	}
+	got, _ = parseArgs([]string{"stubcity", "Red", "-l", "--save", "x"}, cfg)
+	if v := aliasValue(got); v != "stubcity Red -l" {
+		t.Errorf("list aliasValue = %q", v)
+	}
+	for _, bad := range [][]string{{"stubcity", "x", "--save"}, {"stubcity", "x", "--save", "-t"}} {
+		if _, err := parseArgs(bad, cfg); err == nil {
+			t.Errorf("%v should fail", bad)
+		}
+	}
+	// The saved value round-trips through alias expansion, quotes included.
+	cfg = &config.Config{Aliases: map[string]string{"home": "stubcity Red 'park street' -c 2 -t"}}
+	got, err = parseArgs([]string{"home"}, cfg)
+	if err != nil || got.Route != "Red" || got.Query != "park street" || got.Count != 2 || !got.ShowClock {
+		t.Errorf("round trip: %+v %v", got, err)
+	}
+}
+
+func TestSplitArgs(t *testing.T) {
+	cases := map[string][]string{
+		"a b  c":                  {"a", "b", "c"},
+		"boston 'park street' -t": {"boston", "park street", "-t"},
+		`x "two words" 'it''s'`:   {"x", "two words", "its"},
+		"":                        nil,
+	}
+	for in, want := range cases {
+		if got := splitArgs(in); strings.Join(got, "|") != strings.Join(want, "|") {
+			t.Errorf("splitArgs(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+func TestSetAlias(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("XDG_CONFIG_HOME", dir)
+	if err := os.MkdirAll(config.Dir(), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(config.ConfigFile(), []byte("# mine\ndefault_city = oslo\nhome = old\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := config.SetAlias("home", "oslo 31 jernbanetorget -c 2"); err != nil {
+		t.Fatal(err)
+	}
+	if err := config.SetAlias("work", "london Central bank"); err != nil {
+		t.Fatal(err)
+	}
+	if err := config.SetAlias("default_city", "x"); err == nil {
+		t.Errorf("default_city must be refused")
+	}
+	b, _ := os.ReadFile(config.ConfigFile())
+	want := "# mine\ndefault_city = oslo\nhome = oslo 31 jernbanetorget -c 2\nwork = london Central bank\n"
+	if string(b) != want {
+		t.Errorf("file:\n%s\nwant:\n%s", b, want)
+	}
+	cfg, err := config.Load(config.ConfigFile())
+	if err != nil || cfg.DefaultCity != "oslo" || cfg.Aliases["home"] != "oslo 31 jernbanetorget -c 2" {
+		t.Errorf("reload: %+v %v", cfg, err)
+	}
+}
+
 func TestVersionString(t *testing.T) {
 	if got := versionString(); got != "eta dev" {
 		t.Errorf("default = %q", got)

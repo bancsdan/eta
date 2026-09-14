@@ -64,18 +64,30 @@ func Key(env string) string {
 	return kv[transit.KeySpec{Env: env}.ConfigName()]
 }
 
-func SetKey(name, value string) error {
-	path := KeysFile()
+func SetKey(name, value string) error { return setKV(KeysFile(), name, value) }
+
+// SetAlias writes name = args into the config file; "default_city" is
+// reserved and refused.
+func SetAlias(name, args string) error {
+	if strings.ToLower(strings.TrimSpace(name)) == "default_city" {
+		return errors.New(`"default_city" is not an alias name`)
+	}
+	return setKV(ConfigFile(), name, args)
+}
+
+// setKV replaces or appends "name = value" in path, keeping every other line
+// (comments included). The file is created with owner-only permissions.
+func setKV(path, name, value string) error {
 	name = strings.ToLower(strings.TrimSpace(name))
 	value = strings.TrimSpace(value)
-	if name == "" || value == "" {
-		return errors.New("key name and value must not be empty")
+	if name == "" || value == "" || strings.ContainsAny(name, " \t=") {
+		return errors.New("name and value must not be empty, and the name may not contain spaces or '='")
 	}
 	var lines []string
 	if b, err := os.ReadFile(path); err == nil {
 		lines = strings.Split(strings.TrimRight(string(b), "\n"), "\n")
 	} else if !errors.Is(err, os.ErrNotExist) {
-		return fmt.Errorf("keys %s: %v", path, err)
+		return fmt.Errorf("%s: %v", path, err)
 	}
 	replaced := false
 	for i, line := range lines {

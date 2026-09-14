@@ -49,6 +49,7 @@ Print the next departures at a stop: every line, or just one route.
       --every N   refresh interval in seconds for -w
   -a, --aliases   show the configured aliases and exit
       --setup     prompt for the city's API key and save it
+      --save NAME after a successful lookup, save the command as alias NAME
       --version   print the version and exit
   -h, --help      show this help
 
@@ -62,7 +63,8 @@ API keys are named after the data provider: ETA_<PROVIDER>_API_KEY
 which cities need a key and where to get one; "eta <city> --setup" saves it.
 
 $XDG_CONFIG_HOME/eta/config (~/.config/eta/config) holds the default city
-and aliases, one per line as "name = args"; "default" runs with no args:
+and aliases, one per line as "name = args"; "default" runs with no args.
+"eta oslo 31 jernbanetorget -c 2 --save home" writes the "home" line for you:
 
   default_city = berlin
   home         = M4 alexanderplatz -c 3
@@ -165,13 +167,98 @@ func run(args []string) error {
 		return err
 	}
 	if !opts.watch {
-		return once()
+		if err := once(); err != nil {
+			return err
+		}
+		return saveAlias(opts)
 	}
-	return watch(ctx, once, opts.every, isTTY(os.Stdout))
+	return watch(ctx, once, opts.every, isTTY(os.Stdout), func() error { return saveAlias(opts) })
+}
+
+// saveAlias records the command as opts.save once a lookup succeeded, so a
+// mistyped stop never becomes an alias.
+func saveAlias(opts *cliOptions) error {
+	if opts.save == "" {
+		return nil
+	}
+	value := aliasValue(opts)
+	if err := config.SetAlias(opts.save, value); err != nil {
+		return err
+	}
+	fmt.Fprintf(os.Stderr, "eta: saved alias %s = %s (in %s)\n", opts.save, value, config.ConfigFile())
+	return nil
+}
+
+// aliasValue rebuilds the command line from the resolved options: the city
+// is always included so the alias survives a change of default_city, and a
+// multi-word stop query is quoted so it is not read back as route + stop.
+func aliasValue(o *cliOptions) string {
+	parts := []string{o.City}
+	if o.Route != "" {
+		parts = append(parts, quoteArg(o.Route))
+	}
+	if o.Query != "" {
+		parts = append(parts, quoteArg(o.Query))
+	}
+	if o.List {
+		parts = append(parts, "-l")
+	}
+	if o.Count > 1 {
+		parts = append(parts, "-c", strconv.Itoa(o.Count))
+	}
+	if o.ShowClock {
+		parts = append(parts, "-t")
+	}
+	if o.JSON {
+		parts = append(parts, "-j")
+	}
+	return strings.Join(parts, " ")
+}
+
+func quoteArg(s string) string {
+	if strings.ContainsAny(s, " \t\"") {
+		return "'" + strings.ReplaceAll(s, "'", "'\\''") + "'"
+	}
+	return s
+}
+
+// splitArgs tokenizes an alias value like a shell would for the simple
+// cases: whitespace separates, single or double quotes group.
+func splitArgs(s string) []string {
+	var out []string
+	var cur strings.Builder
+	inWord := false
+	var quote rune
+	for _, r := range s {
+		switch {
+		case quote != 0:
+			if r == quote {
+				quote = 0
+			} else {
+				cur.WriteRune(r)
+			}
+		case r == '\'' || r == '"':
+			quote = r
+			inWord = true
+		case r == ' ' || r == '\t' || r == '\n':
+			if inWord {
+				out = append(out, cur.String())
+				cur.Reset()
+				inWord = false
+			}
+		default:
+			cur.WriteRune(r)
+			inWord = true
+		}
+	}
+	if inWord {
+		out = append(out, cur.String())
+	}
+	return out
 }
 
 // Usage errors stop the loop: a retry cannot fix them.
-func watch(ctx context.Context, once func() error, every time.Duration, tty bool) error {
+func watch(ctx context.Context, once func() error, every time.Duration, tty bool, onFirstSuccess func() error) error {
 	for {
 		if tty {
 			fmt.Print("\x1b[2J\x1b[H")
@@ -183,6 +270,11 @@ func watch(ctx context.Context, once func() error, every time.Duration, tty bool
 		}
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "eta:", err)
+		} else if onFirstSuccess != nil {
+			if err := onFirstSuccess(); err != nil {
+				return err
+			}
+			onFirstSuccess = nil
 		}
 		fmt.Fprintf(os.Stdout, "\n(refreshing every %s, Ctrl-C to stop)\n", every)
 		select {
@@ -283,6 +375,7 @@ type cliOptions struct {
 	watch bool
 	every time.Duration
 	setup bool
+	save  string
 }
 
 func parseArgs(args []string, cfg *config.Config) (*cliOptions, error) {
@@ -293,14 +386,14 @@ func parseArgs(args []string, cfg *config.Config) (*cliOptions, error) {
 	aliases := cfg.Aliases
 	switch {
 	case len(pos) > 0 && aliases[pos[0]] != "":
-		expanded := append(strings.Fields(aliases[pos[0]]), removeFirst(args, pos[0])...)
+		expanded := append(splitArgs(aliases[pos[0]]), removeFirst(args, pos[0])...)
 		o, pos, err = parseOnce(expanded)
 	case len(pos) == 0 && aliases["default"] != "":
 		def := aliases["default"]
 		if aliases[def] != "" { // "default = home"
 			def = aliases[def]
 		}
-		o, pos, err = parseOnce(append(strings.Fields(def), args...))
+		o, pos, err = parseOnce(append(splitArgs(def), args...))
 	}
 	if err != nil || o == nil {
 		return o, err
@@ -363,6 +456,18 @@ func parseOnce(args []string) (*cliOptions, []string, error) {
 			o.watch = true
 		case "--setup":
 			o.setup = true
+		case "--save":
+			if !hasVal {
+				if i+1 >= len(args) {
+					return nil, nil, &app.UsageError{Msg: "--save needs an alias name\n" + usage}
+				}
+				i++
+				val = args[i]
+			}
+			if strings.TrimSpace(val) == "" || strings.HasPrefix(val, "-") {
+				return nil, nil, &app.UsageError{Msg: fmt.Sprintf("--save: %q is not an alias name", val)}
+			}
+			o.save = val
 		case "--every":
 			if !hasVal {
 				if i+1 >= len(args) {

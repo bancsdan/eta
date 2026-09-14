@@ -7,12 +7,12 @@ Set Height 400
 Set TypingSpeed 80ms
 Set Padding 20
 
-Type "eta oslo 2 holmen"
+Type "eta oslo 2 holmen -c 3 -t --save home"
 Sleep 0.3s
 Enter
-Sleep 3s
+Sleep 5s
 
-Type "eta oslo 2 holmen -c 3 -t"
+Type "eta home"
 Sleep 0.3s
 Enter
 Sleep 5s

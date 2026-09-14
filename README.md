@@ -7,6 +7,29 @@ Next departures of a public-transport route at a stop, from your terminal, in an
 <img src="docs/assets/overview.gif" alt="eta demo: real-time line 2 departures at Holmen, Oslo, grouped by direction, then with clock times" width="720">
 </div>
 
+## Contents
+
+- [Motivation](#motivation)
+- [What it is, and what it is not](#what-it-is-and-what-it-is-not)
+- [Cities](#cities)
+- [Features](#features)
+  - [Every line at a stop](#every-line-at-a-stop)
+  - [One route, with clock times](#one-route-with-clock-times)
+  - [A route's stops, in order](#a-routes-stops-in-order)
+  - [Ambiguous stop? Pick one](#ambiguous-stop-pick-one)
+  - [Live board](#live-board)
+  - [JSON for scripts and status bars](#json-for-scripts-and-status-bars)
+  - [Default city and aliases](#default-city-and-aliases)
+  - [Key setup and health check](#key-setup-and-health-check)
+- [Install](#install)
+- [Usage](#usage)
+- [API keys](#api-keys)
+- [Config and aliases](#config-and-aliases)
+- [JSON output](#json-output)
+- [How it works](#how-it-works)
+- [Development](#development)
+- [License](#license)
+
 ## Motivation
 
 I often code right before leaving the comfort of my house to venture into the city, and was frustrated that I had to tackle multiple rounds of auth hurdles `(unlock phone -> auth app -> find my bus on the map/UI)` to check the departure of my bus next to my house. For easing the pain I built [GoKK](https://github.com/bancsdan/GoKK), which works in Budapest where I live. Install tool, save an alias, and I can get the next departure in a second every time.
@@ -214,7 +237,16 @@ work         = budapest 4 moricz
 default      = home
 ```
 
-`default_city` lets you omit the city. Every other line is an alias whose value is re-parsed as arguments, so it may include the city and flags; later command-line flags override it (`eta home -c 1`). Bare `eta` runs the `default` alias.
+`default_city` lets you omit the city. Every other line is an alias whose value is re-parsed as arguments, so it may include the city and flags; later command-line flags override it (`eta home -c 1`). Bare `eta` runs the `default` alias. Quote a multi-word stop name in an alias (`boston Red 'park street'`).
+
+You don't have to edit the file: add `--save NAME` to any command and, once the lookup succeeds, eta writes it as an alias with the city filled in.
+
+```sh
+eta oslo 31 jernbanetorget -c 2 --save home   # saved as: home = oslo 31 jernbanetorget -c 2
+eta home
+```
+
+Saving `default` makes the command run on bare `eta`. An existing alias with the same name is replaced; `eta -a` lists them.
 
 ## JSON output
 
