@@ -37,7 +37,7 @@ jobs:
         with:
           install-fonts: true
           path: docs/tapes/overview.tape
-      - name: Record the remaining tapes
+      - name: Record the tapes
         run: |
           for tape in board route list pick watch json alias; do
             echo "== $tape"

@@ -4,7 +4,7 @@
 
 Next departures of a public-transport route at a stop, from your terminal, in any supported city.
 
-<img src="docs/assets/overview.gif" alt="eta demo: the city list, then real-time Central line departures at Bank grouped by direction" width="720">
+<img src="docs/assets/overview.gif" alt="eta demo: real-time line 2 departures at Holmen, Oslo, grouped by direction, then with clock times" width="720">
 </div>
 
 ## Motivation
