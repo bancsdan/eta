@@ -1,5 +1,8 @@
 name: Demo GIFs
 
+# Re-records docs/assets/*.gif from docs/tapes/*.tape with the freshly built
+# eta, in one job so the toolchain is set up once. Every tape uses a keyless
+# city, so no secrets are needed.
 on:
   workflow_dispatch:
   push:
@@ -13,25 +16,9 @@ permissions:
   contents: write
 
 jobs:
-  check:
-    name: Live APIs reachable
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          check-latest: true
-      - run: go run ./cmd/eta cities --check
-
   record:
-    name: Record ${{ matrix.tape }}
-    needs: check
+    name: Record
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        tape: [overview, board, route, list, pick, watch, json, alias]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -43,27 +30,19 @@ jobs:
           go install ./cmd/eta
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
           sudo apt-get update -q && sudo apt-get install -y -q zsh
-      - uses: charmbracelet/vhs-action@v2
+      - name: Live APIs reachable
+        run: eta cities --check
+      - name: Install VHS
+        uses: charmbracelet/vhs-action@v2
         with:
-          path: docs/tapes/${{ matrix.tape }}.tape
-      - uses: actions/upload-artifact@v4
-        with:
-          name: gif-${{ matrix.tape }}
-          path: docs/assets/${{ matrix.tape }}.gif
-          if-no-files-found: error
-          retention-days: 1
-
-  commit:
-    name: Commit gifs
-    needs: record
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: gif-*
-          path: docs/assets
-          merge-multiple: true
+          install-fonts: true
+          path: docs/tapes/overview.tape
+      - name: Record the remaining tapes
+        run: |
+          for tape in board route list pick watch json alias; do
+            echo "== $tape"
+            vhs "docs/tapes/$tape.tape"
+          done
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "docs(demo): re-record gifs"
