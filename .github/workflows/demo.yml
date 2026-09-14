@@ -1,7 +1,5 @@
 name: Demo GIFs
 
-# Re-records docs/assets/*.gif from docs/tapes/*.tape with the freshly built
-# eta. Every tape uses a keyless city, so no secrets are needed.
 on:
   workflow_dispatch:
   push:
@@ -15,9 +13,25 @@ permissions:
   contents: write
 
 jobs:
-  record:
-    name: Record
+  check:
+    name: Live APIs reachable
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+      - run: go run ./cmd/eta cities --check
+
+  record:
+    name: Record ${{ matrix.tape }}
+    needs: check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tape: [overview, board, route, list, pick, watch, json, alias]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -29,32 +43,27 @@ jobs:
           go install ./cmd/eta
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
           sudo apt-get update -q && sudo apt-get install -y -q zsh
-      - name: Smoke test the live APIs the tapes depend on
-        run: eta cities --check
       - uses: charmbracelet/vhs-action@v2
         with:
-          path: docs/tapes/overview.tape
-      - uses: charmbracelet/vhs-action@v2
+          path: docs/tapes/${{ matrix.tape }}.tape
+      - uses: actions/upload-artifact@v4
         with:
-          path: docs/tapes/board.tape
-      - uses: charmbracelet/vhs-action@v2
+          name: gif-${{ matrix.tape }}
+          path: docs/assets/${{ matrix.tape }}.gif
+          if-no-files-found: error
+          retention-days: 1
+
+  commit:
+    name: Commit gifs
+    needs: record
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          path: docs/tapes/route.tape
-      - uses: charmbracelet/vhs-action@v2
-        with:
-          path: docs/tapes/list.tape
-      - uses: charmbracelet/vhs-action@v2
-        with:
-          path: docs/tapes/pick.tape
-      - uses: charmbracelet/vhs-action@v2
-        with:
-          path: docs/tapes/watch.tape
-      - uses: charmbracelet/vhs-action@v2
-        with:
-          path: docs/tapes/json.tape
-      - uses: charmbracelet/vhs-action@v2
-        with:
-          path: docs/tapes/alias.tape
+          pattern: gif-*
+          path: docs/assets
+          merge-multiple: true
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "docs(demo): re-record gifs"
