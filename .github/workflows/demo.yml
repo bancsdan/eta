@@ -35,6 +35,9 @@ jobs:
       - name: Install VHS
         uses: charmbracelet/vhs-action@v2
         with:
+          # Newer VHS builds recorded fine but left the gifs unwritten on the
+          # runner; this version is known to work.
+          version: v0.11.0
           install-fonts: true
           path: docs/tapes/overview.tape
       - name: Record the tapes

@@ -1,2 +1,4 @@
 /eta
 /dist/
+# Chrome profile VHS leaves behind when the alias tape sets XDG_CONFIG_HOME
+docs/tapes/config/google-chrome/
