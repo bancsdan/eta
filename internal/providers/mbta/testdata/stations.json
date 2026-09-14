@@ -1,0 +1,68 @@
+{
+  "data": [
+    {
+      "id": "place-alfcl",
+      "type": "stop",
+      "attributes": {
+        "name": "Alewife",
+        "municipality": "Cambridge"
+      }
+    },
+    {
+      "id": "place-brntn",
+      "type": "stop",
+      "attributes": {
+        "name": "Braintree",
+        "municipality": "Braintree"
+      }
+    },
+    {
+      "id": "place-cntsq",
+      "type": "stop",
+      "attributes": {
+        "name": "Central",
+        "municipality": "Cambridge"
+      }
+    },
+    {
+      "id": "place-davis",
+      "type": "stop",
+      "attributes": {
+        "name": "Davis",
+        "municipality": "Somerville"
+      }
+    },
+    {
+      "id": "place-harsq",
+      "type": "stop",
+      "attributes": {
+        "name": "Harvard",
+        "municipality": "Cambridge"
+      }
+    },
+    {
+      "id": "place-knncl",
+      "type": "stop",
+      "attributes": {
+        "name": "Kendall/MIT",
+        "municipality": "Cambridge"
+      }
+    },
+    {
+      "id": "place-pktrm",
+      "type": "stop",
+      "attributes": {
+        "name": "Park Street",
+        "municipality": "Boston"
+      }
+    },
+    {
+      "id": "place-sstat",
+      "type": "stop",
+      "attributes": {
+        "name": "South Station",
+        "municipality": "Boston"
+      }
+    }
+  ]
+}

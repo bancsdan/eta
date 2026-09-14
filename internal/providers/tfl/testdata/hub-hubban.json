@@ -1,0 +1,110 @@
+{
+ "$type": "Tfl.Api.Presentation.Entities.StopPoint, Tfl.Api.Presentation.Entities",
+ "naptanId": "HUBBAN",
+ "modes": [
+  "bus",
+  "dlr",
+  "tube"
+ ],
+ "icsCode": "1000013",
+ "stopType": "TransportInterchange",
+ "hubNaptanCode": "HUBBAN",
+ "status": true,
+ "id": "HUBBAN",
+ "commonName": "Bank",
+ "placeType": "StopPoint",
+ "children": [
+  {
+   "naptanId": "490G000556",
+   "modes": [
+    "bus"
+   ],
+   "icsCode": "1007606",
+   "stopType": "NaptanOnstreetBusCoachStopCluster",
+   "stationNaptan": "490G000556",
+   "hubNaptanCode": "HUBBAN",
+   "status": true,
+   "id": "490G000556",
+   "commonName": "Bank Station  / Cornhill",
+   "placeType": "StopPoint",
+   "children": [
+    {
+     "naptanId": "490000013D",
+     "indicator": "Stop D",
+     "stopLetter": "D",
+     "modes": [
+      "bus"
+     ],
+     "icsCode": "1007606",
+     "stopType": "NaptanPublicBusCoachTram",
+     "stationNaptan": "490G000556",
+     "hubNaptanCode": "HUBBAN",
+     "status": true,
+     "id": "490000013D",
+     "commonName": "Bank Station  / Cornhill",
+     "placeType": "StopPoint",
+     "children": [],
+     "lat": 51.51338,
+     "lon": -0.0876
+    },
+    {
+     "naptanId": "490000013E",
+     "indicator": "Stop E",
+     "stopLetter": "E",
+     "modes": [
+      "bus"
+     ],
+     "icsCode": "1007606",
+     "stopType": "NaptanPublicBusCoachTram",
+     "stationNaptan": "490G000556",
+     "hubNaptanCode": "HUBBAN",
+     "status": true,
+     "id": "490000013E",
+     "commonName": "Bank Station  / Cornhill",
+     "placeType": "StopPoint",
+     "children": [],
+     "lat": 51.51327,
+     "lon": -0.08775
+    }
+   ],
+   "lat": 51.51338,
+   "lon": -0.0876
+  },
+  {
+   "naptanId": "940GZZDLBNK",
+   "modes": [
+    "dlr"
+   ],
+   "icsCode": "1000013",
+   "stopType": "NaptanMetroStation",
+   "stationNaptan": "940GZZDLBNK",
+   "hubNaptanCode": "HUBBAN",
+   "status": true,
+   "id": "940GZZDLBNK",
+   "commonName": "Bank DLR Station",
+   "placeType": "StopPoint",
+   "children": [],
+   "lat": 51.513233,
+   "lon": -0.088515
+  },
+  {
+   "naptanId": "940GZZLUBNK",
+   "modes": [
+    "tube"
+   ],
+   "icsCode": "1000013",
+   "stopType": "NaptanMetroStation",
+   "stationNaptan": "940GZZLUBNK",
+   "hubNaptanCode": "HUBBAN",
+   "status": true,
+   "id": "940GZZLUBNK",
+   "commonName": "Bank Underground Station",
+   "placeType": "StopPoint",
+   "children": [],
+   "lat": 51.51225,
+   "lon": -0.087792
+  }
+ ],
+ "lat": 51.513395,
+ "lon": -0.089095
+}

@@ -1,0 +1,20 @@
+{
+  "code": 200,
+  "currentTime": 1789252200000,
+  "version": 3,
+  "status": "OK",
+  "text": "OK",
+  "data": {
+    "entry": {
+      "query": "zugligeti",
+      "routeIds": [],
+      "stopIds": ["BKK_F02004", "BKK_F02003"]
+    },
+    "references": {
+      "stops": {
+        "BKK_F02004": {"id": "BKK_F02004", "name": "Zugligeti út", "lat": 47.5173, "lon": 18.9755},
+        "BKK_F02003": {"id": "BKK_F02003", "name": "Zugligeti út", "lat": 47.5171, "lon": 18.9757}
+      }
+    }
+  }
+}

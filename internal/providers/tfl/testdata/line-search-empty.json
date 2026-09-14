@@ -1,0 +1,5 @@
+{
+ "$type": "Tfl.Api.Presentation.Entities.RouteSearchResponse, Tfl.Api.Presentation.Entities",
+ "input": "zz-no-such-route-zz",
+ "searchMatches": []
+}

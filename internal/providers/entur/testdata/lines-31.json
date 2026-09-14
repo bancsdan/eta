@@ -1,0 +1,118 @@
+{
+ "data": {
+  "lines": [
+   {
+    "id": "RUT:Line:31",
+    "publicCode": "31",
+    "name": "Snarøya - Fornebu - Tonsenhagen - Grorud",
+    "transportMode": "bus",
+    "journeyPatterns": [
+     {
+      "id": "RUT:JourneyPattern:017168",
+      "directionType": "outbound",
+      "name": "Tonsenhagen-Snarøya",
+      "quays": [
+       {
+        "id": "NSR:Quay:101400",
+        "name": "Sars' gate",
+        "publicCode": null,
+        "stopPlace": {
+         "id": "NSR:StopPlace:59421",
+         "name": "Sars' gate"
+        }
+       },
+       {
+        "id": "NSR:Quay:101466",
+        "name": "Hausmanns bru",
+        "publicCode": null,
+        "stopPlace": {
+         "id": "NSR:StopPlace:59472",
+         "name": "Hausmanns bru"
+        }
+       },
+       {
+        "id": "NSR:Quay:7203",
+        "name": "Jernbanetorget",
+        "publicCode": "A",
+        "stopPlace": {
+         "id": "NSR:StopPlace:4000",
+         "name": "Jernbanetorget"
+        }
+       },
+       {
+        "id": "NSR:Quay:11817",
+        "name": "Skøyen stasjon",
+        "publicCode": "C",
+        "stopPlace": {
+         "id": "NSR:StopPlace:6429",
+         "name": "Skøyen stasjon"
+        }
+       },
+       {
+        "id": "NSR:Quay:11881",
+        "name": "Maritim",
+        "publicCode": "",
+        "stopPlace": {
+         "id": "NSR:StopPlace:6463",
+         "name": "Maritim"
+        }
+       }
+      ]
+     },
+     {
+      "id": "RUT:JourneyPattern:017169",
+      "directionType": "inbound",
+      "name": "Snarøya-Grorud T",
+      "quays": [
+       {
+        "id": "NSR:Quay:11880",
+        "name": "Maritim",
+        "publicCode": "",
+        "stopPlace": {
+         "id": "NSR:StopPlace:6463",
+         "name": "Maritim"
+        }
+       },
+       {
+        "id": "NSR:Quay:11829",
+        "name": "Sjølyst",
+        "publicCode": "A",
+        "stopPlace": {
+         "id": "NSR:StopPlace:6434",
+         "name": "Sjølyst"
+        }
+       },
+       {
+        "id": "NSR:Quay:7202",
+        "name": "Jernbanetorget",
+        "publicCode": "D",
+        "stopPlace": {
+         "id": "NSR:StopPlace:4000",
+         "name": "Jernbanetorget"
+        }
+       },
+       {
+        "id": "NSR:Quay:101465",
+        "name": "Hausmanns bru",
+        "publicCode": null,
+        "stopPlace": {
+         "id": "NSR:StopPlace:59472",
+         "name": "Hausmanns bru"
+        }
+       },
+       {
+        "id": "NSR:Quay:101401",
+        "name": "Sars' gate",
+        "publicCode": null,
+        "stopPlace": {
+         "id": "NSR:StopPlace:59421",
+         "name": "Sars' gate"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "$type": "Tfl.Api.Presentation.Entities.RouteSearchResponse, Tfl.Api.Presentation.Entities",
+ "input": "central",
+ "searchMatches": [
+  {
+   "$type": "Tfl.Api.Presentation.Entities.RouteSearchMatch, Tfl.Api.Presentation.Entities",
+   "lineId": "central",
+   "mode": "tube",
+   "lineName": "Central",
+   "matchedRouteSections": [],
+   "matchedStops": []
+  },
+  {
+   "$type": "Tfl.Api.Presentation.Entities.RouteSearchMatch, Tfl.Api.Presentation.Entities",
+   "lineId": "grand-central",
+   "mode": "national-rail",
+   "lineName": "Grand Central",
+   "matchedRouteSections": [],
+   "matchedStops": []
+  }
+ ]
+}

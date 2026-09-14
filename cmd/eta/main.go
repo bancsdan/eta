@@ -1,0 +1,423 @@
+// Command eta prints the next real-time departures at a public-transport stop, in any supported city.
+package main
+
+import (
+	"bufio"
+	"context"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"os/signal"
+	"sort"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/bancsdan/eta/internal/app"
+	"github.com/bancsdan/eta/internal/cache"
+	"github.com/bancsdan/eta/internal/config"
+	_ "github.com/bancsdan/eta/internal/providers/all"
+	"github.com/bancsdan/eta/internal/registry"
+	"github.com/bancsdan/eta/internal/transit"
+)
+
+const (
+	usage = `usage: eta <city> <stop-query> [-c N] [-t] [-j] [-r] [-w]
+       eta <city> <route> <stop-query> [flags]
+       eta <city> <route> -l [-j]
+       eta <stop-query> | eta <route> <stop-query>   (with default_city set)
+       eta <alias> [flags]
+       eta <city> --setup
+       eta cities [--check]
+
+Print the next departures at a stop: every line, or just one route.
+
+  <city>        a city id or alias from "eta cities": berlin, london, nyc ...
+  <route>       route short name as riders know it: 155, M4, Northern, Red
+  <stop-query>  free-text stop name; accent-insensitive and fuzzy
+                ("viranyos" matches "Virányos út")
+  <alias>       a name from the config file (see -a)
+
+  -c, --count N   departures to show per direction (default 1)
+  -t, --times     also print clock times, e.g. 5m42s (22:41)
+  -j, --json      print JSON instead of text
+  -l, --list      list the route's stops by direction instead of departures
+  -r, --refresh   ignore the route/stop cache (~/.cache/eta)
+  -w, --watch     keep the board on screen, refreshing every 30 s
+      --every N   refresh interval in seconds for -w
+  -a, --aliases   show the configured aliases and exit
+      --setup     prompt for the city's API key and save it
+  -h, --help      show this help
+
+Times are real-time predictions; ~ marks schedule-only entries. When a stop
+query is ambiguous eta asks you to choose (or, with a route, picks the best
+match and says what else matched).
+
+API keys are named after the data provider: ETA_<PROVIDER>_API_KEY
+(e.g. ETA_BKK_API_KEY for Budapest) or $XDG_CONFIG_HOME/eta/keys
+(~/.config/eta/keys), one "provider = key" per line. "eta cities" shows
+which cities need a key and where to get one; "eta <city> --setup" saves it.
+
+$XDG_CONFIG_HOME/eta/config (~/.config/eta/config) holds the default city
+and aliases, one per line as "name = args"; "default" runs with no args:
+
+  default_city = berlin
+  home         = M4 alexanderplatz -c 3
+  work         = budapest 4 moricz
+  default      = home`
+)
+
+const (
+	cacheTTL    = 24 * time.Hour
+	timeout     = 10 * time.Second
+	coldTimeout = 90 * time.Second
+)
+
+func main() {
+	if err := run(os.Args[1:]); err != nil {
+		var ue *app.UsageError
+		var ce *config.UsageError
+		switch {
+		case errors.As(err, &ue):
+			fmt.Fprintln(os.Stderr, ue.Msg)
+		case errors.As(err, &ce):
+			fmt.Fprintln(os.Stderr, ce.Msg)
+		default:
+			fmt.Fprintln(os.Stderr, "eta:", err)
+		}
+		os.Exit(1)
+	}
+}
+
+func run(args []string) error {
+	if len(args) > 0 && args[0] == "cities" {
+		return runCities(args[1:], os.Stdout)
+	}
+	cfg, err := config.Load(config.File())
+	if err != nil {
+		return err
+	}
+	opts, err := parseArgs(args, cfg)
+	if err != nil {
+		return err
+	}
+	if opts == nil { // help or alias listing already printed
+		return nil
+	}
+	entry, ok := registry.Lookup(opts.City)
+	if !ok {
+		return &app.UsageError{Msg: fmt.Sprintf("unknown city %q (run \"eta cities\")", opts.City)}
+	}
+	opts.City = entry.Info.ID
+	if opts.setup {
+		return runSetup(entry.Info, os.Stdin, os.Stdout)
+	}
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+	p := entry.New(registry.Deps{
+		Key:   config.Key,
+		HTTP:  &http.Client{},
+		Cache: cache.Default(entry.Info.ID, cacheTTL),
+		Now:   time.Now,
+	})
+	budget := timeout
+	if cs, ok := p.(transit.ColdStarter); ok && cs.Cold() {
+		budget = coldTimeout
+		fmt.Fprintf(os.Stderr, "eta: first run for %s downloads its stop list; this can take a minute\n", entry.Info.ID)
+	}
+
+	interactive := isTTY(os.Stdin) && isTTY(os.Stdout) && !opts.JSON
+	a := &app.App{
+		Provider: p,
+		Cache:    cache.Default(entry.Info.ID, cacheTTL),
+		Out:      os.Stdout,
+		Err:      os.Stderr,
+		Color:    colorEnabled() && !opts.JSON,
+	}
+	if interactive {
+		a.Pick = pickFromTerminal
+	}
+	once := func() error {
+		rctx, cancel := context.WithTimeout(ctx, budget)
+		defer cancel()
+		err := a.Run(rctx, opts.Options)
+		if errors.Is(err, transit.ErrNoKey) || errors.Is(err, transit.ErrUnauthorized) {
+			if k, ok := missingKey(entry.Info); ok {
+				return config.MissingKeyError(entry.Info, k)
+			}
+			for _, k := range entry.Info.Keys {
+				if errors.Is(err, transit.ErrUnauthorized) {
+					return fmt.Errorf("%v; check %s", err, k.Env)
+				}
+			}
+		}
+		return err
+	}
+	if !opts.watch {
+		return once()
+	}
+	return watch(ctx, once, opts.every, isTTY(os.Stdout))
+}
+
+// Usage errors stop the loop: a retry cannot fix them.
+func watch(ctx context.Context, once func() error, every time.Duration, tty bool) error {
+	for {
+		if tty {
+			fmt.Print("\x1b[2J\x1b[H")
+		}
+		err := once()
+		var ue *app.UsageError
+		if errors.As(err, &ue) {
+			return err
+		}
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "eta:", err)
+		}
+		fmt.Fprintf(os.Stdout, "\n(refreshing every %s, Ctrl-C to stop)\n", every)
+		select {
+		case <-ctx.Done():
+			fmt.Println()
+			return nil
+		case <-time.After(every):
+		}
+	}
+}
+
+func pickFromTerminal(names []string) int {
+	fmt.Fprintln(os.Stderr, "Several stops match; which one?")
+	for i, n := range names {
+		fmt.Fprintf(os.Stderr, "  %d. %s\n", i+1, n)
+	}
+	fmt.Fprint(os.Stderr, "> ")
+	line, err := bufio.NewReader(os.Stdin).ReadString('\n')
+	if err != nil && line == "" {
+		fmt.Fprintln(os.Stderr)
+		return -1
+	}
+	n, err := strconv.Atoi(strings.TrimSpace(line))
+	if err != nil || n < 1 || n > len(names) {
+		return -1
+	}
+	return n - 1
+}
+
+func runSetup(info transit.Info, in io.Reader, out io.Writer) error {
+	if len(info.Keys) == 0 {
+		fmt.Fprintf(out, "%s needs no API key.\n", info.Name)
+		return nil
+	}
+	rd := bufio.NewReader(in)
+	for _, k := range info.Keys {
+		label := k.Env
+		if k.Label != "" {
+			label = k.Label + " key (" + k.Env + ")"
+		}
+		req := "required"
+		if k.Req == transit.KeyOptional {
+			req = "optional, raises the rate limit"
+		}
+		fmt.Fprintf(out, "%s: %s (%s)\n", info.Name, label, req)
+		if k.SignupURL != "" {
+			fmt.Fprintf(out, "  get one at %s\n", k.SignupURL)
+		}
+		if cur := config.Key(k.Env); cur != "" {
+			fmt.Fprintf(out, "  currently set (%s…); press Enter to keep it\n", cur[:min(4, len(cur))])
+		}
+		fmt.Fprint(out, "  key: ")
+		line, err := rd.ReadString('\n')
+		if err != nil && line == "" {
+			fmt.Fprintln(out)
+			return nil
+		}
+		val := strings.TrimSpace(line)
+		if val == "" {
+			continue
+		}
+		if err := config.SetKey(k.ConfigName(), val); err != nil {
+			return err
+		}
+		fmt.Fprintf(out, "  saved to %s as %q\n", config.KeysFile(), k.ConfigName())
+	}
+	return nil
+}
+
+func isTTY(f *os.File) bool {
+	fi, err := f.Stat()
+	return err == nil && fi.Mode()&os.ModeCharDevice != 0
+}
+
+func missingKey(info transit.Info) (transit.KeySpec, bool) {
+	for _, k := range info.Keys {
+		if k.Req == transit.KeyRequired && config.Key(k.Env) == "" {
+			return k, true
+		}
+	}
+	return transit.KeySpec{}, false
+}
+
+type cliOptions struct {
+	app.Options
+	watch bool
+	every time.Duration
+	setup bool
+}
+
+func parseArgs(args []string, cfg *config.Config) (*cliOptions, error) {
+	o, pos, err := parseOnce(args)
+	if err != nil || o == nil {
+		return o, err
+	}
+	aliases := cfg.Aliases
+	switch {
+	case len(pos) > 0 && aliases[pos[0]] != "":
+		expanded := append(strings.Fields(aliases[pos[0]]), removeFirst(args, pos[0])...)
+		o, pos, err = parseOnce(expanded)
+	case len(pos) == 0 && aliases["default"] != "":
+		def := aliases["default"]
+		if aliases[def] != "" { // "default = home"
+			def = aliases[def]
+		}
+		o, pos, err = parseOnce(append(strings.Fields(def), args...))
+	}
+	if err != nil || o == nil {
+		return o, err
+	}
+	if len(pos) > 0 {
+		if _, ok := registry.Lookup(pos[0]); ok {
+			o.City = pos[0]
+			pos = pos[1:]
+		} else if cfg.DefaultCity != "" {
+			o.City = cfg.DefaultCity
+		} else {
+			return nil, &app.UsageError{Msg: fmt.Sprintf("unknown city %q (run \"eta cities\", or set default_city in %s)\n%s", pos[0], config.File(), usage)}
+		}
+	}
+	if o.setup {
+		if o.City == "" {
+			return nil, &app.UsageError{Msg: "--setup needs a city: eta <city> --setup"}
+		}
+		return o, nil
+	}
+	switch {
+	case len(pos) == 0:
+		return nil, &app.UsageError{Msg: usage}
+	case o.List:
+		o.Route = pos[0]
+	case len(pos) == 1:
+		o.Query = pos[0]
+	default:
+		o.Route = pos[0]
+		o.Query = strings.Join(pos[1:], " ")
+	}
+	return o, nil
+}
+
+func parseOnce(args []string) (*cliOptions, []string, error) {
+	o := &cliOptions{Options: app.Options{Count: 1}, every: 30 * time.Second}
+	var pos []string
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+		name, val, hasVal := strings.Cut(arg, "=")
+		switch name {
+		case "-h", "--help":
+			fmt.Println(usage)
+			return nil, nil, nil
+		case "-a", "--aliases":
+			printAliases()
+			return nil, nil, nil
+		case "-t", "--times":
+			o.ShowClock = true
+		case "-j", "--json":
+			o.JSON = true
+		case "-r", "--refresh":
+			o.Refresh = true
+		case "-l", "--list":
+			o.List = true
+		case "-w", "--watch":
+			o.watch = true
+		case "--setup":
+			o.setup = true
+		case "--every":
+			if !hasVal {
+				if i+1 >= len(args) {
+					return nil, nil, &app.UsageError{Msg: "--every needs a number of seconds\n" + usage}
+				}
+				i++
+				val = args[i]
+			}
+			n, err := strconv.Atoi(val)
+			if err != nil || n < 5 {
+				return nil, nil, &app.UsageError{Msg: fmt.Sprintf("--every: %q is not a number of seconds (minimum 5)", val)}
+			}
+			o.every = time.Duration(n) * time.Second
+		case "-c", "--count":
+			if !hasVal {
+				if i+1 >= len(args) {
+					return nil, nil, &app.UsageError{Msg: "-c needs a number\n" + usage}
+				}
+				i++
+				val = args[i]
+			}
+			n, err := strconv.Atoi(val)
+			if err != nil || n < 1 {
+				return nil, nil, &app.UsageError{Msg: fmt.Sprintf("-c: %q is not a positive number", val)}
+			}
+			o.Count = n
+		default:
+			if strings.HasPrefix(arg, "-") && len(arg) > 1 {
+				return nil, nil, &app.UsageError{Msg: fmt.Sprintf("unknown flag %s\n%s", arg, usage)}
+			}
+			pos = append(pos, arg)
+		}
+	}
+	return o, pos, nil
+}
+
+func removeFirst(args []string, tok string) []string {
+	out := make([]string, 0, len(args))
+	removed := false
+	for _, a := range args {
+		if !removed && a == tok {
+			removed = true
+			continue
+		}
+		out = append(out, a)
+	}
+	return out
+}
+
+func printAliases() {
+	path := config.File()
+	cfg, err := config.Load(path)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if len(cfg.Aliases) == 0 {
+		fmt.Printf("no aliases; add lines like \"home = berlin M4 alexanderplatz -c 3\" to %s\n", path)
+		return
+	}
+	names := make([]string, 0, len(cfg.Aliases))
+	width := 0
+	for n := range cfg.Aliases {
+		names = append(names, n)
+		if len(n) > width {
+			width = len(n)
+		}
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		fmt.Printf("%-*s = %s\n", width, n, cfg.Aliases[n])
+	}
+}
+
+func colorEnabled() bool {
+	if os.Getenv("NO_COLOR") != "" || os.Getenv("TERM") == "dumb" {
+		return false
+	}
+	fi, err := os.Stdout.Stat()
+	return err == nil && fi.Mode()&os.ModeCharDevice != 0
+}

@@ -1,0 +1,198 @@
+{
+ "data": {
+  "s0": {
+   "name": "Jernbanetorget",
+   "estimatedCalls": [
+    {
+     "aimedDepartureTime": "2026-09-13T20:48:00+02:00",
+     "expectedDepartureTime": "2026-09-13T20:48:03+02:00",
+     "realtime": true,
+     "cancellation": false,
+     "predictionInaccurate": false,
+     "destinationDisplay": {
+      "frontText": "Fornebu"
+     },
+     "serviceJourney": {
+      "id": "RUT:ServiceJourney:a071e2b3b9ebc30822cd6b8d22856812",
+      "line": {
+       "id": "RUT:Line:31",
+       "publicCode": "31",
+       "transportMode": "bus"
+      },
+      "directionType": "outbound"
+     },
+     "quay": {
+      "id": "NSR:Quay:7203",
+      "publicCode": "A"
+     }
+    },
+    {
+     "aimedDepartureTime": "2026-09-13T20:58:00+02:00",
+     "expectedDepartureTime": "2026-09-13T20:58:50+02:00",
+     "realtime": true,
+     "cancellation": false,
+     "predictionInaccurate": false,
+     "destinationDisplay": {
+      "frontText": "Snarøya"
+     },
+     "serviceJourney": {
+      "id": "RUT:ServiceJourney:07bfbed041706bf991d74305ebc3edbf",
+      "line": {
+       "id": "RUT:Line:31",
+       "publicCode": "31",
+       "transportMode": "bus"
+      },
+      "directionType": "outbound"
+     },
+     "quay": {
+      "id": "NSR:Quay:7203",
+      "publicCode": "A"
+     }
+    },
+    {
+     "aimedDepartureTime": "2026-09-13T21:28:00+02:00",
+     "expectedDepartureTime": "2026-09-13T21:28:00+02:00",
+     "realtime": false,
+     "cancellation": false,
+     "predictionInaccurate": false,
+     "destinationDisplay": {
+      "frontText": "Fornebu"
+     },
+     "serviceJourney": {
+      "id": "RUT:ServiceJourney:c5c2db2a1699a098f570543a7e31a1ba",
+      "line": {
+       "id": "RUT:Line:31",
+       "publicCode": "31",
+       "transportMode": "bus"
+      },
+      "directionType": "outbound"
+     },
+     "quay": {
+      "id": "NSR:Quay:7203",
+      "publicCode": "A"
+     }
+    },
+    {
+     "aimedDepartureTime": "2026-09-13T21:38:00+02:00",
+     "expectedDepartureTime": "2026-09-13T21:38:00+02:00",
+     "realtime": false,
+     "cancellation": false,
+     "predictionInaccurate": false,
+     "destinationDisplay": {
+      "frontText": "Snarøya"
+     },
+     "serviceJourney": {
+      "id": "RUT:ServiceJourney:951e19b924c7384c0fe94969aa975fec",
+      "line": {
+       "id": "RUT:Line:31",
+       "publicCode": "31",
+       "transportMode": "bus"
+      },
+      "directionType": "outbound"
+     },
+     "quay": {
+      "id": "NSR:Quay:7203",
+      "publicCode": "A"
+     }
+    }
+   ]
+  },
+  "s1": {
+   "name": "Jernbanetorget",
+   "estimatedCalls": [
+    {
+     "aimedDepartureTime": "2026-09-13T20:46:00+02:00",
+     "expectedDepartureTime": "2026-09-13T20:47:24+02:00",
+     "realtime": true,
+     "cancellation": false,
+     "predictionInaccurate": false,
+     "destinationDisplay": {
+      "frontText": "Grorud T"
+     },
+     "serviceJourney": {
+      "id": "RUT:ServiceJourney:232a48c8d24a6f7bf758d69dea4f89ec",
+      "line": {
+       "id": "RUT:Line:31",
+       "publicCode": "31",
+       "transportMode": "bus"
+      },
+      "directionType": "inbound"
+     },
+     "quay": {
+      "id": "NSR:Quay:7202",
+      "publicCode": "D"
+     }
+    },
+    {
+     "aimedDepartureTime": "2026-09-13T20:56:00+02:00",
+     "expectedDepartureTime": "2026-09-13T20:56:29+02:00",
+     "realtime": true,
+     "cancellation": false,
+     "predictionInaccurate": false,
+     "destinationDisplay": {
+      "frontText": "Tonsenhagen"
+     },
+     "serviceJourney": {
+      "id": "RUT:ServiceJourney:72d91d361070030806fbe38f17a6dd18",
+      "line": {
+       "id": "RUT:Line:31",
+       "publicCode": "31",
+       "transportMode": "bus"
+      },
+      "directionType": "inbound"
+     },
+     "quay": {
+      "id": "NSR:Quay:7202",
+      "publicCode": "D"
+     }
+    },
+    {
+     "aimedDepartureTime": "2026-09-13T21:36:00+02:00",
+     "expectedDepartureTime": "2026-09-13T21:36:00+02:00",
+     "realtime": false,
+     "cancellation": false,
+     "predictionInaccurate": false,
+     "destinationDisplay": {
+      "frontText": "Tonsenhagen"
+     },
+     "serviceJourney": {
+      "id": "RUT:ServiceJourney:b7d6720b88a609d1ee356c499f97cca7",
+      "line": {
+       "id": "RUT:Line:31",
+       "publicCode": "31",
+       "transportMode": "bus"
+      },
+      "directionType": "inbound"
+     },
+     "quay": {
+      "id": "NSR:Quay:7202",
+      "publicCode": "D"
+     }
+    },
+    {
+     "aimedDepartureTime": "2026-09-13T21:46:00+02:00",
+     "expectedDepartureTime": "2026-09-13T21:46:00+02:00",
+     "realtime": false,
+     "cancellation": false,
+     "predictionInaccurate": false,
+     "destinationDisplay": {
+      "frontText": "Grorud T"
+     },
+     "serviceJourney": {
+      "id": "RUT:ServiceJourney:bcf2b8a2221a81c9df013af6161a052e",
+      "line": {
+       "id": "RUT:Line:31",
+       "publicCode": "31",
+       "transportMode": "bus"
+      },
+      "directionType": "inbound"
+     },
+     "quay": {
+      "id": "NSR:Quay:7202",
+      "publicCode": "D"
+     }
+    }
+   ]
+  }
+ }
+}

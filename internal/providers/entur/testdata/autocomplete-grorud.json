@@ -1,0 +1,150 @@
+{
+ "geocoding": {
+  "version": "0.2",
+  "attribution": "http://pelias.mapzen.com/v1/attribution",
+  "engine": {
+   "name": "Photon",
+   "author": "Komoot",
+   "version": "1.2.0"
+  },
+  "timestamp": 1789325237349
+ },
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     10.882537,
+     59.961166
+    ]
+   },
+   "properties": {
+    "id": "NSR:StopPlace:58216",
+    "gid": "openstreetmap:venue:NSR:StopPlace:58216",
+    "layer": "venue",
+    "source": "openstreetmap",
+    "source_id": "NSR:StopPlace:58216",
+    "name": "Grorud",
+    "street": "NOT_AN_ADDRESS-NSR:StopPlace:58216",
+    "accuracy": "point",
+    "country_a": "NOR",
+    "county": "Oslo",
+    "county_gid": "whosonfirst:county:KVE:TopographicPlace:03",
+    "locality": "Oslo",
+    "locality_gid": "whosonfirst:locality:KVE:TopographicPlace:0301",
+    "label": "Grorud, Oslo",
+    "category": [
+     "metroStation",
+     "busStation"
+    ],
+    "mode": [
+     {
+      "metro": null
+     },
+     {
+      "bus": null
+     }
+    ],
+    "tariff_zones": [
+     "RUT:TariffZone:1",
+     "RUT:FareZone:4"
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     10.501606,
+     59.306872
+    ]
+   },
+   "properties": {
+    "id": "NSR:StopPlace:17582",
+    "gid": "whosonfirst:venue:NSR:StopPlace:17582",
+    "layer": "venue",
+    "source": "whosonfirst",
+    "source_id": "NSR:StopPlace:17582",
+    "name": "Grorud",
+    "street": "NOT_AN_ADDRESS-NSR:StopPlace:17582",
+    "accuracy": "point",
+    "country_a": "NOR",
+    "county": "Vestfold",
+    "county_gid": "whosonfirst:county:KVE:TopographicPlace:39",
+    "locality": "Tønsberg",
+    "locality_gid": "whosonfirst:locality:KVE:TopographicPlace:3905",
+    "label": "Grorud, Tønsberg",
+    "category": [
+     "onstreetBus"
+    ],
+    "mode": [
+     {
+      "bus": null
+     }
+    ],
+    "tariff_zones": [
+     "VKT:TariffZone:702",
+     "VKT:FareZone:4"
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     10.887827,
+     59.950106
+    ]
+   },
+   "properties": {
+    "id": "NSR:StopPlace:59620",
+    "gid": "openstreetmap:venue:NSR:StopPlace:59620",
+    "layer": "venue",
+    "source": "openstreetmap",
+    "source_id": "NSR:StopPlace:59620",
+    "name": "Grorud stasjon",
+    "street": "NOT_AN_ADDRESS-NSR:StopPlace:59620",
+    "accuracy": "point",
+    "country_a": "NOR",
+    "county": "Oslo",
+    "county_gid": "whosonfirst:county:KVE:TopographicPlace:03",
+    "locality": "Oslo",
+    "locality_gid": "whosonfirst:locality:KVE:TopographicPlace:0301",
+    "label": "Grorud stasjon, Oslo",
+    "category": [
+     "railStation",
+     "onstreetBus",
+     "onstreetBus",
+     "onstreetBus",
+     "onstreetBus",
+     "onstreetBus"
+    ],
+    "mode": [
+     {
+      "rail": null
+     },
+     {
+      "bus": "railReplacementBus"
+     },
+     {
+      "bus": null
+     }
+    ],
+    "tariff_zones": [
+     "RUT:TariffZone:1",
+     "RUT:FareZone:4"
+    ]
+   }
+  }
+ ],
+ "bbox": [
+  8.715264,
+  59.306872,
+  10.887827,
+  61.852289
+ ]
+}

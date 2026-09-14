@@ -1,0 +1,211 @@
+{
+ "data": [
+  {
+   "attributes": {
+    "direction_destinations": [
+     "Ashmont/Braintree",
+     "Alewife"
+    ],
+    "direction_names": [
+     "South",
+     "North"
+    ],
+    "long_name": "Red Line",
+    "short_name": "",
+    "type": 1
+   },
+   "id": "Red",
+   "links": {
+    "self": "/routes/Red"
+   },
+   "relationships": {
+    "agency": {
+     "data": {
+      "id": "1",
+      "type": "agency"
+     }
+    },
+    "line": {
+     "data": {
+      "id": "line-Red",
+      "type": "line"
+     }
+    }
+   },
+   "type": "route"
+  },
+  {
+   "attributes": {
+    "direction_destinations": [
+     "Forest Hills",
+     "Oak Grove"
+    ],
+    "direction_names": [
+     "South",
+     "North"
+    ],
+    "long_name": "Orange Line",
+    "short_name": "",
+    "type": 1
+   },
+   "id": "Orange",
+   "links": {
+    "self": "/routes/Orange"
+   },
+   "relationships": {
+    "agency": {
+     "data": {
+      "id": "1",
+      "type": "agency"
+     }
+    },
+    "line": {
+     "data": {
+      "id": "line-Orange",
+      "type": "line"
+     }
+    }
+   },
+   "type": "route"
+  },
+  {
+   "attributes": {
+    "direction_destinations": [
+     "Heath Street",
+     "Medford/Tufts"
+    ],
+    "direction_names": [
+     "West",
+     "East"
+    ],
+    "long_name": "Green Line E",
+    "short_name": "E",
+    "type": 0
+   },
+   "id": "Green-E",
+   "links": {
+    "self": "/routes/Green-E"
+   },
+   "relationships": {
+    "agency": {
+     "data": {
+      "id": "1",
+      "type": "agency"
+     }
+    },
+    "line": {
+     "data": {
+      "id": "line-Green",
+      "type": "line"
+     }
+    }
+   },
+   "type": "route"
+  },
+  {
+   "attributes": {
+    "direction_destinations": [
+     "Wachusett",
+     "North Station"
+    ],
+    "direction_names": [
+     "Outbound",
+     "Inbound"
+    ],
+    "long_name": "Fitchburg Line",
+    "short_name": "",
+    "type": 2
+   },
+   "id": "CR-Fitchburg",
+   "links": {
+    "self": "/routes/CR-Fitchburg"
+   },
+   "relationships": {
+    "agency": {
+     "data": {
+      "id": "1",
+      "type": "agency"
+     }
+    },
+    "line": {
+     "data": {
+      "id": "line-Fitchburg",
+      "type": "line"
+     }
+    }
+   },
+   "type": "route"
+  },
+  {
+   "attributes": {
+    "direction_destinations": [
+     "Hingham",
+     "Rowes Wharf"
+    ],
+    "direction_names": [
+     "Outbound",
+     "Inbound"
+    ],
+    "long_name": "Hingham Ferry",
+    "short_name": "",
+    "type": 4
+   },
+   "id": "Boat-F1",
+   "links": {
+    "self": "/routes/Boat-F1"
+   },
+   "relationships": {
+    "agency": {
+     "data": {
+      "id": "1",
+      "type": "agency"
+     }
+    },
+    "line": {
+     "data": {
+      "id": "line-Boat-F1",
+      "type": "line"
+     }
+    }
+   },
+   "type": "route"
+  },
+  {
+   "attributes": {
+    "direction_destinations": [
+     "Harvard Square",
+     "Nubian Station"
+    ],
+    "direction_names": [
+     "Outbound",
+     "Inbound"
+    ],
+    "long_name": "Harvard Square - Nubian Station",
+    "short_name": "1",
+    "type": 3
+   },
+   "id": "1",
+   "links": {
+    "self": "/routes/1"
+   },
+   "relationships": {
+    "agency": {
+     "data": {
+      "id": "1",
+      "type": "agency"
+     }
+    },
+    "line": {
+     "data": {
+      "id": "line-1",
+      "type": "line"
+     }
+    }
+   },
+   "type": "route"
+  }
+ ],
+ "jsonapi": {
+  "version": "1.0"
+ }
+}

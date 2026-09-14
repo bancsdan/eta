@@ -1,0 +1,83 @@
+{
+ "$type": "Tfl.Api.Presentation.Entities.SearchResponse, Tfl.Api.Presentation.Entities",
+ "query": "Bank",
+ "total": 27,
+ "matches": [
+  {
+   "$type": "Tfl.Api.Presentation.Entities.MatchedStop, Tfl.Api.Presentation.Entities",
+   "icsId": "1000013",
+   "modes": [
+    "bus",
+    "tube",
+    "dlr"
+   ],
+   "zone": "1",
+   "id": "HUBBAN",
+   "name": "Bank",
+   "lat": 51.513395,
+   "lon": -0.089095
+  },
+  {
+   "$type": "Tfl.Api.Presentation.Entities.MatchedStop, Tfl.Api.Presentation.Entities",
+   "icsId": "1000075",
+   "topMostParentId": "940GZZLUEMB",
+   "modes": [
+    "tube"
+   ],
+   "zone": "1",
+   "id": "940GZZLUEMB",
+   "name": "Embankment Underground Station",
+   "lat": 51.507058,
+   "lon": -0.122666
+  },
+  {
+   "$type": "Tfl.Api.Presentation.Entities.MatchedStop, Tfl.Api.Presentation.Entities",
+   "icsId": "1002301",
+   "topMostParentId": "490008915S2",
+   "towards": "Vauxhall",
+   "modes": [
+    "bus"
+   ],
+   "id": "490008915S2",
+   "name": "Millbank Millennium Pier",
+   "lat": 51.49229,
+   "lon": -0.12517
+  },
+  {
+   "$type": "Tfl.Api.Presentation.Entities.MatchedStop, Tfl.Api.Presentation.Entities",
+   "icsId": "1002429",
+   "topMostParentId": "490G00002429",
+   "modes": [
+    "bus"
+   ],
+   "id": "490G00002429",
+   "name": "East Bank",
+   "lat": 51.54192,
+   "lon": -0.01276
+  },
+  {
+   "$type": "Tfl.Api.Presentation.Entities.MatchedStop, Tfl.Api.Presentation.Entities",
+   "icsId": "1002446",
+   "topMostParentId": "490G00002446",
+   "modes": [
+    "bus"
+   ],
+   "id": "490G00002446",
+   "name": "Cannon St Stn   / Bank Station",
+   "lat": 51.51135,
+   "lon": -0.08918
+  },
+  {
+   "$type": "Tfl.Api.Presentation.Entities.MatchedStop, Tfl.Api.Presentation.Entities",
+   "icsId": "1003579",
+   "topMostParentId": "490G00003579",
+   "modes": [
+    "bus"
+   ],
+   "id": "490G00003579",
+   "name": "Bankhurst Road",
+   "lat": 51.44858,
+   "lon": -0.02969
+  }
+ ]
+}

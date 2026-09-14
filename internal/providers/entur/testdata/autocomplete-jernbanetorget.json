@@ -1,0 +1,81 @@
+{
+ "geocoding": {
+  "version": "0.2",
+  "attribution": "http://pelias.mapzen.com/v1/attribution",
+  "engine": {
+   "name": "Photon",
+   "author": "Komoot",
+   "version": "1.2.0"
+  },
+  "timestamp": 1789325209354
+ },
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     10.75038,
+     59.911898
+    ]
+   },
+   "properties": {
+    "id": "NSR:StopPlace:58366",
+    "gid": "openstreetmap:venue:NSR:StopPlace:58366",
+    "layer": "venue",
+    "source": "openstreetmap",
+    "source_id": "NSR:StopPlace:58366",
+    "name": "Jernbanetorget",
+    "street": "NOT_AN_ADDRESS-NSR:StopPlace:58366",
+    "accuracy": "point",
+    "country_a": "NOR",
+    "county": "Oslo",
+    "county_gid": "whosonfirst:county:KVE:TopographicPlace:03",
+    "locality": "Oslo",
+    "locality_gid": "whosonfirst:locality:KVE:TopographicPlace:0301",
+    "label": "Jernbanetorget, Oslo",
+    "category": [
+     "onstreetBus",
+     "onstreetTram",
+     "metroStation",
+     "onstreetBus",
+     "onstreetBus",
+     "onstreetTram",
+     "onstreetBus",
+     "onstreetBus",
+     "onstreetBus",
+     "onstreetBus",
+     "onstreetBus",
+     "onstreetTram",
+     "onstreetBus"
+    ],
+    "mode": [
+     {
+      "bus": null
+     },
+     {
+      "tram": null
+     },
+     {
+      "metro": null
+     },
+     {
+      "bus": "localBus"
+     }
+    ],
+    "tariff_zones": [
+     "BRA:TariffZone:311",
+     "RUT:TariffZone:1",
+     "RUT:FareZone:4"
+    ]
+   }
+  }
+ ],
+ "bbox": [
+  10.75038,
+  59.911898,
+  10.75038,
+  59.911898
+ ]
+}

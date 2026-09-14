@@ -1,0 +1,41 @@
+{
+  "code": 200,
+  "currentTime": 1789252200000,
+  "version": 3,
+  "status": "OK",
+  "text": "OK",
+  "data": {
+    "entry": {
+      "stopId": "BKK_F02003",
+      "routeIds": ["BKK_1550"],
+      "alertIds": [],
+      "stopTimes": [
+        {"stopId": "BKK_F02004", "tripId": "BKK_T1", "stopHeadsign": "Zugliget", "arrivalTime": 1789252440, "departureTime": 1789252440, "predictedArrivalTime": 1789252392, "predictedDepartureTime": 1789252392, "predictionScheduled": false, "uncertain": false, "serviceDate": "20260912"},
+        {"stopId": "BKK_F02004", "tripId": "BKK_T2", "stopHeadsign": "Zugliget", "arrivalTime": 1789252680, "departureTime": 1789252680, "predictedArrivalTime": 1789252620, "predictedDepartureTime": 1789252620, "predictionScheduled": false, "uncertain": false, "serviceDate": "20260912"},
+        {"stopId": "BKK_F02004", "tripId": "BKK_T3", "stopHeadsign": "Zugliget", "arrivalTime": 1789253100, "departureTime": 1789253100, "predictedArrivalTime": 1789253160, "predictedDepartureTime": 1789253160, "predictionScheduled": false, "uncertain": false, "serviceDate": "20260912"},
+        {"stopId": "BKK_F02004", "tripId": "BKK_T4", "stopHeadsign": "Zugliget", "arrivalTime": 1789253700, "departureTime": 1789253700, "predictionScheduled": false, "uncertain": false, "serviceDate": "20260912"},
+        {"stopId": "BKK_F02003", "tripId": "BKK_T5", "stopHeadsign": "", "arrivalTime": 1789252500, "departureTime": 1789252500, "predictedArrivalTime": 1789252500, "predictedDepartureTime": 1789252500, "predictionScheduled": true, "uncertain": false, "serviceDate": "20260912"},
+        {"stopId": "BKK_F02003", "tripId": "BKK_T6", "stopHeadsign": "", "arrivalTime": 1789252920, "departureTime": 1789252920, "predictedArrivalTime": 1789252944, "predictedDepartureTime": 1789252944, "predictionScheduled": false, "uncertain": false, "serviceDate": "20260912"},
+        {"stopId": "BKK_F02003", "tripId": "BKK_Tend", "stopHeadsign": "", "arrivalTime": 1789252320, "departureTime": 1789252320, "predictedArrivalTime": 1789252320, "predictedDepartureTime": 1789252320, "predictionScheduled": false, "pickupAllowed": false, "uncertain": false, "serviceDate": "20260912"}
+      ]
+    },
+    "references": {
+      "routes": {
+        "BKK_1550": {"id": "BKK_1550", "shortName": "155", "longName": "Zugliget / Széll Kálmán tér M", "type": "BUS", "color": "009EE3"}
+      },
+      "trips": {
+        "BKK_T1": {"id": "BKK_T1", "routeId": "BKK_1550", "directionId": "0", "tripHeadsign": "Zugliget", "blockId": "1"},
+        "BKK_T2": {"id": "BKK_T2", "routeId": "BKK_1550", "directionId": "0", "tripHeadsign": "Zugliget", "blockId": "2"},
+        "BKK_T3": {"id": "BKK_T3", "routeId": "BKK_1550", "directionId": "0", "tripHeadsign": "Zugliget", "blockId": "3"},
+        "BKK_T4": {"id": "BKK_T4", "routeId": "BKK_1550", "directionId": "0", "tripHeadsign": "Zugliget", "blockId": "4"},
+        "BKK_T5": {"id": "BKK_T5", "routeId": "BKK_1550", "directionId": "1", "tripHeadsign": "Széll Kálmán tér M", "blockId": "5"},
+        "BKK_T6": {"id": "BKK_T6", "routeId": "BKK_1550", "directionId": "1", "tripHeadsign": "Széll Kálmán tér M", "blockId": "6"},
+        "BKK_Tend": {"id": "BKK_Tend", "routeId": "BKK_1550", "directionId": "1", "tripHeadsign": "Széll Kálmán tér M", "blockId": "7"}
+      },
+      "stops": {
+        "BKK_F02003": {"id": "BKK_F02003", "name": "Zugligeti út", "lat": 47.5142, "lon": 18.9865},
+        "BKK_F02004": {"id": "BKK_F02004", "name": "Zugligeti út", "lat": 47.5143, "lon": 18.9864}
+      }
+    }
+  }
+}

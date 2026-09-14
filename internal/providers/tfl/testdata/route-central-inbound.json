@@ -1,0 +1,410 @@
+{
+ "$type": "Tfl.Api.Presentation.Entities.RouteSequence, Tfl.Api.Presentation.Entities",
+ "lineId": "central",
+ "lineName": "Central",
+ "direction": "inbound",
+ "isOutboundOnly": false,
+ "mode": "tube",
+ "stopPointSequences": [
+  {
+   "$type": "Tfl.Api.Presentation.Entities.StopPointSequence, Tfl.Api.Presentation.Entities",
+   "lineId": "central",
+   "lineName": "Central",
+   "direction": "inbound",
+   "branchId": 6,
+   "nextBranchIds": [
+    3,
+    4
+   ],
+   "prevBranchIds": [
+    5,
+    1
+   ],
+   "stopPoint": [
+    {
+     "stationId": "940GZZLULYS",
+     "topMostParentId": "940GZZLULYS",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "3+4",
+     "status": true,
+     "id": "940GZZLULYS",
+     "name": "Leytonstone Underground Station",
+     "lat": 51.568324,
+     "lon": 0.008194
+    },
+    {
+     "stationId": "940GZZLULYN",
+     "topMostParentId": "940GZZLULYN",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "3",
+     "status": true,
+     "id": "940GZZLULYN",
+     "name": "Leyton Underground Station",
+     "lat": 51.556589,
+     "lon": -0.005523
+    },
+    {
+     "parentId": "HUBSRA",
+     "stationId": "940GZZLUSTD",
+     "topMostParentId": "HUBSRA",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "2/3",
+     "status": true,
+     "id": "940GZZLUSTD",
+     "name": "Stratford Underground Station",
+     "lat": 51.541806,
+     "lon": -0.003458
+    },
+    {
+     "stationId": "940GZZLUMED",
+     "topMostParentId": "940GZZLUMED",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "2",
+     "hasDisruption": true,
+     "status": true,
+     "id": "940GZZLUMED",
+     "name": "Mile End Underground Station",
+     "lat": 51.525122,
+     "lon": -0.03364
+    },
+    {
+     "stationId": "940GZZLUBLG",
+     "topMostParentId": "940GZZLUBLG",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "2",
+     "status": true,
+     "id": "940GZZLUBLG",
+     "name": "Bethnal Green Underground Station",
+     "lat": 51.527222,
+     "lon": -0.055506
+    },
+    {
+     "parentId": "HUBLST",
+     "stationId": "940GZZLULVT",
+     "topMostParentId": "HUBLST",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1",
+     "hasDisruption": true,
+     "status": true,
+     "id": "940GZZLULVT",
+     "name": "Liverpool Street Underground Station",
+     "lat": 51.517372,
+     "lon": -0.083182
+    },
+    {
+     "parentId": "HUBBAN",
+     "stationId": "940GZZLUBNK",
+     "topMostParentId": "HUBBAN",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1",
+     "hasDisruption": true,
+     "status": true,
+     "id": "940GZZLUBNK",
+     "name": "Bank Underground Station",
+     "lat": 51.51225,
+     "lon": -0.087792
+    },
+    {
+     "stationId": "940GZZLUSPU",
+     "topMostParentId": "940GZZLUSPU",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1",
+     "status": true,
+     "id": "940GZZLUSPU",
+     "name": "St. Paul's Underground Station",
+     "lat": 51.514936,
+     "lon": -0.097567
+    },
+    {
+     "stationId": "940GZZLUCHL",
+     "topMostParentId": "940GZZLUCHL",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1",
+     "status": true,
+     "id": "940GZZLUCHL",
+     "name": "Chancery Lane Underground Station",
+     "lat": 51.518247,
+     "lon": -0.111583
+    },
+    {
+     "stationId": "940GZZLUHBN",
+     "topMostParentId": "940GZZLUHBN",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1",
+     "hasDisruption": true,
+     "status": true,
+     "id": "940GZZLUHBN",
+     "name": "Holborn Underground Station",
+     "lat": 51.51758,
+     "lon": -0.120475
+    },
+    {
+     "parentId": "HUBTCR",
+     "stationId": "940GZZLUTCR",
+     "topMostParentId": "HUBTCR",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1",
+     "status": true,
+     "id": "940GZZLUTCR",
+     "name": "Tottenham Court Road Underground Station",
+     "lat": 51.516426,
+     "lon": -0.13041
+    },
+    {
+     "stationId": "940GZZLUOXC",
+     "topMostParentId": "940GZZLUOXC",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1",
+     "hasDisruption": true,
+     "status": true,
+     "id": "940GZZLUOXC",
+     "name": "Oxford Circus Underground Station",
+     "lat": 51.515224,
+     "lon": -0.141903
+    },
+    {
+     "parentId": "HUBBDS",
+     "stationId": "940GZZLUBND",
+     "topMostParentId": "HUBBDS",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1",
+     "status": true,
+     "id": "940GZZLUBND",
+     "name": "Bond Street Underground Station",
+     "lat": 51.514304,
+     "lon": -0.149723
+    },
+    {
+     "stationId": "940GZZLUMBA",
+     "topMostParentId": "940GZZLUMBA",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1",
+     "hasDisruption": true,
+     "status": true,
+     "id": "940GZZLUMBA",
+     "name": "Marble Arch Underground Station",
+     "lat": 51.513424,
+     "lon": -0.158953
+    },
+    {
+     "stationId": "940GZZLULGT",
+     "topMostParentId": "940GZZLULGT",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1",
+     "status": true,
+     "id": "940GZZLULGT",
+     "name": "Lancaster Gate Underground Station",
+     "lat": 51.511723,
+     "lon": -0.175494
+    },
+    {
+     "stationId": "940GZZLUQWY",
+     "topMostParentId": "940GZZLUQWY",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1",
+     "status": true,
+     "id": "940GZZLUQWY",
+     "name": "Queensway Underground Station",
+     "lat": 51.510312,
+     "lon": -0.187152
+    },
+    {
+     "stationId": "940GZZLUNHG",
+     "topMostParentId": "940GZZLUNHG",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "1+2",
+     "hasDisruption": true,
+     "status": true,
+     "id": "940GZZLUNHG",
+     "name": "Notting Hill Gate Underground Station",
+     "lat": 51.509128,
+     "lon": -0.196104
+    },
+    {
+     "stationId": "940GZZLUHPK",
+     "topMostParentId": "940GZZLUHPK",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "2",
+     "status": true,
+     "id": "940GZZLUHPK",
+     "name": "Holland Park Underground Station",
+     "lat": 51.507143,
+     "lon": -0.205679
+    },
+    {
+     "parentId": "HUBSPB",
+     "stationId": "940GZZLUSBC",
+     "topMostParentId": "HUBSPB",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "2",
+     "status": true,
+     "id": "940GZZLUSBC",
+     "name": "Shepherd's Bush (Central) Underground Station",
+     "lat": 51.504376,
+     "lon": -0.218813
+    },
+    {
+     "stationId": "940GZZLUWCY",
+     "topMostParentId": "940GZZLUWCY",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "2",
+     "status": true,
+     "id": "940GZZLUWCY",
+     "name": "White City Underground Station",
+     "lat": 51.511959,
+     "lon": -0.224297
+    },
+    {
+     "stationId": "940GZZLUEAN",
+     "topMostParentId": "940GZZLUEAN",
+     "modes": [
+      "tube"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "2",
+     "status": true,
+     "id": "940GZZLUEAN",
+     "name": "East Acton Underground Station",
+     "lat": 51.516612,
+     "lon": -0.247248
+    },
+    {
+     "stationId": "940GZZLUNAN",
+     "topMostParentId": "940GZZLUNAN",
+     "modes": [
+      "tube",
+      "bus"
+     ],
+     "stopType": "NaptanMetroStation",
+     "zone": "2+3",
+     "status": true,
+     "id": "940GZZLUNAN",
+     "name": "North Acton Underground Station",
+     "lat": 51.523524,
+     "lon": -0.259755
+    }
+   ],
+   "serviceType": "Regular"
+  }
+ ],
+ "orderedLineRoutes": [
+  {
+   "$type": "Tfl.Api.Presentation.Entities.OrderedRoute, Tfl.Api.Presentation.Entities",
+   "name": "Epping  &harr;  West Ruislip ",
+   "naptanIds": [
+    "940GZZLULYS",
+    "940GZZLULYN",
+    "940GZZLUSTD",
+    "940GZZLUMED",
+    "940GZZLUBLG",
+    "940GZZLULVT",
+    "940GZZLUBNK",
+    "940GZZLUSPU",
+    "940GZZLUCHL",
+    "940GZZLUHBN",
+    "940GZZLUTCR",
+    "940GZZLUOXC",
+    "940GZZLUBND",
+    "940GZZLUMBA",
+    "940GZZLULGT",
+    "940GZZLUQWY",
+    "940GZZLUNHG",
+    "940GZZLUHPK",
+    "940GZZLUSBC",
+    "940GZZLUWCY",
+    "940GZZLUEAN",
+    "940GZZLUNAN"
+   ],
+   "serviceType": "Regular"
+  },
+  {
+   "$type": "Tfl.Api.Presentation.Entities.OrderedRoute, Tfl.Api.Presentation.Entities",
+   "name": "Epping  &harr;  Ealing Broadway ",
+   "naptanIds": [
+    "940GZZLULYS",
+    "940GZZLULYN",
+    "940GZZLUSTD",
+    "940GZZLUMED",
+    "940GZZLUBLG",
+    "940GZZLULVT",
+    "940GZZLUBNK",
+    "940GZZLUSPU",
+    "940GZZLUCHL",
+    "940GZZLUHBN",
+    "940GZZLUTCR",
+    "940GZZLUOXC",
+    "940GZZLUBND",
+    "940GZZLUMBA",
+    "940GZZLULGT",
+    "940GZZLUQWY",
+    "940GZZLUNHG",
+    "940GZZLUHPK",
+    "940GZZLUSBC",
+    "940GZZLUWCY",
+    "940GZZLUEAN",
+    "940GZZLUNAN"
+   ],
+   "serviceType": "Regular"
+  }
+ ]
+}

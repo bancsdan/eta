@@ -1,0 +1,686 @@
+{
+	"departures": [
+		{
+			"tripId": "1|63422|22|86|13092026",
+			"stop": {
+				"type": "stop",
+				"id": "900100026",
+				"name": "S+U Alexanderplatz Bhf/Gontardstr. (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900100026",
+					"latitude": 52.52105,
+					"longitude": 13.411285
+				},
+				"products": {
+					"suburban": false,
+					"subway": false,
+					"tram": true,
+					"bus": false,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900100026"
+				}
+			},
+			"when": "2026-09-13T20:43:00+02:00",
+			"plannedWhen": "2026-09-13T20:45:00+02:00",
+			"delay": -120,
+			"platform": "Pos. 15",
+			"plannedPlatform": "Pos. 15",
+			"prognosisType": "prognosed",
+			"direction": "S Hackescher Markt",
+			"provenance": null,
+			"line": {
+				"type": "line",
+				"id": "de-vbb-11000000-tram-m4",
+				"fahrtNr": "34960",
+				"name": "M4",
+				"public": true,
+				"adminCode": "BVT---",
+				"productName": "Tram",
+				"mode": "train",
+				"product": "tram",
+				"operator": {
+					"type": "operator",
+					"id": "berliner-verkehrsbetriebe",
+					"name": "Berliner Verkehrsbetriebe"
+				}
+			},
+			"remarks": [
+				{
+					"type": "hint",
+					"code": "FK",
+					"text": "Bicycle conveyance"
+				}
+			],
+			"origin": null,
+			"destination": {
+				"type": "stop",
+				"id": "900100002",
+				"name": "S Hackescher Markt (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900100002",
+					"latitude": 52.522605,
+					"longitude": 13.402359
+				},
+				"products": {
+					"suburban": true,
+					"subway": false,
+					"tram": true,
+					"bus": true,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900100002"
+				}
+			},
+			"currentTripPosition": {
+				"type": "location",
+				"latitude": 52.520403,
+				"longitude": 13.405505
+			},
+			"occupancy": "low"
+		},
+		{
+			"tripId": "1|64699|41|86|13092026",
+			"stop": {
+				"type": "stop",
+				"id": "900100026",
+				"name": "S+U Alexanderplatz Bhf/Gontardstr. (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900100026",
+					"latitude": 52.52105,
+					"longitude": 13.411285
+				},
+				"products": {
+					"suburban": false,
+					"subway": false,
+					"tram": true,
+					"bus": false,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900100026"
+				}
+			},
+			"when": "2026-09-13T20:44:00+02:00",
+			"plannedWhen": "2026-09-13T20:43:00+02:00",
+			"delay": 60,
+			"platform": "Pos. 16",
+			"plannedPlatform": "Pos. 16",
+			"prognosisType": "prognosed",
+			"direction": "Hellersdorf, Riesaer Str.",
+			"provenance": null,
+			"line": {
+				"type": "line",
+				"id": "de-vbb-11000000-tram-m6",
+				"fahrtNr": "37079",
+				"name": "M6",
+				"public": true,
+				"adminCode": "BVT---",
+				"productName": "Tram",
+				"mode": "train",
+				"product": "tram",
+				"operator": {
+					"type": "operator",
+					"id": "berliner-verkehrsbetriebe",
+					"name": "Berliner Verkehrsbetriebe"
+				}
+			},
+			"remarks": [
+				{
+					"type": "hint",
+					"code": "FK",
+					"text": "Bicycle conveyance"
+				}
+			],
+			"origin": null,
+			"destination": {
+				"type": "stop",
+				"id": "900175013",
+				"name": "Riesaer Str. (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900175013",
+					"latitude": 52.529401,
+					"longitude": 13.624186
+				},
+				"products": {
+					"suburban": false,
+					"subway": false,
+					"tram": true,
+					"bus": true,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900175013"
+				}
+			},
+			"currentTripPosition": {
+				"type": "location",
+				"latitude": 52.520942,
+				"longitude": 13.41258
+			},
+			"occupancy": "low"
+		},
+		{
+			"tripId": "1|2507|2|86|13092026",
+			"stop": {
+				"type": "stop",
+				"id": "900100003",
+				"name": "S+U Alexanderplatz Bhf (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900100003",
+					"latitude": 52.521508,
+					"longitude": 13.411267
+				},
+				"products": {
+					"suburban": true,
+					"subway": true,
+					"tram": false,
+					"bus": false,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900100003"
+				}
+			},
+			"when": "2026-09-13T20:45:00+02:00",
+			"plannedWhen": "2026-09-13T20:45:00+02:00",
+			"delay": 0,
+			"platform": "3",
+			"plannedPlatform": "3",
+			"prognosisType": "prognosed",
+			"direction": "S Ahrensfelde Bhf (Berlin)",
+			"provenance": null,
+			"line": {
+				"type": "line",
+				"id": "de-vbb-11000000-s-bahn-s7-s7-o",
+				"fahrtNr": "23329",
+				"name": "S7",
+				"public": true,
+				"adminCode": "DBS---",
+				"productName": "S",
+				"mode": "train",
+				"product": "suburban",
+				"operator": {
+					"type": "operator",
+					"id": "s-bahn-berlin-gmbh",
+					"name": "S-Bahn Berlin GmbH"
+				}
+			},
+			"remarks": [
+				{
+					"type": "hint",
+					"code": "FK",
+					"text": "Bicycle conveyance"
+				}
+			],
+			"origin": null,
+			"destination": {
+				"type": "stop",
+				"id": "900170004",
+				"name": "S Ahrensfelde Bhf (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900170004",
+					"latitude": 52.571335,
+					"longitude": 13.565648
+				},
+				"products": {
+					"suburban": true,
+					"subway": false,
+					"tram": false,
+					"bus": true,
+					"ferry": false,
+					"express": false,
+					"regional": true
+				},
+				"ids": {
+					"ifopt": "de:11000:900170004"
+				}
+			},
+			"currentTripPosition": {
+				"type": "location",
+				"latitude": 52.521517,
+				"longitude": 13.411223
+			}
+		},
+		{
+			"tripId": "1|63630|21|86|13092026",
+			"stop": {
+				"type": "stop",
+				"id": "900100026",
+				"name": "S+U Alexanderplatz Bhf/Gontardstr. (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900100026",
+					"latitude": 52.52105,
+					"longitude": 13.411285
+				},
+				"products": {
+					"suburban": false,
+					"subway": false,
+					"tram": true,
+					"bus": false,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900100026"
+				}
+			},
+			"when": "2026-09-13T20:45:00+02:00",
+			"plannedWhen": "2026-09-13T20:45:00+02:00",
+			"delay": 0,
+			"platform": "Pos. 16",
+			"plannedPlatform": "Pos. 16",
+			"prognosisType": "prognosed",
+			"direction": "Falkenberg",
+			"provenance": null,
+			"line": {
+				"type": "line",
+				"id": "de-vbb-11000000-tram-m4",
+				"fahrtNr": "34048",
+				"name": "M4",
+				"public": true,
+				"adminCode": "BVT---",
+				"productName": "Tram",
+				"mode": "train",
+				"product": "tram",
+				"operator": {
+					"type": "operator",
+					"id": "berliner-verkehrsbetriebe",
+					"name": "Berliner Verkehrsbetriebe"
+				}
+			},
+			"remarks": [
+				{
+					"type": "hint",
+					"code": "FK",
+					"text": "Bicycle conveyance"
+				}
+			],
+			"origin": null,
+			"destination": {
+				"type": "stop",
+				"id": "900152007",
+				"name": "Falkenberg (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900152007",
+					"latitude": 52.570212,
+					"longitude": 13.526815
+				},
+				"products": {
+					"suburban": false,
+					"subway": false,
+					"tram": true,
+					"bus": true,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900152007"
+				}
+			},
+			"currentTripPosition": {
+				"type": "location",
+				"latitude": 52.521427,
+				"longitude": 13.410665
+			},
+			"occupancy": "low"
+		},
+		{
+			"tripId": "1|65339|10|86|13092026",
+			"stop": {
+				"type": "stop",
+				"id": "900100003",
+				"name": "S+U Alexanderplatz Bhf (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900100003",
+					"latitude": 52.521508,
+					"longitude": 13.411267
+				},
+				"products": {
+					"suburban": true,
+					"subway": true,
+					"tram": false,
+					"bus": false,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900100003"
+				}
+			},
+			"when": "2026-09-13T20:45:00+02:00",
+			"plannedWhen": "2026-09-13T20:45:00+02:00",
+			"delay": 0,
+			"platform": "1 (U2)",
+			"plannedPlatform": "1 (U2)",
+			"prognosisType": "prognosed",
+			"direction": "Ruhleben",
+			"provenance": null,
+			"line": {
+				"type": "line",
+				"id": "de-vbb-11000000-u-bahn-u2",
+				"fahrtNr": "14062",
+				"name": "U2",
+				"public": true,
+				"adminCode": "BVU---",
+				"productName": "U",
+				"mode": "train",
+				"product": "subway",
+				"operator": {
+					"type": "operator",
+					"id": "berliner-verkehrsbetriebe",
+					"name": "Berliner Verkehrsbetriebe"
+				}
+			},
+			"remarks": [
+				{
+					"type": "hint",
+					"code": "FK",
+					"text": "Bicycle conveyance"
+				}
+			],
+			"origin": null,
+			"destination": {
+				"type": "stop",
+				"id": "900025202",
+				"name": "U Ruhleben (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900025202",
+					"latitude": 52.525589,
+					"longitude": 13.241902
+				},
+				"products": {
+					"suburban": false,
+					"subway": true,
+					"tram": false,
+					"bus": true,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900025202"
+				}
+			},
+			"currentTripPosition": {
+				"type": "location",
+				"latitude": 52.521661,
+				"longitude": 13.414018
+			},
+			"occupancy": "low"
+		},
+		{
+			"tripId": "1|36004|0|86|13092026",
+			"stop": {
+				"type": "stop",
+				"id": "900100031",
+				"name": "S+U Alexanderplatz Bhf/Memhardstr. (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900100031",
+					"latitude": 52.522937,
+					"longitude": 13.410755
+				},
+				"products": {
+					"suburban": false,
+					"subway": false,
+					"tram": false,
+					"bus": true,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900100031"
+				}
+			},
+			"when": "2026-09-13T20:46:00+02:00",
+			"plannedWhen": "2026-09-13T20:46:00+02:00",
+			"delay": null,
+			"platform": "Pos. 1",
+			"plannedPlatform": "Pos. 1",
+			"prognosisType": null,
+			"direction": "S+U Zoologischer Garten via Potsdamer Platz",
+			"provenance": null,
+			"line": {
+				"type": "line",
+				"id": "de-vbb-11000000-bus-200",
+				"fahrtNr": "114415",
+				"name": "200",
+				"public": true,
+				"adminCode": "BVB---",
+				"productName": "Bus",
+				"mode": "bus",
+				"product": "bus",
+				"operator": {
+					"type": "operator",
+					"id": "berliner-verkehrsbetriebe",
+					"name": "Berliner Verkehrsbetriebe"
+				}
+			},
+			"remarks": [],
+			"origin": null,
+			"destination": {
+				"type": "stop",
+				"id": "900023201",
+				"name": "S+U Zoologischer Garten Bhf (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900023201",
+					"latitude": 52.506919,
+					"longitude": 13.332711
+				},
+				"products": {
+					"suburban": true,
+					"subway": true,
+					"tram": false,
+					"bus": true,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900023201"
+				}
+			},
+			"currentTripPosition": null,
+			"occupancy": "low"
+		},
+		{
+			"tripId": "1|1942|0|86|13092026",
+			"stop": {
+				"type": "stop",
+				"id": "900100003",
+				"name": "S+U Alexanderplatz Bhf (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900100003",
+					"latitude": 52.521508,
+					"longitude": 13.411267
+				},
+				"products": {
+					"suburban": true,
+					"subway": true,
+					"tram": false,
+					"bus": false,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900100003"
+				}
+			},
+			"when": "2026-09-13T20:47:00+02:00",
+			"plannedWhen": "2026-09-13T20:47:00+02:00",
+			"delay": 0,
+			"platform": "3",
+			"plannedPlatform": "3",
+			"prognosisType": "prognosed",
+			"direction": "S Strausberg Nord",
+			"provenance": null,
+			"line": {
+				"type": "line",
+				"id": "de-vbb-11000000-s-bahn-s5-s5-e",
+				"fahrtNr": "22071",
+				"name": "S5",
+				"public": true,
+				"adminCode": "DBS---",
+				"productName": "S",
+				"mode": "train",
+				"product": "suburban",
+				"operator": {
+					"type": "operator",
+					"id": "s-bahn-berlin-gmbh",
+					"name": "S-Bahn Berlin GmbH"
+				}
+			},
+			"remarks": [
+				{
+					"type": "hint",
+					"code": "FK",
+					"text": "Bicycle conveyance"
+				}
+			],
+			"origin": null,
+			"destination": {
+				"type": "stop",
+				"id": "900176001",
+				"name": "S Mahlsdorf Bhf (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900176001",
+					"latitude": 52.512043,
+					"longitude": 13.610693
+				},
+				"products": {
+					"suburban": true,
+					"subway": false,
+					"tram": false,
+					"bus": true,
+					"ferry": false,
+					"express": false,
+					"regional": true
+				},
+				"ids": {
+					"ifopt": "de:11000:900176001"
+				}
+			},
+			"currentTripPosition": {
+				"type": "location",
+				"latitude": 52.522416,
+				"longitude": 13.401038
+			}
+		},
+		{
+			"tripId": "1|19876|0|86|13092026",
+			"stop": {
+				"type": "stop",
+				"id": "900100031",
+				"name": "S+U Alexanderplatz Bhf/Memhardstr. (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900100031",
+					"latitude": 52.522937,
+					"longitude": 13.410755
+				},
+				"products": {
+					"suburban": false,
+					"subway": false,
+					"tram": false,
+					"bus": true,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900100031"
+				}
+			},
+			"when": null,
+			"plannedWhen": "2026-09-13T20:47:00+02:00",
+			"delay": null,
+			"platform": "Pos. 1",
+			"plannedPlatform": "Pos. 1",
+			"prognosisType": null,
+			"direction": "S+U Zoologischer Garten via Reichstag",
+			"provenance": null,
+			"line": {
+				"type": "line",
+				"id": "de-vbb-11000000-bus-100",
+				"fahrtNr": "91065",
+				"name": "100",
+				"public": true,
+				"adminCode": "BVB---",
+				"productName": "Bus",
+				"mode": "bus",
+				"product": "bus",
+				"operator": {
+					"type": "operator",
+					"id": "berliner-verkehrsbetriebe",
+					"name": "Berliner Verkehrsbetriebe"
+				}
+			},
+			"remarks": [
+				{
+					"type": "status",
+					"code": "canceled-trip",
+					"text": "Trip cancelled"
+				}
+			],
+			"origin": null,
+			"destination": {
+				"type": "stop",
+				"id": "900023201",
+				"name": "S+U Zoologischer Garten Bhf (Berlin)",
+				"location": {
+					"type": "location",
+					"id": "900023201",
+					"latitude": 52.506919,
+					"longitude": 13.332711
+				},
+				"products": {
+					"suburban": true,
+					"subway": true,
+					"tram": false,
+					"bus": true,
+					"ferry": false,
+					"express": false,
+					"regional": false
+				},
+				"ids": {
+					"ifopt": "de:11000:900023201"
+				}
+			},
+			"occupancy": "low",
+			"currentTripPosition": null,
+			"cancelled": true
+		}
+	],
+	"realtimeDataUpdatedAt": 1789325046
+}

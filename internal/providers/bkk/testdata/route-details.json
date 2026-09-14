@@ -1,0 +1,41 @@
+{
+  "code": 200,
+  "currentTime": 1789252200000,
+  "version": 3,
+  "status": "OK",
+  "text": "OK",
+  "data": {
+    "entry": {
+      "id": "BKK_1550",
+      "shortName": "155",
+      "longName": "Zugliget / Széll Kálmán tér M",
+      "type": "BUS",
+      "variants": [
+        {
+          "routeId": "BKK_1550",
+          "direction": "1",
+          "headsign": "Széll Kálmán tér M",
+          "name": "Zugliget, Libegő / Széll Kálmán tér M",
+          "stopIds": ["BKK_F02008", "BKK_F02003", "BKK_F02002"]
+        },
+        {
+          "routeId": "BKK_1550",
+          "direction": "0",
+          "headsign": "Zugliget",
+          "name": "Széll Kálmán tér M / Zugliget, Libegő",
+          "stopIds": ["BKK_F02001", "BKK_F02004", "BKK_F02007"]
+        }
+      ]
+    },
+    "references": {
+      "stops": {
+        "BKK_F02001": {"id": "BKK_F02001", "name": "Széll Kálmán tér M", "lat": 47.507, "lon": 19.024, "direction": "270"},
+        "BKK_F02002": {"id": "BKK_F02002", "name": "Széll Kálmán tér M", "lat": 47.5071, "lon": 19.0241, "direction": "90"},
+        "BKK_F02003": {"id": "BKK_F02003", "name": "Zugligeti út", "lat": 47.5142, "lon": 18.9865, "direction": "90"},
+        "BKK_F02004": {"id": "BKK_F02004", "name": "Zugligeti út", "lat": 47.5143, "lon": 18.9864, "direction": "270"},
+        "BKK_F02007": {"id": "BKK_F02007", "name": "Zugliget, Libegő", "lat": 47.5185, "lon": 18.9702, "direction": "270"},
+        "BKK_F02008": {"id": "BKK_F02008", "name": "Zugliget, Libegő", "lat": 47.5186, "lon": 18.9703, "direction": "90"}
+      }
+    }
+  }
+}
