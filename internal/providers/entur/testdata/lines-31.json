@@ -19,7 +19,9 @@
         "stopPlace": {
          "id": "NSR:StopPlace:59421",
          "name": "Sars' gate"
-        }
+        },
+        "latitude": 59.91,
+        "longitude": 10.75
        },
        {
         "id": "NSR:Quay:101466",
@@ -28,7 +30,9 @@
         "stopPlace": {
          "id": "NSR:StopPlace:59472",
          "name": "Hausmanns bru"
-        }
+        },
+        "latitude": 59.910999999999994,
+        "longitude": 10.751
        },
        {
         "id": "NSR:Quay:7203",
@@ -37,7 +41,9 @@
         "stopPlace": {
          "id": "NSR:StopPlace:4000",
          "name": "Jernbanetorget"
-        }
+        },
+        "latitude": 59.912,
+        "longitude": 10.752
        },
        {
         "id": "NSR:Quay:11817",
@@ -46,7 +52,9 @@
         "stopPlace": {
          "id": "NSR:StopPlace:6429",
          "name": "Skøyen stasjon"
-        }
+        },
+        "latitude": 59.913,
+        "longitude": 10.753
        },
        {
         "id": "NSR:Quay:11881",
@@ -55,7 +63,9 @@
         "stopPlace": {
          "id": "NSR:StopPlace:6463",
          "name": "Maritim"
-        }
+        },
+        "latitude": 59.913999999999994,
+        "longitude": 10.754
        }
       ]
      },
@@ -71,7 +81,9 @@
         "stopPlace": {
          "id": "NSR:StopPlace:6463",
          "name": "Maritim"
-        }
+        },
+        "latitude": 59.91,
+        "longitude": 10.75
        },
        {
         "id": "NSR:Quay:11829",
@@ -80,7 +92,9 @@
         "stopPlace": {
          "id": "NSR:StopPlace:6434",
          "name": "Sjølyst"
-        }
+        },
+        "latitude": 59.910999999999994,
+        "longitude": 10.751
        },
        {
         "id": "NSR:Quay:7202",
@@ -89,7 +103,9 @@
         "stopPlace": {
          "id": "NSR:StopPlace:4000",
          "name": "Jernbanetorget"
-        }
+        },
+        "latitude": 59.912,
+        "longitude": 10.752
        },
        {
         "id": "NSR:Quay:101465",
@@ -98,7 +114,9 @@
         "stopPlace": {
          "id": "NSR:StopPlace:59472",
          "name": "Hausmanns bru"
-        }
+        },
+        "latitude": 59.913,
+        "longitude": 10.753
        },
        {
         "id": "NSR:Quay:101401",
@@ -107,7 +125,9 @@
         "stopPlace": {
          "id": "NSR:StopPlace:59421",
          "name": "Sars' gate"
-        }
+        },
+        "latitude": 59.913999999999994,
+        "longitude": 10.754
        }
       ]
      }

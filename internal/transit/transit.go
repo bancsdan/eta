@@ -82,7 +82,7 @@ func (k KeySpec) ConfigName() string {
 type Info struct {
 	ID       string
 	Name     string
-	Country  string // "Norway"; listings group by it
+	Country  string // country id, "norway"
 	Provider string // data source id, "entur"; one provider can serve many cities
 	TZ       string // IANA zone, "Europe/Berlin"
 	Keys     []KeySpec
@@ -130,6 +130,10 @@ var (
 	ErrNotFound     = errors.New("not found")
 	ErrRateLimited  = errors.New("rate limited")
 	ErrUnknownRoute = errors.New("unknown route")
+	// ErrNoRouteLookup is returned by a RouteLister that cannot resolve
+	// routes by name in its current scope (a country-wide entry); the app
+	// then matches the route at the stop instead.
+	ErrNoRouteLookup = errors.New("route lookup not available")
 )
 
 type UnknownRouteError struct {

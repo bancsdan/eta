@@ -11,7 +11,7 @@ Next departures of a public-transport route at a stop, from your terminal, in an
 
 - [Motivation](#motivation)
 - [What it is, and what it is not](#what-it-is-and-what-it-is-not)
-- [Cities](#cities)
+- [Countries and towns](#countries-and-towns)
 - [Features](#features)
   - [Every line at a stop](#every-line-at-a-stop)
   - [One route, with clock times](#one-route-with-clock-times)
@@ -42,21 +42,22 @@ This tool is a successor of `GoKK`, with multi-city support, and a similar UX. T
 
 It is **not a journey planner**. It will not route you from A to B, pick a stop near you, handle transfers or tell you how long the ride takes. The closest it gets is `-l`, which lists a route's stops in order so you can find the right name to type. For anything more, use the operator's own app or a general planner; `eta` is what you reach for once you know where you need to board.
 
-## Cities
+## Countries and towns
 
-One row per country; a provider serves every city listed next to it. `eta countries` prints this table for the build you have, `eta cities <country>` lists one country's cities with their ids and aliases, and `eta cities --check` makes one real request per city.
+Every command names a country and a town: `eta norway halden 34 bussterminal`. The town scopes the search; it is not part of the stop name. Where the provider covers a whole country, every town in it works. Single-city APIs accept only that city as the town.
 
-| Country | Cities | Provider | Key | Notes |
+`eta countries` prints this table for the build you have; `eta cities <country>` lists the towns eta probes regularly (with their ids and aliases); `eta cities --check` makes one real request per probed town.
+
+| Country (id) | Towns | Provider | Key | Notes |
 |---|---|---|---|---|
-| Finland | Helsinki, Tampere, Turku | `digitransit` ([Digitransit](https://digitransit.fi/en/developers/)) | `ETA_DIGITRANSIT_API_KEY`, required | not yet verified against the live API |
-| Germany | Berlin, Potsdam | `bvg` (community-run [v6.bvg.transport.rest](https://v6.bvg.transport.rest)) | none | stop search only; the upstream service has outages |
-| Hungary | Budapest | `bkk` ([BKK FUTÁR](https://opendata.bkk.hu)) | `ETA_BKK_API_KEY`, required | |
-| Norway | Oslo, Bergen, Trondheim, Stavanger, Drammen, Fredrikstad, Sarpsborg, Kristiansand, Tromsø, Skien, Porsgrunn, Hamar, Lillehammer, Molde, Ålesund, Bodø | `entur` ([Entur](https://developer.entur.no) national API) | none | routes scoped to each city's county operator; stop search covers all Norway |
-| Sweden | Stockholm (the whole SL region) | `sl` ([SL Transport](https://www.trafiklab.se/api/our-apis/sl/transport/)) | none | stop list downloaded on first run; stop search only |
-| Switzerland | Zürich, Geneva, Basel, Bern, Lausanne, Winterthur, Lucerne, St. Gallen, Lugano, Biel/Bienne, Thun, Fribourg, Schaffhausen, Chur, Neuchâtel, Sion | `opendatach` ([transport.opendata.ch](https://transport.opendata.ch)) | none | whole of Switzerland; stop search only |
-| United Kingdom | London | `tfl` ([TfL Unified API](https://api-portal.tfl.gov.uk)) | `ETA_TFL_API_KEY`, optional | tube, bus, DLR, Overground lines by name, Elizabeth line, tram |
-| United States | Boston | `mbta` ([MBTA v3](https://api-v3.mbta.com)) | `ETA_MBTA_API_KEY`, optional | keyless is ~20 req/min; without a route, stop search covers stations only |
-| United States | New York City | `mta` ([MTA GTFS-Realtime](https://api.mta.info/)) | none | subway only; first run downloads the 5 MB static timetable; no timetable fallback |
+| Finland (`finland`, `fi`) | every town | `digitransit` ([Digitransit](https://digitransit.fi/en/developers/)) | `ETA_DIGITRANSIT_API_KEY`, required | not yet verified against the live API |
+| Germany (`germany`, `de`) | every town in Berlin and Brandenburg | `bvg` (community-run [v6.bvg.transport.rest](https://v6.bvg.transport.rest)) | none | stop search only; the upstream service has outages |
+| Hungary (`hungary`, `hu`) | Budapest | `bkk` ([BKK FUTÁR](https://opendata.bkk.hu)) | `ETA_BKK_API_KEY`, required | |
+| Norway (`norway`, `no`) | every town | `entur` ([Entur](https://developer.entur.no) national API) | none | routes are matched to the town's operator, so `-l` works anywhere |
+| Sweden (`sweden`, `se`) | Stockholm and the SL region | `sl` ([SL Transport](https://www.trafiklab.se/api/our-apis/sl/transport/)) | none | stop list downloaded on first run; stop search only |
+| Switzerland (`switzerland`, `ch`) | every town | `opendatach` ([transport.opendata.ch](https://transport.opendata.ch)) | none | stop search only |
+| United Kingdom (`uk`, `gb`) | London | `tfl` ([TfL Unified API](https://api-portal.tfl.gov.uk)) | `ETA_TFL_API_KEY`, optional | tube, bus, DLR, Overground lines by name, Elizabeth line, tram |
+| United States (`usa`, `us`) | Boston, New York City | `mbta` ([MBTA v3](https://api-v3.mbta.com)), `mta` ([MTA GTFS-Realtime](https://api.mta.info/)) | `ETA_MBTA_API_KEY` optional; MTA none | Boston: keyless is ~20 req/min. New York: subway only, 5 MB timetable download on first run, no timetable fallback |
 
 "Stop search only" means the API has no route → stops call, so `-l` is unavailable there and a route is matched against the stop's board instead.
 
@@ -69,7 +70,7 @@ Planned next: Paris, Prague, Washington DC, Chicago, Portland, Vancouver, Singap
 Give a city and a stop name and you get the whole board, grouped by line and direction, next departure first. Stop names are matched fuzzily and accent-insensitively (`viranyos` finds `Virányos út`, `jernbanetorget` finds `Jernbanetorget, Oslo`).
 
 ```sh
-eta bergen "bergen busstasjon"
+eta norway bergen "bergen busstasjon"
 ```
 
 <img src="docs/assets/board.gif" alt="every line leaving Bergen bus station" width="720">
@@ -79,7 +80,7 @@ eta bergen "bergen busstasjon"
 Add the route to see only that line. `-c N` shows N departures per direction and `-t` adds the clock time next to the countdown. `~` marks entries that come from the timetable rather than a live prediction.
 
 ```sh
-eta boston Red "park street" -c 3 -t
+eta usa boston Red "park street" -c 3 -t
 ```
 
 <img src="docs/assets/route.gif" alt="Red Line departures at Park Street with clock times" width="720">
@@ -89,7 +90,7 @@ eta boston Red "park street" -c 3 -t
 `-l` lists every stop of a route per direction, in travel order, so you can find the exact name to type. Not a journey planner, just the list of stops.
 
 ```sh
-eta london Central -l
+eta uk london Central -l
 ```
 
 <img src="docs/assets/list.gif" alt="Central line stops listed in order" width="720">
@@ -99,7 +100,7 @@ eta london Central -l
 When a name matches several stops, eta asks on the terminal. Piped, it takes the search API's best hit and prints the alternatives on stderr. With a route given, stops the route does not serve are dropped first, which usually settles it without asking.
 
 ```sh
-eta oslo grorud
+eta norway oslo grorud
 ```
 
 <img src="docs/assets/pick.gif" alt="choosing between two stops named Grorud" width="720">
@@ -109,7 +110,7 @@ eta oslo grorud
 `-w` keeps the board on screen and refreshes it every 30 seconds (`--every N` to change). Ctrl-C stops it.
 
 ```sh
-eta stavanger 1 hillevåg -w --every 5
+eta norway stavanger 1 hillevåg -w --every 5
 ```
 
 <img src="docs/assets/watch.gif" alt="a refreshing departure board" width="720">
@@ -119,14 +120,14 @@ eta stavanger 1 hillevåg -w --every 5
 `-j` prints the same board as JSON: RFC 3339 times, seconds until departure, and whether each entry is live. See [JSON output](#json-output) for the schema.
 
 ```sh
-eta trondheim 3 dragvoll -j
+eta norway trondheim 3 dragvoll -j
 ```
 
 <img src="docs/assets/json.gif" alt="JSON output for line 3 at Dragvoll" width="720">
 
 ### Default city and aliases
 
-Set `default_city` once and skip the city argument. Aliases bake in a whole command line, so your commute is `eta` and your office is `eta work`. See [Config and aliases](#config-and-aliases).
+Set `default_country` and `default_town` once and skip both arguments. Aliases bake in a whole command line, so your commute is `eta` and your office is `eta work`. See [Config and aliases](#config-and-aliases).
 
 ```sh
 eta          # runs the "default" alias
@@ -137,11 +138,11 @@ eta work -c 2
 
 ### Key setup and health check
 
-`eta countries` summarises coverage per country and `eta cities <country>` lists a country's cities with their ids, provider, readiness and where to get a key; `eta cities --check` makes one real request per city. `eta <city> --setup` prompts for the key and writes it to the keys file.
+`eta countries` summarises coverage per country and `eta cities <country>` lists a country's verified towns with their ids, provider, readiness and where to get a key; `eta cities --check` makes one real request per town. `eta <country> <town> --setup` prompts for the key and writes it to the keys file.
 
 ```sh
 eta cities --check
-eta budapest --setup
+eta hungary budapest --setup
 ```
 
 ## Installation
@@ -163,16 +164,17 @@ go install github.com/bancsdan/eta/cmd/eta@latest
 ## Usage
 
 ```
-eta <city> <stop-query> [-c N] [-t] [-j] [-r] [-w]     every line at the stop
-eta <city> <route> <stop-query> [flags]                one route
-eta <city> <route> -l [-j]                             the route's stops
-eta <stop-query> | eta <route> <stop-query>            (with default_city set)
+eta <country> <town> <stop-query> [-c N] [-t] [-j] [-r] [-w]   every line at the stop
+eta <country> <town> <route> <stop-query> [flags]              one route
+eta <country> <town> <route> -l [-j]                           the route's stops
+eta <town> ...                                                 with default_country set
+eta <route> <stop-query>                                       with default_country and default_town set
 eta <alias> [flags]
-eta <city> --setup                                     save the city's API key
+eta <country> <town> --setup                                   save the provider's API key
 eta countries | eta cities [<country>] [--check]
 ```
 
-After the city, one positional is a stop query and two are a route and a stop.
+After the country and town, one positional is a stop query and two are a route and a stop.
 
 | Flag | Meaning |
 |---|---|
@@ -180,7 +182,7 @@ After the city, one positional is a stop query and two are a route and a stop.
 | `-t`, `--times` | also print clock times, e.g. `5m42s (22:41)` |
 | `-j`, `--json` | print JSON instead of text |
 | `-l`, `--list` | list the route's stops by direction instead of departures |
-| `-r`, `--refresh` | ignore the route/stop cache (`~/.cache/eta/<city>`) |
+| `-r`, `--refresh` | ignore the route/stop cache (`~/.cache/eta/<provider>/<town>`) |
 | `-w`, `--watch` | keep the board on screen, refreshing every 30 s (`--every N` seconds to change) |
 | `-a`, `--aliases` | show the configured aliases and exit |
 | `--setup` | prompt for the city's API key(s) and save them to the keys file |
@@ -188,7 +190,7 @@ After the city, one positional is a stop query and two are a route and a stop.
 Flags may appear anywhere. Times are real-time predictions; `~` marks schedule-only entries. Colour is dropped when piped or under `NO_COLOR`.
 
 ```
-$ eta boston Red "park street" -c 2 -t
+$ eta usa boston Red "park street" -c 2 -t
 Park Street
 Red → Ashmont
   4m31s (21:02)  13m40s (21:11)
@@ -216,7 +218,7 @@ bkk = 0123abcd-...
 tfl = ...
 ```
 
-If both set, the environment variable wins. Providers with several keys use `ETA_<PROVIDER>_<LABEL>_API_KEY` and `provider_label = ...`. `eta <city> --setup` prompts for the key and writes the file for you. A key is only ever sent to that provider's API; `ETA_DEBUG=1` logs every request with keys masked.
+If both set, the environment variable wins. Providers with several keys use `ETA_<PROVIDER>_<LABEL>_API_KEY` and `provider_label = ...`. `eta <country> <town> --setup` prompts for the key and writes the file for you. A key is only ever sent to that provider's API; `ETA_DEBUG=1` logs every request with keys masked.
 
 | Provider | Cities | Variable | Keys-file name | Needed? | Where to get it |
 |---|---|---|---|---|---|
@@ -235,18 +237,19 @@ If both set, the environment variable wins. Providers with several keys use `ETA
 `$XDG_CONFIG_HOME/eta/config` (`~/.config/eta/config`), one `name = value` per line:
 
 ```
-default_city = berlin
-home         = M4 alexanderplatz -c 3
-work         = budapest 4 moricz
-default      = home
+default_country = norway
+default_town    = oslo
+home            = 31 jernbanetorget -c 3
+work            = uk london Central bank -t
+default         = home
 ```
 
-`default_city` lets you omit the city. Every other line is an alias whose value is re-parsed as arguments, so it may include the city and flags; later command-line flags override it (`eta home -c 1`). Bare `eta` runs the `default` alias. Quote a multi-word stop name in an alias (`boston Red 'park street'`).
+`default_country` lets you omit the country, and `default_town` the town too (a registered town typed first still wins, so `eta bergen 1 byparken` works with Oslo as the default). Every other line is an alias whose value is re-parsed as arguments, so it may include the city and flags; later command-line flags override it (`eta home -c 1`). Bare `eta` runs the `default` alias. Quote a multi-word stop name in an alias (`boston Red 'park street'`).
 
 You don't have to edit the file: add `--save NAME` to any command and, once the lookup succeeds, eta writes it as an alias with the city filled in.
 
 ```sh
-eta oslo 31 jernbanetorget -c 2 --save home   # saved as: home = oslo 31 jernbanetorget -c 2
+eta norway oslo 31 jernbanetorget -c 2 --save home   # saved as: home = norway oslo 31 jernbanetorget -c 2
 eta home
 ```
 
@@ -255,9 +258,10 @@ Saving `default` makes the command run on bare `eta`. An existing alias with the
 ## JSON output
 
 ```
-$ eta berlin M4 "alexanderplatz bhf" -j -c 2
+$ eta germany berlin M4 "alexanderplatz bhf" -j -c 2
 {
-  "city": "berlin",
+  "country": "germany",
+  "town": "berlin",
   "stop": "S+U Alexanderplatz Bhf (Berlin)",
   "stopIds": ["900100003"],
   "route": "M4",
@@ -274,13 +278,14 @@ $ eta berlin M4 "alexanderplatz bhf" -j -c 2
 }
 ```
 
-`inSeconds` counts from `generatedAt` (the server clock where the API provides one) and is clamped at zero; `live` is false for schedule-only entries. Without a route, `route` is empty and each direction carries a `line`. `-l -j` prints `{city, route, routeId, directions[{direction, from, to, stops[{id, name}]}]}`. Errors stay plain text on stderr with exit code 1.
+`inSeconds` counts from `generatedAt` (the server clock where the API provides one) and is clamped at zero; `live` is false for schedule-only entries. Without a route, `route` is empty and each direction carries a `line`. `-l -j` prints `{country, town, route, routeId, directions[...]}`. Errors stay plain text on stderr with exit code 1.
 
 ## How it works
 
-1. **Route resolution.** With a route, providers whose API can list a route's stops (`RouteLister`: `bkk`, `tfl`, `entur`, `mbta`, `digitransit`, `mta`) resolve the short name, fetch the stops per direction (cached 24h under `~/.cache/eta/<city>`), and fuzzy-match your query locally, exactly like GoKK.
-2. **Stop search.** Without a route, or with providers lacking that call (`StopSearcher`: `bvg`, `sl`, `opendatach`, and all of the above), stops are searched by name through the API or a cached stop list. With a route, ambiguous hits are probed with one departures call each and only stops actually served by the route survive.
-3. **One departures call** for the matched stop, filtered by route client-side when one was given, grouped by line, direction and headsign, `count` per group.
+1. **Scoping.** The town narrows everything that follows: verified towns carry an operator scope or a map focus; any other town is geocoded once (cached) and stops and lines are kept by locality or distance where the data has no locality.
+2. **Route resolution.** With a route, providers whose API can list a route's stops (`RouteLister`: `bkk`, `tfl`, `entur`, `mbta`, `digitransit`, `mta`) resolve the short name, fetch the stops per direction (cached 24h under `~/.cache/eta/<provider>/<town>`), and fuzzy-match your query locally, exactly like GoKK.
+3. **Stop search.** Without a route, or with providers lacking that call (`StopSearcher`: `bvg`, `sl`, `opendatach`, and all of the above), stops are searched by name through the API or a cached stop list. With a route, ambiguous hits are probed with one departures call each and only stops actually served by the route survive.
+4. **One departures call** for the matched stop, filtered by route client-side when one was given, grouped by line, direction and headsign, `count` per group.
 
 Live departures are never cached. Every invocation has a 10 s budget, extended on a first run that downloads bulk data. GTFS-based providers (`mta`) read stops and routes straight out of the operator's static GTFS zip (`internal/gtfs`, cached for a week) and decode the GTFS-Realtime protobuf feeds (`internal/gtfsrt`); those two packages are the only reason the module has dependencies. Each data provider lives in `internal/providers/<provider>` and registers every city it serves (Entur registers Oslo, Bergen, Trondheim and Stavanger with their operator scoping); the shared pieces are `internal/transit` (domain model and interfaces), `internal/app` (resolution, grouping, rendering), `internal/httpx`, `internal/cache`, `internal/match` and `internal/xutil`.
 
@@ -293,7 +298,7 @@ ETA_BKK_API_KEY=... go test ./internal/providers/budapest -run TestLive -v
 golangci-lint run
 ```
 
-Adding a city: if its data provider already exists, add a row to that package's `cities` table (metadata, probe, any operator scoping). Otherwise create `internal/providers/<provider>` implementing `transit.Provider` plus `RouteLister` and/or `StopSearcher`, register its cities in `init()`, blank-import it from `internal/providers/all`, and make `transittest.Conform` pass against captured fixtures. See `entur` for a multi-city provider and `tfl` for a single-city one.
+Adding a town: if its data provider already exists, add a row to that package's `cities` table (metadata, probe, any operator scoping); providers with an `AnyTown` constructor already serve every town in their country. Otherwise create `internal/providers/<provider>` implementing `transit.Provider` plus `RouteLister` and/or `StopSearcher`, register its cities in `init()`, blank-import it from `internal/providers/all`, and make `transittest.Conform` pass against captured fixtures. See `entur` for a multi-city provider and `tfl` for a single-city one.
 
 ## License
 

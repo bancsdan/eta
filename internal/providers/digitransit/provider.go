@@ -11,10 +11,12 @@ package digitransit
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/bancsdan/eta/internal/cache"
 	"github.com/bancsdan/eta/internal/httpx"
 	"github.com/bancsdan/eta/internal/match"
 	"github.com/bancsdan/eta/internal/registry"
@@ -23,9 +25,10 @@ import (
 )
 
 const (
-	DefaultBaseURL = "https://api.digitransit.fi/routing/v2"
-	keyEnv         = "ETA_DIGITRANSIT_API_KEY"
-	keyHeader      = "digitransit-subscription-key"
+	DefaultBaseURL     = "https://api.digitransit.fi/routing/v2"
+	DefaultGeocoderURL = "https://api.digitransit.fi/geocoding/v1"
+	keyEnv             = "ETA_DIGITRANSIT_API_KEY"
+	keyHeader          = "digitransit-subscription-key"
 )
 
 var keySpec = transit.KeySpec{Env: keyEnv, Req: transit.KeyRequired, SignupURL: "https://portal-api.digitransit.fi"}
@@ -38,6 +41,7 @@ type city struct {
 	aliases []string
 	router  string
 	feeds   []string
+	town    string // set for an unregistered town: stops are kept within xutil.NearbyKm of it
 }
 
 var cities = []city{
@@ -51,7 +55,7 @@ func cityInfo(id, name, route, query string) transit.Info {
 		ID:       id,
 		Name:     name,
 		Provider: "digitransit",
-		Country:  "Finland",
+		Country:  "finland",
 		TZ:       "Europe/Helsinki",
 		Keys:     []transit.KeySpec{keySpec},
 		Realtime: true,
@@ -64,6 +68,7 @@ func cityInfo(id, name, route, query string) transit.Info {
 var Helsinki = cities[0].info
 
 func init() {
+	registry.RegisterCountry(registry.Country{ID: "finland", Name: "Finland", Aliases: []string{"fi", "suomi"}, Providers: []string{"digitransit"}, AnyTown: NewTown})
 	for _, c := range cities {
 		c := c
 		registry.Register(registry.Entry{
@@ -75,11 +80,13 @@ func init() {
 }
 
 type Provider struct {
-	BaseURL string
-	city    city
-	key     string
-	http    *httpx.Client
-	now     func() time.Time
+	BaseURL     string
+	GeocoderURL string
+	city        city
+	key         string
+	http        *httpx.Client
+	cache       *cache.Cache
+	now         func() time.Time
 }
 
 func New(d registry.Deps, info transit.Info) transit.Provider {
@@ -95,10 +102,68 @@ func New(d registry.Deps, info transit.Info) transit.Provider {
 		h.Header.Set(keyHeader, key)
 		h.Redact = []string{key}
 	}
-	return &Provider{BaseURL: DefaultBaseURL, city: c, key: key, http: h, now: d.Clock()}
+	return &Provider{BaseURL: DefaultBaseURL, GeocoderURL: DefaultGeocoderURL, city: c, key: key, http: h, cache: d.Cache, now: d.Clock()}
 }
 
 func (p *Provider) Info() transit.Info { return p.city.info }
+
+// NewTown builds a provider for any Finnish town on the national router.
+// Stops are kept within xutil.NearbyKm of the geocoded town; routes cannot
+// be resolved by name without a feed, so the app matches them at the stop.
+func NewTown(d registry.Deps, town string) transit.Provider {
+	c := city{
+		info: transit.Info{
+			ID:       strings.ReplaceAll(match.Normalize(town), " ", "-"),
+			Name:     town + " (Digitransit)",
+			Provider: "digitransit",
+			Country:  "finland",
+			TZ:       "Europe/Helsinki",
+			Keys:     []transit.KeySpec{keySpec},
+			Realtime: true,
+			Notes:    "national router, scoped by distance; -l not available; not yet verified",
+		},
+		router: "finland",
+		town:   town,
+	}
+	key := d.KeyFor(keyEnv)
+	h := httpx.New("digitransit", d.HTTP)
+	if key != "" {
+		h.Header.Set(keyHeader, key)
+		h.Redact = []string{key}
+	}
+	return &Provider{BaseURL: DefaultBaseURL, GeocoderURL: DefaultGeocoderURL, city: c, key: key, http: h, cache: d.Cache, now: d.Clock()}
+}
+
+type place struct{ Lat, Lon float64 }
+
+// locate geocodes the town once through the Digitransit geocoder.
+func (p *Provider) locate(ctx context.Context) (place, error) {
+	var pl place
+	if p.cache.Load("place", &pl) && pl.Lat != 0 {
+		return pl, nil
+	}
+	if p.key == "" {
+		return pl, fmt.Errorf("digitransit: %w: set %s (free key: %s)", transit.ErrNoKey, keyEnv, keySpec.SignupURL)
+	}
+	q := url.Values{"text": {p.city.town}, "size": {"1"}, "layers": {"localadmin,locality"}}
+	var resp struct {
+		Features []struct {
+			Geometry struct {
+				Coordinates []float64 `json:"coordinates"`
+			} `json:"geometry"`
+		} `json:"features"`
+	}
+	if err := p.http.GetJSON(ctx, httpx.URL(p.GeocoderURL, "search", q), &resp); err != nil {
+		return pl, err
+	}
+	if len(resp.Features) == 0 || len(resp.Features[0].Geometry.Coordinates) < 2 {
+		return pl, fmt.Errorf("digitransit: no place in Finland named %q", p.city.town)
+	}
+	c := resp.Features[0].Geometry.Coordinates
+	pl = place{Lat: c[1], Lon: c[0]}
+	_ = p.cache.Store("place", pl)
+	return pl, nil
+}
 
 func (p *Provider) endpoint() string {
 	return httpx.Join(p.BaseURL, p.city.router+"/gtfs/v1")
@@ -114,6 +179,9 @@ func (p *Provider) graphql(ctx context.Context, query string, vars map[string]an
 const routesQuery = `query($name:String,$feeds:[String]){ routes(name:$name, feeds:$feeds) { gtfsId shortName longName mode } }`
 
 func (p *Provider) FindRoutes(ctx context.Context, short string) ([]transit.Route, error) {
+	if p.city.town != "" {
+		return nil, fmt.Errorf("digitransit: %s: %w", p.city.info.ID, transit.ErrNoRouteLookup)
+	}
 	var data routesData
 	if err := p.graphql(ctx, routesQuery, map[string]any{"name": short, "feeds": p.city.feeds}, &data); err != nil {
 		return nil, err
@@ -172,13 +240,24 @@ func (p *Provider) SearchStops(ctx context.Context, query string) ([]transit.Sto
 	if err := p.graphql(ctx, stopsQuery, map[string]any{"name": query}, &data); err != nil {
 		return nil, err
 	}
+	var pl place
+	if p.city.town != "" {
+		var err error
+		if pl, err = p.locate(ctx); err != nil {
+			return nil, err
+		}
+	}
 	out := make([]transit.Stop, 0, len(data.Stops))
 	for _, s := range data.Stops {
 		if s.GtfsID == "" || s.Name == "" {
 			continue
 		}
-		// The Waltti router answers for every region it hosts; keep the city's feed.
-		if !p.inFeeds(s.GtfsID) {
+		if p.city.town != "" {
+			if xutil.DistanceKm(pl.Lat, pl.Lon, s.Lat, s.Lon) > xutil.NearbyKm {
+				continue
+			}
+		} else if !p.inFeeds(s.GtfsID) {
+			// The Waltti router answers for every region it hosts; keep the city's feed.
 			continue
 		}
 		out = append(out, toStop(s))

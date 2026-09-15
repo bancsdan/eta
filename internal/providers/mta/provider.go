@@ -29,7 +29,7 @@ var info = transit.Info{
 	ID:       "newyork",
 	Name:     "New York City Subway (MTA)",
 	Provider: "mta",
-	Country:  "United States",
+	Country:  "usa",
 	TZ:       "America/New_York",
 	Realtime: true,
 	Notes:    "subway only; first run downloads the static timetable (5 MB); no scheduled fallback",
@@ -37,6 +37,7 @@ var info = transit.Info{
 }
 
 func init() {
+	registry.RegisterCountry(registry.Country{ID: "usa", Name: "United States", Aliases: nil, Providers: []string{"mta"}})
 	registry.Register(registry.Entry{Info: info, Aliases: []string{"nyc", "mta", "nyc-subway"}, New: New})
 }
 

@@ -3,6 +3,7 @@
 package xutil
 
 import (
+	"math"
 	"strings"
 	"time"
 )
@@ -62,3 +63,17 @@ func EpochTime(v int64) time.Time {
 func WindowMinutes(window time.Duration) int {
 	return max(1, int(window/time.Minute))
 }
+
+// DistanceKm is the great-circle distance between two WGS84 points.
+func DistanceKm(lat1, lon1, lat2, lon2 float64) float64 {
+	const r = 6371.0
+	toRad := func(d float64) float64 { return d * math.Pi / 180 }
+	dLat := toRad(lat2 - lat1)
+	dLon := toRad(lon2 - lon1)
+	a := math.Sin(dLat/2)*math.Sin(dLat/2) + math.Cos(toRad(lat1))*math.Cos(toRad(lat2))*math.Sin(dLon/2)*math.Sin(dLon/2)
+	return 2 * r * math.Asin(math.Sqrt(a))
+}
+
+// NearbyKm is the radius within which a stop or line counts as "in" a town
+// when the data carries no locality: wide enough for a metro area's suburbs.
+const NearbyKm = 25.0

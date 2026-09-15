@@ -24,18 +24,21 @@ import (
 )
 
 const (
-	usage = `usage: eta <city> <stop-query> [-c N] [-t] [-j] [-r] [-w]
-       eta <city> <route> <stop-query> [flags]
-       eta <city> <route> -l [-j]
-       eta <stop-query> | eta <route> <stop-query>   (with default_city set)
+	usage = `usage: eta <country> <town> <stop-query> [-c N] [-t] [-j] [-r] [-w]
+       eta <country> <town> <route> <stop-query> [flags]
+       eta <country> <town> <route> -l [-j]
+       eta <town> ...              (with default_country set)
+       eta <route> <stop-query>    (with default_country and default_town set)
        eta <alias> [flags]
-       eta <city> --setup
+       eta <country> <town> --setup
        eta countries | eta cities [<country>] [--check]
 
 Print the next departures at a stop: every line, or just one route.
 
-  <city>        a city id or alias: berlin, london, nyc ... ("eta countries"
-                and "eta cities <country>" list them)
+  <country>     norway, switzerland, uk, usa ... ("eta countries" lists them)
+  <town>        the town the stop is in: oslo, halden, zurich, london ...
+                (any town where the country's provider can place it;
+                "eta cities <country>" lists the verified ones)
   <route>       route short name as riders know it: 155, M4, Northern, Red
   <stop-query>  free-text stop name; accent-insensitive and fuzzy
                 ("viranyos" matches "Virányos út")
@@ -49,7 +52,7 @@ Print the next departures at a stop: every line, or just one route.
   -w, --watch     keep the board on screen, refreshing every 30 s
       --every N   refresh interval in seconds for -w
   -a, --aliases   show the configured aliases and exit
-      --setup     prompt for the city's API key and save it
+      --setup     prompt for the provider's API key and save it
       --save NAME after a successful lookup, save the command as alias NAME
       --version   print the version and exit
   -h, --help      show this help
@@ -60,17 +63,18 @@ match and says what else matched).
 
 API keys are named after the data provider: ETA_<PROVIDER>_API_KEY
 (e.g. ETA_BKK_API_KEY for Budapest) or $XDG_CONFIG_HOME/eta/keys
-(~/.config/eta/keys), one "provider = key" per line. "eta cities" shows
-which cities need a key and where to get one; "eta <city> --setup" saves it.
+(~/.config/eta/keys), one "provider = key" per line. "eta countries" shows
+which need a key and where to get one; "eta <country> <town> --setup" saves it.
 
-$XDG_CONFIG_HOME/eta/config (~/.config/eta/config) holds the default city
-and aliases, one per line as "name = args"; "default" runs with no args.
-"eta oslo 31 jernbanetorget -c 2 --save home" writes the "home" line for you:
+$XDG_CONFIG_HOME/eta/config (~/.config/eta/config) holds the defaults and
+aliases, one per line as "name = args"; "default" runs with no args.
+"eta norway oslo 31 jernbanetorget -c 2 --save home" writes the "home" line:
 
-  default_city = berlin
-  home         = M4 alexanderplatz -c 3
-  work         = budapest 4 moricz
-  default      = home`
+  default_country = norway
+  default_town    = oslo
+  home            = 31 jernbanetorget -c 2
+  work            = uk london Central bank -t
+  default         = home`
 )
 
 // Set by GoReleaser through -ldflags "-X main.version=..."; "dev" for local builds.
@@ -120,33 +124,34 @@ func run(args []string) error {
 	if opts == nil { // help or alias listing already printed
 		return nil
 	}
-	entry, ok := registry.Lookup(opts.City)
-	if !ok {
-		return &app.UsageError{Msg: fmt.Sprintf("unknown city %q (run \"eta cities\")", opts.City)}
+	info, newProvider, err := registry.Resolve(opts.Country, opts.Town)
+	if err != nil {
+		return &app.UsageError{Msg: err.Error() + " (run \"eta countries\")"}
 	}
-	opts.City = entry.Info.ID
+	opts.Country, opts.Town = info.Country, info.ID
 	if opts.setup {
-		return runSetup(entry.Info, os.Stdin, os.Stdout)
+		return runSetup(info, os.Stdin, os.Stdout)
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
-	p := entry.New(registry.Deps{
+	ns := info.Provider + "/" + info.ID
+	p := newProvider(registry.Deps{
 		Key:   config.Key,
 		HTTP:  &http.Client{},
-		Cache: cache.Default(entry.Info.ID, cacheTTL),
+		Cache: cache.Default(ns, cacheTTL),
 		Now:   time.Now,
 	})
 	budget := timeout
 	if cs, ok := p.(transit.ColdStarter); ok && cs.Cold() {
 		budget = coldTimeout
-		fmt.Fprintf(os.Stderr, "eta: first run for %s downloads its stop list; this can take a minute\n", entry.Info.ID)
+		fmt.Fprintf(os.Stderr, "eta: first run for %s downloads its stop list; this can take a minute\n", info.Name)
 	}
 
 	interactive := isTTY(os.Stdin) && isTTY(os.Stdout) && !opts.JSON
 	a := &app.App{
 		Provider: p,
-		Cache:    cache.Default(entry.Info.ID, cacheTTL),
+		Cache:    cache.Default(ns, cacheTTL),
 		Out:      os.Stdout,
 		Err:      os.Stderr,
 		Color:    colorEnabled() && !opts.JSON,
@@ -159,10 +164,10 @@ func run(args []string) error {
 		defer cancel()
 		err := a.Run(rctx, opts.Options)
 		if errors.Is(err, transit.ErrNoKey) || errors.Is(err, transit.ErrUnauthorized) {
-			if k, ok := missingKey(entry.Info); ok {
-				return config.MissingKeyError(entry.Info, k)
+			if k, ok := missingKey(info); ok {
+				return config.MissingKeyError(info, k)
 			}
-			for _, k := range entry.Info.Keys {
+			for _, k := range info.Keys {
 				if errors.Is(err, transit.ErrUnauthorized) {
 					return fmt.Errorf("%v; check %s", err, k.Env)
 				}
@@ -197,7 +202,7 @@ func saveAlias(opts *cliOptions) error {
 // is always included so the alias survives a change of default_city, and a
 // multi-word stop query is quoted so it is not read back as route + stop.
 func aliasValue(o *cliOptions) string {
-	parts := []string{o.City}
+	parts := []string{o.Country, quoteArg(o.Town)}
 	if o.Route != "" {
 		parts = append(parts, quoteArg(o.Route))
 	}
@@ -402,20 +407,42 @@ func parseArgs(args []string, cfg *config.Config) (*cliOptions, error) {
 	if err != nil || o == nil {
 		return o, err
 	}
+	// Country: from the arguments when the first word names one, else the
+	// configured default.
 	if len(pos) > 0 {
-		if _, ok := registry.Lookup(pos[0]); ok {
-			o.City = pos[0]
+		if c, ok := registry.LookupCountry(pos[0]); ok {
+			o.Country = c.ID
 			pos = pos[1:]
-		} else if cfg.DefaultCity != "" {
-			o.City = cfg.DefaultCity
-		} else {
-			return nil, &app.UsageError{Msg: fmt.Sprintf("unknown city %q (run \"eta cities\", or set default_city in %s)\n%s", pos[0], config.ConfigFile(), usage)}
 		}
 	}
-	if o.setup {
-		if o.City == "" {
-			return nil, &app.UsageError{Msg: "--setup needs a city: eta <city> --setup"}
+	if o.Country == "" {
+		if cfg.DefaultCountry == "" {
+			if len(pos) == 0 {
+				return nil, &app.UsageError{Msg: usage}
+			}
+			return nil, &app.UsageError{Msg: fmt.Sprintf("unknown country %q (run \"eta countries\", or set default_country in %s)\n%s", pos[0], config.ConfigFile(), usage)}
 		}
+		o.Country = cfg.DefaultCountry
+	}
+	// Town: required unless default_town is set; a registered town in the
+	// arguments always wins over the default.
+	switch {
+	case len(pos) > 0 && cfg.DefaultTown == "":
+		o.Town = pos[0]
+		pos = pos[1:]
+	case len(pos) > 0 && cfg.DefaultTown != "":
+		if _, ok := registry.LookupTown(o.Country, pos[0]); ok {
+			o.Town = pos[0]
+			pos = pos[1:]
+		} else {
+			o.Town = cfg.DefaultTown
+		}
+	case cfg.DefaultTown != "":
+		o.Town = cfg.DefaultTown
+	default:
+		return nil, &app.UsageError{Msg: usage}
+	}
+	if o.setup {
 		return o, nil
 	}
 	switch {
