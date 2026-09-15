@@ -66,10 +66,11 @@ Cities are grouped by the data provider that serves them; one provider package c
 | Helsinki | `helsinki` (`hsl`) | `digitransit`, [Digitransit](https://digitransit.fi/en/developers/) | `ETA_DIGITRANSIT_API_KEY`, required | yes | yes | not yet verified against the live API |
 | Tampere | `tampere` (`nysse`) | `digitransit` (Waltti router) | `ETA_DIGITRANSIT_API_KEY`, required | yes | yes | not yet verified against the live API |
 | Turku | `turku` (`foli`) | `digitransit` (Waltti router) | `ETA_DIGITRANSIT_API_KEY`, required | yes | yes | not yet verified against the live API |
+| New York City | `newyork` (`nyc`, `mta`) | `mta`, [MTA GTFS-Realtime](https://api.mta.info/) | none | yes, no timetable fallback | yes | subway only; first run downloads the 5 MB static timetable |
 
 `eta cities` prints this table for the build you have, with the live key status. `eta cities --check` additionally makes one real request per city.
 
-Planned next: Paris, Prague, Washington DC, Chicago, Portland, Vancouver, Singapore, Melbourne, Tokyo, New York, Sydney, SF Bay Area, Los Angeles.
+Planned next: Paris, Prague, Washington DC, Chicago, Portland, Vancouver, Singapore, Melbourne, Tokyo, Sydney, SF Bay Area, Los Angeles.
 
 ## Features
 
@@ -237,6 +238,7 @@ If both set, the environment variable wins. Providers with several keys use `ETA
 | `sl` | Stockholm | none | | no | |
 | `opendatach` | Zürich, Bern, Basel, Geneva, Lausanne | none | | no | |
 | `digitransit` | Helsinki, Tampere, Turku | `ETA_DIGITRANSIT_API_KEY` | `digitransit` | required | https://portal-api.digitransit.fi |
+| `mta` | New York City | none | | no | |
 
 ## Config and aliases
 
@@ -286,11 +288,11 @@ $ eta berlin M4 "alexanderplatz bhf" -j -c 2
 
 ## How it works
 
-1. **Route resolution.** With a route, providers whose API can list a route's stops (`RouteLister`: `bkk`, `tfl`, `entur`, `mbta`, `digitransit`) resolve the short name, fetch the stops per direction (cached 24h under `~/.cache/eta/<city>`), and fuzzy-match your query locally, exactly like GoKK.
+1. **Route resolution.** With a route, providers whose API can list a route's stops (`RouteLister`: `bkk`, `tfl`, `entur`, `mbta`, `digitransit`, `mta`) resolve the short name, fetch the stops per direction (cached 24h under `~/.cache/eta/<city>`), and fuzzy-match your query locally, exactly like GoKK.
 2. **Stop search.** Without a route, or with providers lacking that call (`StopSearcher`: `bvg`, `sl`, `opendatach`, and all of the above), stops are searched by name through the API or a cached stop list. With a route, ambiguous hits are probed with one departures call each and only stops actually served by the route survive.
 3. **One departures call** for the matched stop, filtered by route client-side when one was given, grouped by line, direction and headsign, `count` per group.
 
-Live departures are never cached. Every invocation has a 10 s budget. Each data provider lives in `internal/providers/<provider>` and registers every city it serves (Entur registers Oslo, Bergen, Trondheim and Stavanger with their operator scoping); the shared pieces are `internal/transit` (domain model and interfaces), `internal/app` (resolution, grouping, rendering), `internal/httpx`, `internal/cache`, `internal/match` and `internal/xutil`.
+Live departures are never cached. Every invocation has a 10 s budget, extended on a first run that downloads bulk data. GTFS-based providers (`mta`) read stops and routes straight out of the operator's static GTFS zip (`internal/gtfs`, cached for a week) and decode the GTFS-Realtime protobuf feeds (`internal/gtfsrt`); those two packages are the only reason the module has dependencies. Each data provider lives in `internal/providers/<provider>` and registers every city it serves (Entur registers Oslo, Bergen, Trondheim and Stavanger with their operator scoping); the shared pieces are `internal/transit` (domain model and interfaces), `internal/app` (resolution, grouping, rendering), `internal/httpx`, `internal/cache`, `internal/match` and `internal/xutil`.
 
 ## Development
 
