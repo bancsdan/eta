@@ -19,7 +19,8 @@ import (
 )
 
 type Options struct {
-	City      string // registry id, for output only
+	Country   string // country id, for output only
+	Town      string // town id, for output only
 	Route     string // public short name, e.g. "155"; "" shows every line at the stop
 	Query     string
 	Count     int
@@ -74,8 +75,18 @@ func (a *App) Run(ctx context.Context, o Options) error {
 	)
 	if hasRoutes {
 		routes, err = a.resolveRoutes(ctx, rl, o.Route, o.Refresh)
-		if err != nil && (!hasSearch || !errors.Is(err, transit.ErrUnknownRoute)) {
-			return err
+		if err != nil {
+			var ure *transit.UnknownRouteError
+			switch {
+			case hasSearch && errors.Is(err, transit.ErrNoRouteLookup):
+				// The provider cannot resolve routes by name here; match
+				// the route at the stop instead.
+				routes = nil
+			case errors.As(err, &ure):
+				return &UsageError{ure.Error()}
+			default:
+				return err
+			}
 		}
 	}
 	switch {
@@ -96,7 +107,7 @@ func (a *App) Run(ctx context.Context, o Options) error {
 		if err != nil {
 			return err
 		}
-		cand, err = a.pickStop(o.Route, o.Query, stops)
+		cand, err = a.pickStop(o.Route, o.Query, o.Town, stops)
 		if err != nil {
 			return err
 		}
@@ -122,7 +133,7 @@ func (a *App) Run(ctx context.Context, o Options) error {
 		label = o.Route
 	}
 	if o.JSON {
-		return a.writeJSON(departuresJSON(o.City, cand, label, deps.Now, groups))
+		return a.writeJSON(departuresJSON(o, cand, label, deps.Now, groups))
 	}
 	a.render(cand.Name, label, groups, o)
 	return nil
@@ -148,7 +159,7 @@ func (a *App) runBoard(ctx context.Context, ss transit.StopSearcher, hasSearch b
 	}
 	groups := groupDepartures(deps, nil, nil, o.Count)
 	if o.JSON {
-		return a.writeJSON(departuresJSON(o.City, cand, "", deps.Now, groups))
+		return a.writeJSON(departuresJSON(o, cand, "", deps.Now, groups))
 	}
 	a.render(cand.Name, "", groups, o)
 	return nil
@@ -167,15 +178,11 @@ func (a *App) resolveRoutes(ctx context.Context, rl transit.RouteLister, short s
 		return routes, nil
 	}
 	found, err := rl.FindRoutes(ctx, short)
-	var ure *transit.UnknownRouteError
-	if errors.As(err, &ure) {
-		return nil, &UsageError{ure.Error()}
-	}
 	if err != nil {
 		return nil, err
 	}
 	if len(found) == 0 {
-		return nil, &UsageError{(&transit.UnknownRouteError{Route: short}).Error()}
+		return nil, &transit.UnknownRouteError{Route: short}
 	}
 	_ = a.Cache.Store(key, found)
 	return found, nil
@@ -345,7 +352,8 @@ func (a *App) probe(ctx context.Context, cands []match.Candidate, routes []trans
 }
 
 type RouteStops struct {
-	City       string           `json:"city"`
+	Country    string           `json:"country"`
+	Town       string           `json:"town"`
 	Route      string           `json:"route"`
 	RouteID    string           `json:"routeId"`
 	Directions []DirectionStops `json:"directions"`
@@ -400,7 +408,7 @@ func (a *App) stopLists(ctx context.Context, rl transit.RouteLister, routes []tr
 				}
 			}
 		}
-		rs := RouteStops{City: a.Provider.Info().ID, Route: r.ShortName, RouteID: r.ID}
+		rs := RouteStops{Country: a.Provider.Info().Country, Town: a.Provider.Info().ID, Route: r.ShortName, RouteID: r.ID}
 		if rs.Route == "" {
 			rs.Route = r.ID
 		}
@@ -455,8 +463,22 @@ func names(cands []match.Candidate) []string {
 	return out
 }
 
-func (a *App) pickStop(route, query string, stops []match.Stop) (match.Candidate, error) {
+func (a *App) pickStop(route, query, town string, stops []match.Stop) (match.Candidate, error) {
 	cands := match.Find(query, stops)
+	// A route can serve several towns ("skysstasjon" in Gjøvik and Hamar);
+	// a name carrying the town settles the tie.
+	if len(cands) > 1 && town != "" {
+		var local []match.Candidate
+		t := match.Normalize(town)
+		for _, c := range cands {
+			if strings.Contains(match.Normalize(c.Name), t) {
+				local = append(local, c)
+			}
+		}
+		if len(local) == 1 {
+			return local[0], nil
+		}
+	}
 	switch len(cands) {
 	case 1:
 		return cands[0], nil

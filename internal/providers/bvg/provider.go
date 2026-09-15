@@ -8,9 +8,11 @@ import (
 	"context"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bancsdan/eta/internal/httpx"
+	"github.com/bancsdan/eta/internal/match"
 	"github.com/bancsdan/eta/internal/registry"
 	"github.com/bancsdan/eta/internal/transit"
 	"github.com/bancsdan/eta/internal/xutil"
@@ -32,6 +34,7 @@ var cities = []city{
 			ID:       "berlin",
 			Name:     "Berlin (BVG)",
 			Provider: "bvg",
+			Country:  "germany",
 			TZ:       "Europe/Berlin",
 			Realtime: true,
 			Notes:    "Berlin & Brandenburg; -l not available",
@@ -45,6 +48,7 @@ var cities = []city{
 			ID:       "potsdam",
 			Name:     "Potsdam (VBB)",
 			Provider: "bvg",
+			Country:  "germany",
 			TZ:       "Europe/Berlin",
 			Realtime: true,
 			Notes:    "served by the Berlin/Brandenburg endpoint; -l not available",
@@ -54,6 +58,7 @@ var cities = []city{
 }
 
 func init() {
+	registry.RegisterCountry(registry.Country{ID: "germany", Name: "Germany", Aliases: []string{"de", "deutschland"}, Providers: []string{"bvg"}, Coverage: "every town in Berlin and Brandenburg", AnyTown: NewTown})
 	for _, c := range cities {
 		c := c
 		registry.Register(registry.Entry{
@@ -67,13 +72,29 @@ func init() {
 type Provider struct {
 	BaseURL string
 	info    transit.Info
+	town    string // kept in stop names: "(Berlin)", "Potsdam, ..."
 	http    *httpx.Client
 	now     func() time.Time
 }
 
 // New builds the provider for one of the registered cities' Info.
 func New(d registry.Deps, info transit.Info) transit.Provider {
-	return &Provider{BaseURL: DefaultBaseURL, info: info, http: httpx.New("bvg", d.HTTP), now: d.Clock()}
+	return &Provider{BaseURL: DefaultBaseURL, info: info, town: info.ID, http: httpx.New("bvg", d.HTTP), now: d.Clock()}
+}
+
+// NewTown builds a provider for any town in the Berlin/Brandenburg data set;
+// stop names carry the town, so the search is filtered on it.
+func NewTown(d registry.Deps, town string) transit.Provider {
+	info := transit.Info{
+		ID:       strings.ReplaceAll(match.Normalize(town), " ", "-"),
+		Name:     town + " (VBB)",
+		Provider: "bvg",
+		Country:  "germany",
+		TZ:       "Europe/Berlin",
+		Realtime: true,
+		Notes:    "Berlin/Brandenburg data set only; -l not available",
+	}
+	return &Provider{BaseURL: DefaultBaseURL, info: info, town: town, http: httpx.New("bvg", d.HTTP), now: d.Clock()}
 }
 
 // Berlin is the Info of the primary city, for callers constructing New directly.
@@ -94,7 +115,7 @@ func (p *Provider) SearchStops(ctx context.Context, query string) ([]transit.Sto
 	if err := p.http.GetJSON(ctx, httpx.URL(p.BaseURL, "/locations", q), &locs); err != nil {
 		return nil, err
 	}
-	out := make([]transit.Stop, 0, len(locs))
+	all := make([]transit.Stop, 0, len(locs))
 	for _, l := range locs {
 		if l.ID == "" || l.Name == "" || (l.Type != "stop" && l.Type != "station") {
 			continue
@@ -103,7 +124,19 @@ func (p *Provider) SearchStops(ctx context.Context, query string) ([]transit.Sto
 		if l.Location != nil {
 			s.Lat, s.Lon = l.Location.Latitude, l.Location.Longitude
 		}
-		out = append(out, s)
+		all = append(all, s)
+	}
+	// Keep the town's stops, falling back to everything when the filter
+	// would leave nothing (the query may already name the town).
+	town := match.Normalize(p.town)
+	var out []transit.Stop
+	for _, s := range all {
+		if strings.Contains(match.Normalize(s.Name), town) {
+			out = append(out, s)
+		}
+	}
+	if len(out) == 0 {
+		return all, nil
 	}
 	return out, nil
 }

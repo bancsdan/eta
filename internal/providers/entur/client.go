@@ -32,6 +32,8 @@ type quayDTO struct {
 	ID         string      `json:"id"`
 	Name       string      `json:"name"`
 	PublicCode string      `json:"publicCode"`
+	Latitude   float64     `json:"latitude"`
+	Longitude  float64     `json:"longitude"`
 	StopPlace  *stopRefDTO `json:"stopPlace"`
 }
 

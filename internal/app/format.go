@@ -77,7 +77,8 @@ func (a *App) renderLists(lists []RouteStops) {
 }
 
 type DeparturesJSON struct {
-	City        string          `json:"city"`
+	Country     string          `json:"country"`
+	Town        string          `json:"town"`
 	Stop        string          `json:"stop"`
 	StopIDs     []string        `json:"stopIds"`
 	Route       string          `json:"route"`
@@ -100,11 +101,11 @@ type DepartureJSON struct {
 	Live      bool      `json:"live"`
 }
 
-func departuresJSON(city string, cand match.Candidate, route string, now time.Time, groups []Group) DeparturesJSON {
+func departuresJSON(o Options, cand match.Candidate, route string, now time.Time, groups []Group) DeparturesJSON {
 	if now.IsZero() {
 		now = time.Now()
 	}
-	out := DeparturesJSON{City: city, Stop: cand.Name, StopIDs: cand.IDs, Route: route, GeneratedAt: now, Directions: []DirectionJSON{}}
+	out := DeparturesJSON{Country: o.Country, Town: o.Town, Stop: cand.Name, StopIDs: cand.IDs, Route: route, GeneratedAt: now, Directions: []DirectionJSON{}}
 	for _, g := range groups {
 		d := DirectionJSON{Line: g.Line, Direction: g.Direction, Headsign: g.Headsign, Departures: []DepartureJSON{}}
 		for _, ar := range g.Arrivals {

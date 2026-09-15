@@ -40,73 +40,56 @@ type city struct {
 	authorities []string
 	focusLat    float64
 	focusLon    float64
+	town        string // set for an unregistered town: searches are scoped to it geographically
 }
 
+// One entry per city with its county operator's authority (route lookups
+// are scoped to it) and a probe verified live on 2026-09-15: a central stop
+// and a line of that operator calling there.
 var cities = []city{
-	{
+	ncity("oslo", "Oslo (Ruter)", "RUT:Authority:RUT", "31", "jernbanetorget", 59.911, 10.750, "entur", "ruter"),
+	ncity("bergen", "Bergen (Skyss)", "SKY:Authority:SKY", "1", "byparken", 60.393, 5.324, "skyss"),
+	ncity("trondheim", "Trondheim (AtB)", "ATB:Authority:2", "3", "dragvoll", 63.430, 10.395, "atb"),
+	ncity("stavanger", "Stavanger (Kolumbus)", "KOL:Authority:8", "1", "hillevåg", 58.970, 5.733, "kolumbus"),
+	ncity("drammen", "Drammen (Brakar)", "BRA:Authority:4", "1", "bragernes torg", 59.744, 10.204, "brakar"),
+	ncity("fredrikstad", "Fredrikstad (Østfold kollektivtrafikk)", "OST:Authority:1", "1", "fredrikstad bussterminal", 59.211, 10.950),
+	ncity("sarpsborg", "Sarpsborg (Østfold kollektivtrafikk)", "OST:Authority:1", "1", "sarpsborg bussterminal", 59.284, 11.109),
+	ncity("kristiansand", "Kristiansand (AKT)", "AKT:Authority:AKT_ID", "10", "kristiansand rutebilstasjon", 58.146, 7.996, "akt"),
+	ncity("tromso", "Tromsø (Svipper)", "TRO:Authority:1", "100", "prostneset", 69.649, 18.956, "tromsø", "svipper"),
+	ncity("skien", "Skien (Farte)", "TEL:Authority:TFK_ID", "M1", "skien landmannstorget", 59.209, 9.608, "farte"),
+	ncity("porsgrunn", "Porsgrunn (Farte)", "TEL:Authority:TFK_ID", "M1", "porsgrunn kammerherreløkka", 59.139, 9.657),
+	ncity("hamar", "Hamar (Innlandstrafikk)", "INN:Authority:INN_ID", "B21", "hamar skysstasjon", 60.794, 11.068),
+	ncity("lillehammer", "Lillehammer (Innlandstrafikk)", "INN:Authority:INN_ID", "B1", "lillehammer skysstasjon", 61.115, 10.463),
+	ncity("molde", "Molde (FRAM)", "MOR:Authority:MOR", "100", "molde trafikkterminal", 62.737, 7.160),
+	ncity("alesund", "Ålesund (FRAM)", "MOR:Authority:MOR", "1", "st. olavs plass", 62.472, 6.155, "ålesund"),
+	ncity("bodo", "Bodø (Nordland fylkeskommune)", "NOR:Authority:12", "1", "bodø sentrum", 67.280, 14.405, "bodø"),
+}
+
+// ncity builds one table row; aliases are optional.
+func ncity(id, name, authority, route, query string, lat, lon float64, aliases ...string) city {
+	return city{
 		info: transit.Info{
-			ID:       "oslo",
-			Name:     "Oslo (Entur / Ruter)",
+			ID:       id,
+			Name:     name,
+			Country:  "norway",
 			Provider: "entur",
 			TZ:       "Europe/Oslo",
 			Realtime: true,
-			Notes:    "route lookup scoped to Ruter (Oslo & Akershus); stop search covers all Norway",
-			Probe:    transit.Probe{Route: "31", Query: "jernbanetorget"},
+			Notes:    "route lookup scoped to the county operator; stop search covers all Norway",
+			Probe:    transit.Probe{Route: route, Query: query},
 		},
-		aliases:     []string{"entur", "ruter"},
-		authorities: []string{"RUT:Authority:RUT"},
-		focusLat:    59.911, focusLon: 10.750,
-	},
-	{
-		info: transit.Info{
-			ID:       "bergen",
-			Name:     "Bergen (Entur / Skyss)",
-			Provider: "entur",
-			TZ:       "Europe/Oslo",
-			Realtime: true,
-			Notes:    "route lookup scoped to Skyss; stop search covers all Norway",
-			Probe:    transit.Probe{Route: "1", Query: "byparken"},
-		},
-		aliases:     []string{"skyss"},
-		authorities: []string{"SKY:Authority:SKY"},
-		focusLat:    60.393, focusLon: 5.324,
-	},
-	{
-		info: transit.Info{
-			ID:       "trondheim",
-			Name:     "Trondheim (Entur / AtB)",
-			Provider: "entur",
-			TZ:       "Europe/Oslo",
-			Realtime: true,
-			Notes:    "route lookup scoped to AtB; stop search covers all Norway",
-			Probe:    transit.Probe{Route: "3", Query: "dragvoll"},
-		},
-		aliases:     []string{"atb"},
-		authorities: []string{"ATB:Authority:2"},
-		focusLat:    63.430, focusLon: 10.395,
-	},
-	{
-		// Kolumbus publishes its timetable lines under KOL:Authority:8;
-		// KOL:Authority:KOL only carries the on-demand "HentMeg" service.
-		info: transit.Info{
-			ID:       "stavanger",
-			Name:     "Stavanger (Entur / Kolumbus)",
-			Provider: "entur",
-			TZ:       "Europe/Oslo",
-			Realtime: true,
-			Notes:    "route lookup scoped to Kolumbus; stop search covers all Norway",
-			Probe:    transit.Probe{Route: "1", Query: "hillevåg"},
-		},
-		aliases:     []string{"kolumbus"},
-		authorities: []string{"KOL:Authority:8"},
-		focusLat:    58.970, focusLon: 5.733,
-	},
+		aliases:     aliases,
+		authorities: []string{authority},
+		focusLat:    lat,
+		focusLon:    lon,
+	}
 }
 
 // Oslo is the primary city's Info, for callers constructing New directly.
 var Oslo = cities[0].info
 
 func init() {
+	registry.RegisterCountry(registry.Country{ID: "norway", Name: "Norway", Aliases: []string{"no", "norge"}, Providers: []string{"entur"}, AnyTown: NewTown})
 	for _, c := range cities {
 		c := c
 		registry.Register(registry.Entry{
@@ -145,6 +128,83 @@ func New(d registry.Deps, info transit.Info) transit.Provider {
 
 func (p *Provider) Info() transit.Info { return p.city.info }
 
+// NewTown builds a provider for a town without a registered entry. The
+// town is geocoded once (cached) and every search is scoped to it: stops
+// by locality, else within xutil.NearbyKm; lines by having a stop nearby.
+func NewTown(d registry.Deps, town string) transit.Provider {
+	h := httpx.New("entur", d.HTTP)
+	h.Header.Set("ET-Client-Name", clientName)
+	c := city{
+		info: transit.Info{
+			ID:       strings.ReplaceAll(match.Normalize(town), " ", "-"),
+			Name:     town + " (Entur)",
+			Country:  "norway",
+			Provider: "entur",
+			TZ:       "Europe/Oslo",
+			Realtime: true,
+			Notes:    "scoped to the town by locality and distance",
+		},
+		town: town,
+	}
+	return &Provider{BaseURL: defaultBaseURL, GeocoderURL: defaultGeocoderURL, city: c, http: h, cache: d.Cache, now: d.Clock(), loc: c.info.Location()}
+}
+
+// place is a geocoded town.
+type place struct {
+	Lat, Lon float64
+	Locality string
+}
+
+// locate geocodes the town once; the result is cached with the town's
+// other reference data.
+func (p *Provider) locate(ctx context.Context) (place, error) {
+	if p.city.town == "" {
+		return place{Lat: p.city.focusLat, Lon: p.city.focusLon}, nil
+	}
+	var pl place
+	if p.cache.Load("place", &pl) && pl.Lat != 0 {
+		return pl, nil
+	}
+	// The geocoder has no place layer; the town itself comes back as an
+	// entry whose locality (municipality) carries its name, which is what
+	// stops are later matched on.
+	q := url.Values{"text": {p.city.town}, "size": {"10"}, "lang": {"no"}}
+	var resp geoResponse
+	if err := p.http.GetJSON(ctx, httpx.URL(p.GeocoderURL, "autocomplete", q), &resp); err != nil {
+		return pl, err
+	}
+	want := match.Normalize(p.city.town)
+	var hit *geoFeature
+	for i := range resp.Features {
+		f := &resp.Features[i]
+		if len(f.Geometry.Coordinates) < 2 {
+			continue
+		}
+		if match.Normalize(f.Properties.Locality) == want || match.Normalize(f.Properties.Name) == want {
+			hit = f
+			break
+		}
+	}
+	if hit == nil {
+		return pl, fmt.Errorf("entur: no place in Norway named %q", p.city.town)
+	}
+	pl = place{Lat: hit.Geometry.Coordinates[1], Lon: hit.Geometry.Coordinates[0], Locality: hit.Properties.Locality}
+	if pl.Locality == "" {
+		pl.Locality = p.city.town
+	}
+	_ = p.cache.Store("place", pl)
+	return pl, nil
+}
+
+// inTown reports whether a point belongs to the town: same locality name
+// when known, else within xutil.NearbyKm of its centre.
+func (p *Provider) inTown(pl place, locality string, lat, lon float64) bool {
+	if locality != "" && pl.Locality != "" && match.Normalize(locality) == match.Normalize(pl.Locality) {
+		return true
+	}
+	return lat != 0 && xutil.DistanceKm(pl.Lat, pl.Lon, lat, lon) <= xutil.NearbyKm
+}
+
 // cityFor returns the registered city with id, defaulting to the first.
 func cityFor(id string) city {
 	for _, c := range cities {
@@ -159,9 +219,9 @@ func (p *Provider) graphql(ctx context.Context, query string, vars map[string]an
 	return p.http.GraphQL(ctx, p.BaseURL, query, vars, out)
 }
 
-const linesQuery = `query($code:String,$auth:[String]){ lines(publicCode:$code, authorities:$auth) { id publicCode name transportMode journeyPatterns { id directionType name quays { id name publicCode stopPlace { id name } } } } }`
+const linesQuery = `query($code:String,$auth:[String]){ lines(publicCode:$code, authorities:$auth) { id publicCode name transportMode journeyPatterns { id directionType name quays { id name publicCode latitude longitude stopPlace { id name } } } } }`
 
-const lineQuery = `query($id:ID!){ line(id:$id) { id publicCode name transportMode journeyPatterns { id directionType name quays { id name publicCode stopPlace { id name } } } } }`
+const lineQuery = `query($id:ID!){ line(id:$id) { id publicCode name transportMode journeyPatterns { id directionType name quays { id name publicCode latitude longitude stopPlace { id name } } } } }`
 
 // The full response is cached so RouteStops needs no second round trip.
 func (p *Provider) lines(ctx context.Context, short string) ([]lineDTO, error) {
@@ -170,14 +230,43 @@ func (p *Provider) lines(ctx context.Context, short string) ([]lineDTO, error) {
 	if p.cache.Load(key, &cached) && len(cached) > 0 {
 		return cached, nil
 	}
+	vars := map[string]any{"code": short}
+	if len(p.city.authorities) > 0 {
+		vars["auth"] = p.city.authorities
+	}
 	var data linesData
-	if err := p.graphql(ctx, linesQuery, map[string]any{"code": short, "auth": p.city.authorities}, &data); err != nil {
+	if err := p.graphql(ctx, linesQuery, vars, &data); err != nil {
 		return nil, err
 	}
-	if len(data.Lines) > 0 {
-		_ = p.cache.Store(key, data.Lines)
+	lines := data.Lines
+	if p.city.town != "" {
+		// Nationwide match on the public code: keep the lines that stop in town.
+		pl, err := p.locate(ctx)
+		if err != nil {
+			return nil, err
+		}
+		lines = nil
+		for _, l := range data.Lines {
+			if p.lineNear(l, pl) {
+				lines = append(lines, l)
+			}
+		}
 	}
-	return data.Lines, nil
+	if len(lines) > 0 {
+		_ = p.cache.Store(key, lines)
+	}
+	return lines, nil
+}
+
+func (p *Provider) lineNear(l lineDTO, pl place) bool {
+	for _, jp := range l.JourneyPatterns {
+		for _, q := range jp.Quays {
+			if p.inTown(pl, "", q.Latitude, q.Longitude) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (p *Provider) FindRoutes(ctx context.Context, short string) ([]transit.Route, error) {
@@ -286,9 +375,16 @@ func (p *Provider) SearchStops(ctx context.Context, query string) ([]transit.Sto
 		return nil, nil
 	}
 	q := url.Values{"text": {query}, "layers": {"venue"}, "size": {"10"}, "lang": {"en"}}
-	if p.city.focusLat != 0 {
-		q.Set("focus.point.lat", fmt.Sprint(p.city.focusLat))
-		q.Set("focus.point.lon", fmt.Sprint(p.city.focusLon))
+	pl, err := p.locate(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if pl.Lat != 0 {
+		q.Set("focus.point.lat", fmt.Sprint(pl.Lat))
+		q.Set("focus.point.lon", fmt.Sprint(pl.Lon))
+	}
+	if p.city.town != "" {
+		q.Set("size", "20")
 	}
 	u := httpx.URL(p.GeocoderURL, "autocomplete", q)
 	var resp geoResponse
@@ -314,6 +410,9 @@ func (p *Provider) SearchStops(ctx context.Context, query string) ([]transit.Sto
 		s := transit.Stop{ID: pr.ID, Name: name}
 		if len(f.Geometry.Coordinates) >= 2 {
 			s.Lon, s.Lat = f.Geometry.Coordinates[0], f.Geometry.Coordinates[1]
+		}
+		if p.city.town != "" && !p.inTown(pl, pr.Locality, s.Lat, s.Lon) {
+			continue
 		}
 		out = append(out, s)
 	}

@@ -26,6 +26,7 @@ const (
 var info = transit.Info{
 	ID:       "budapest",
 	Provider: "bkk",
+	Country:  "hungary",
 	Name:     "Budapest (BKK FUTÁR)",
 	TZ:       "Europe/Budapest",
 	Keys:     []transit.KeySpec{{Env: keyEnv, Req: transit.KeyRequired, SignupURL: signupURL}},
@@ -34,6 +35,7 @@ var info = transit.Info{
 }
 
 func init() {
+	registry.RegisterCountry(registry.Country{ID: "hungary", Name: "Hungary", Aliases: []string{"hu", "magyarorszag"}, Providers: []string{"bkk"}})
 	registry.Register(registry.Entry{Info: info, Aliases: []string{"bkk"}, New: New})
 }
 

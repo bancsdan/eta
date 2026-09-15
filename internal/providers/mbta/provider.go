@@ -31,6 +31,7 @@ const stationsCacheKey = "stations-all"
 var info = transit.Info{
 	ID:       "boston",
 	Provider: "mbta",
+	Country:  "usa",
 	Name:     "Boston (MBTA)",
 	TZ:       "America/New_York",
 	Keys: []transit.KeySpec{{
@@ -44,6 +45,7 @@ var info = transit.Info{
 }
 
 func init() {
+	registry.RegisterCountry(registry.Country{ID: "usa", Name: "United States", Aliases: []string{"us", "united-states", "america"}, Providers: []string{"mbta"}})
 	registry.Register(registry.Entry{Info: info, Aliases: []string{"mbta"}, New: New})
 }
 
