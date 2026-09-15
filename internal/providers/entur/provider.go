@@ -42,65 +42,46 @@ type city struct {
 	focusLon    float64
 }
 
+// One entry per city with its county operator's authority (route lookups
+// are scoped to it) and a probe verified live on 2026-09-15: a central stop
+// and a line of that operator calling there.
 var cities = []city{
-	{
+	ncity("oslo", "Oslo (Ruter)", "RUT:Authority:RUT", "31", "jernbanetorget", 59.911, 10.750, "entur", "ruter"),
+	ncity("bergen", "Bergen (Skyss)", "SKY:Authority:SKY", "1", "byparken", 60.393, 5.324, "skyss"),
+	ncity("trondheim", "Trondheim (AtB)", "ATB:Authority:2", "3", "dragvoll", 63.430, 10.395, "atb"),
+	ncity("stavanger", "Stavanger (Kolumbus)", "KOL:Authority:8", "1", "hillevåg", 58.970, 5.733, "kolumbus"),
+	ncity("drammen", "Drammen (Brakar)", "BRA:Authority:4", "1", "bragernes torg", 59.744, 10.204, "brakar"),
+	ncity("fredrikstad", "Fredrikstad (Østfold kollektivtrafikk)", "OST:Authority:1", "1", "fredrikstad bussterminal", 59.211, 10.950),
+	ncity("sarpsborg", "Sarpsborg (Østfold kollektivtrafikk)", "OST:Authority:1", "1", "sarpsborg bussterminal", 59.284, 11.109),
+	ncity("kristiansand", "Kristiansand (AKT)", "AKT:Authority:AKT_ID", "10", "kristiansand rutebilstasjon", 58.146, 7.996, "akt"),
+	ncity("tromso", "Tromsø (Svipper)", "TRO:Authority:1", "100", "prostneset", 69.649, 18.956, "tromsø", "svipper"),
+	ncity("skien", "Skien (Farte)", "TEL:Authority:TFK_ID", "M1", "skien landmannstorget", 59.209, 9.608, "farte"),
+	ncity("porsgrunn", "Porsgrunn (Farte)", "TEL:Authority:TFK_ID", "M1", "porsgrunn kammerherreløkka", 59.139, 9.657),
+	ncity("hamar", "Hamar (Innlandstrafikk)", "INN:Authority:INN_ID", "B21", "hamar skysstasjon", 60.794, 11.068),
+	ncity("lillehammer", "Lillehammer (Innlandstrafikk)", "INN:Authority:INN_ID", "B1", "lillehammer skysstasjon", 61.115, 10.463),
+	ncity("molde", "Molde (FRAM)", "MOR:Authority:MOR", "100", "molde trafikkterminal", 62.737, 7.160),
+	ncity("alesund", "Ålesund (FRAM)", "MOR:Authority:MOR", "1", "st. olavs plass", 62.472, 6.155, "ålesund"),
+	ncity("bodo", "Bodø (Nordland fylkeskommune)", "NOR:Authority:12", "1", "bodø sentrum", 67.280, 14.405, "bodø"),
+}
+
+// ncity builds one table row; aliases are optional.
+func ncity(id, name, authority, route, query string, lat, lon float64, aliases ...string) city {
+	return city{
 		info: transit.Info{
-			ID:       "oslo",
-			Name:     "Oslo (Entur / Ruter)",
+			ID:       id,
+			Name:     name,
+			Country:  "Norway",
 			Provider: "entur",
 			TZ:       "Europe/Oslo",
 			Realtime: true,
-			Notes:    "route lookup scoped to Ruter (Oslo & Akershus); stop search covers all Norway",
-			Probe:    transit.Probe{Route: "31", Query: "jernbanetorget"},
+			Notes:    "route lookup scoped to the county operator; stop search covers all Norway",
+			Probe:    transit.Probe{Route: route, Query: query},
 		},
-		aliases:     []string{"entur", "ruter"},
-		authorities: []string{"RUT:Authority:RUT"},
-		focusLat:    59.911, focusLon: 10.750,
-	},
-	{
-		info: transit.Info{
-			ID:       "bergen",
-			Name:     "Bergen (Entur / Skyss)",
-			Provider: "entur",
-			TZ:       "Europe/Oslo",
-			Realtime: true,
-			Notes:    "route lookup scoped to Skyss; stop search covers all Norway",
-			Probe:    transit.Probe{Route: "1", Query: "byparken"},
-		},
-		aliases:     []string{"skyss"},
-		authorities: []string{"SKY:Authority:SKY"},
-		focusLat:    60.393, focusLon: 5.324,
-	},
-	{
-		info: transit.Info{
-			ID:       "trondheim",
-			Name:     "Trondheim (Entur / AtB)",
-			Provider: "entur",
-			TZ:       "Europe/Oslo",
-			Realtime: true,
-			Notes:    "route lookup scoped to AtB; stop search covers all Norway",
-			Probe:    transit.Probe{Route: "3", Query: "dragvoll"},
-		},
-		aliases:     []string{"atb"},
-		authorities: []string{"ATB:Authority:2"},
-		focusLat:    63.430, focusLon: 10.395,
-	},
-	{
-		// Kolumbus publishes its timetable lines under KOL:Authority:8;
-		// KOL:Authority:KOL only carries the on-demand "HentMeg" service.
-		info: transit.Info{
-			ID:       "stavanger",
-			Name:     "Stavanger (Entur / Kolumbus)",
-			Provider: "entur",
-			TZ:       "Europe/Oslo",
-			Realtime: true,
-			Notes:    "route lookup scoped to Kolumbus; stop search covers all Norway",
-			Probe:    transit.Probe{Route: "1", Query: "hillevåg"},
-		},
-		aliases:     []string{"kolumbus"},
-		authorities: []string{"KOL:Authority:8"},
-		focusLat:    58.970, focusLon: 5.733,
-	},
+		aliases:     aliases,
+		authorities: []string{authority},
+		focusLat:    lat,
+		focusLon:    lon,
+	}
 }
 
 // Oslo is the primary city's Info, for callers constructing New directly.

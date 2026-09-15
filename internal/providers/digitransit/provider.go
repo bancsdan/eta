@@ -51,6 +51,7 @@ func cityInfo(id, name, route, query string) transit.Info {
 		ID:       id,
 		Name:     name,
 		Provider: "digitransit",
+		Country:  "Finland",
 		TZ:       "Europe/Helsinki",
 		Keys:     []transit.KeySpec{keySpec},
 		Realtime: true,

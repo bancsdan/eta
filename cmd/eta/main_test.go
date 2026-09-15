@@ -17,7 +17,7 @@ import (
 type stub struct{}
 
 func (stub) Info() transit.Info {
-	return transit.Info{ID: "stubcity", Name: "Stub", Provider: "stub", TZ: "UTC"}
+	return transit.Info{ID: "stubcity", Name: "Stub", Country: "Stubland", Provider: "stub", TZ: "UTC"}
 }
 func (stub) Departures(context.Context, []string, []transit.Route, time.Duration) (*transit.Departures, error) {
 	return &transit.Departures{}, nil
@@ -211,8 +211,19 @@ func TestCitiesTable(t *testing.T) {
 		t.Fatal(err)
 	}
 	out := sb.String()
-	if !strings.Contains(out, "stubcity (sc)") || !strings.Contains(out, "ready") || !strings.Contains(out, "CITY") {
+	if !strings.Contains(out, "STUBLAND") || !strings.Contains(out, "stubcity (sc)") || !strings.Contains(out, "ready") {
 		t.Errorf("output:\n%s", out)
+	}
+	sb.Reset()
+	if err := runCities([]string{"stub"}, &sb); err != nil || !strings.Contains(sb.String(), "stubcity") {
+		t.Errorf("country filter: %v\n%s", err, sb.String())
+	}
+	if err := runCities([]string{"atlantis"}, &sb); err == nil {
+		t.Errorf("unknown country should fail")
+	}
+	sb.Reset()
+	if err := runCountries(&sb); err != nil || !strings.Contains(sb.String(), "Stubland") || !strings.Contains(sb.String(), "stub") {
+		t.Errorf("countries: %v\n%s", err, sb.String())
 	}
 }
 

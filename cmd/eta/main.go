@@ -30,11 +30,12 @@ const (
        eta <stop-query> | eta <route> <stop-query>   (with default_city set)
        eta <alias> [flags]
        eta <city> --setup
-       eta cities [--check]
+       eta countries | eta cities [<country>] [--check]
 
 Print the next departures at a stop: every line, or just one route.
 
-  <city>        a city id or alias from "eta cities": berlin, london, nyc ...
+  <city>        a city id or alias: berlin, london, nyc ... ("eta countries"
+                and "eta cities <country>" list them)
   <route>       route short name as riders know it: 155, M4, Northern, Red
   <stop-query>  free-text stop name; accent-insensitive and fuzzy
                 ("viranyos" matches "Virányos út")
@@ -104,6 +105,9 @@ func main() {
 func run(args []string) error {
 	if len(args) > 0 && args[0] == "cities" {
 		return runCities(args[1:], os.Stdout)
+	}
+	if len(args) > 0 && args[0] == "countries" {
+		return runCountries(os.Stdout)
 	}
 	cfg, err := config.Load(config.ConfigFile())
 	if err != nil {

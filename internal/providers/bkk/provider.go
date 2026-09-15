@@ -26,6 +26,7 @@ const (
 var info = transit.Info{
 	ID:       "budapest",
 	Provider: "bkk",
+	Country:  "Hungary",
 	Name:     "Budapest (BKK FUTÁR)",
 	TZ:       "Europe/Budapest",
 	Keys:     []transit.KeySpec{{Env: keyEnv, Req: transit.KeyRequired, SignupURL: signupURL}},

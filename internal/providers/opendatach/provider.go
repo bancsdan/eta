@@ -22,12 +22,25 @@ type city struct {
 }
 
 // The API is national and unscoped, so cities differ only in metadata.
+// Probes are a central stop and a local line that calls there (verified
+// live 2026-09-15).
 var cities = []city{
-	{info: cityInfo("zurich", "Zürich (SBB / VBZ)", "11", "bellevue"), aliases: []string{"zuerich", "ch", "switzerland"}},
-	{info: cityInfo("bern", "Bern (SBB / Bernmobil)", "9", "bern, bahnhof"), aliases: nil},
-	{info: cityInfo("basel", "Basel (SBB / BVB)", "8", "basel, barfüsserplatz"), aliases: nil},
-	{info: cityInfo("geneva", "Geneva (SBB / TPG)", "12", "genève, bel-air"), aliases: []string{"geneve", "genf"}},
-	{info: cityInfo("lausanne", "Lausanne (SBB / TL)", "M2", "lausanne-flon"), aliases: nil},
+	{info: cityInfo("zurich", "Zürich (VBZ)", "11", "zürich, bellevue"), aliases: []string{"zuerich", "ch", "switzerland"}},
+	{info: cityInfo("geneva", "Geneva (TPG)", "12", "genève, bel-air"), aliases: []string{"geneve", "genf"}},
+	{info: cityInfo("basel", "Basel (BVB)", "8", "basel, barfüsserplatz")},
+	{info: cityInfo("bern", "Bern (Bernmobil)", "9", "bern, bahnhof")},
+	{info: cityInfo("lausanne", "Lausanne (TL)", "M2", "lausanne-flon")},
+	{info: cityInfo("winterthur", "Winterthur (Stadtbus)", "1", "winterthur, hauptbahnhof")},
+	{info: cityInfo("lucerne", "Lucerne (VBL)", "1", "luzern, bahnhof"), aliases: []string{"luzern"}},
+	{info: cityInfo("stgallen", "St. Gallen (VBSG)", "1", "st. gallen, bahnhof"), aliases: []string{"st-gallen", "sanktgallen"}},
+	{info: cityInfo("lugano", "Lugano (TPL)", "1", "lugano, centro")},
+	{info: cityInfo("biel", "Biel/Bienne (VB)", "1", "biel/bienne, zentralplatz"), aliases: []string{"bienne"}},
+	{info: cityInfo("thun", "Thun (STI)", "1", "thun, bahnhof")},
+	{info: cityInfo("fribourg", "Fribourg (TPF)", "1", "fribourg/freiburg, pl. gare"), aliases: []string{"freiburg"}},
+	{info: cityInfo("schaffhausen", "Schaffhausen (VBSH)", "1", "schaffhausen, bahnhof")},
+	{info: cityInfo("chur", "Chur (Stadtbus)", "2", "chur, bahnhofplatz")},
+	{info: cityInfo("neuchatel", "Neuchâtel (transN)", "101", "neuchâtel, place pury"), aliases: []string{"neuenburg"}},
+	{info: cityInfo("sion", "Sion (Bus Sédunois)", "311", "sion, poste/gare"), aliases: []string{"sitten"}},
 }
 
 func cityInfo(id, name, route, query string) transit.Info {
@@ -35,6 +48,7 @@ func cityInfo(id, name, route, query string) transit.Info {
 		ID:       id,
 		Name:     name,
 		Provider: "opendatach",
+		Country:  "Switzerland",
 		TZ:       "Europe/Zurich",
 		Realtime: true,
 		Notes:    "whole of Switzerland; stop search only, -l not available",

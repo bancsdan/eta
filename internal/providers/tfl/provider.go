@@ -27,6 +27,7 @@ var directions = []string{"inbound", "outbound"}
 var info = transit.Info{
 	ID:       "london",
 	Provider: "tfl",
+	Country:  "United Kingdom",
 	Name:     "London (TfL)",
 	TZ:       "Europe/London",
 	Keys: []transit.KeySpec{{

@@ -44,31 +44,21 @@ It is **not a journey planner**. It will not route you from A to B, pick a stop 
 
 ## Cities
 
-Cities are grouped by the data provider that serves them; one provider package can cover several cities.
+One row per country; a provider serves every city listed next to it. `eta countries` prints this table for the build you have, `eta cities <country>` lists one country's cities with their ids and aliases, and `eta cities --check` makes one real request per city.
 
-| City | id (aliases) | Provider | Key | Real-time | `-l` | Notes |
-|---|---|---|---|---|---|---|
-| Berlin, Brandenburg | `berlin` (`bvg`) | `bvg`, community-run [v6.bvg.transport.rest](https://v6.bvg.transport.rest) | none | yes | no | stop search only |
-| Potsdam | `potsdam` | `bvg` | none | yes | no | same Berlin/Brandenburg data set |
-| Boston | `boston` (`mbta`) | `mbta`, [MBTA v3](https://api-v3.mbta.com) | `ETA_MBTA_API_KEY`, optional | yes, timetable fill-in for unpredicted trips | yes | keyless is ~20 req/min; without a route, stop search covers stations only |
-| Budapest | `budapest` (`bkk`) | `bkk`, [BKK FUTÁR](https://opendata.bkk.hu) | `ETA_BKK_API_KEY`, required | yes | yes | |
-| London | `london` (`tfl`) | `tfl`, [TfL Unified API](https://api-portal.tfl.gov.uk) | `ETA_TFL_API_KEY`, optional | yes | yes | tube, bus, DLR, Overground lines by name (Windrush, Mildmay…), Elizabeth line, tram |
-| Oslo | `oslo` (`entur`, `ruter`) | `entur`, [Entur](https://developer.entur.no) national API | none | yes | yes | routes scoped to Ruter; stop search covers all Norway |
-| Bergen | `bergen` (`skyss`) | `entur` | none | yes | yes | routes scoped to Skyss |
-| Trondheim | `trondheim` (`atb`) | `entur` | none | yes | yes | routes scoped to AtB |
-| Stavanger | `stavanger` (`kolumbus`) | `entur` | none | yes | yes | routes scoped to Kolumbus |
-| Stockholm | `stockholm` (`sl`) | `sl`, [SL Transport](https://www.trafiklab.se/api/our-apis/sl/transport/) | none | yes | no | stop list downloaded on first run; stop search only |
-| Zürich | `zurich` (`ch`, `switzerland`) | `opendatach`, [transport.opendata.ch](https://transport.opendata.ch) | none | yes | no | whole of Switzerland; stop search only |
-| Bern | `bern` | `opendatach` | none | yes | no | |
-| Basel | `basel` | `opendatach` | none | yes | no | |
-| Geneva | `geneva` (`geneve`, `genf`) | `opendatach` | none | yes | no | |
-| Lausanne | `lausanne` | `opendatach` | none | yes | no | |
-| Helsinki | `helsinki` (`hsl`) | `digitransit`, [Digitransit](https://digitransit.fi/en/developers/) | `ETA_DIGITRANSIT_API_KEY`, required | yes | yes | not yet verified against the live API |
-| Tampere | `tampere` (`nysse`) | `digitransit` (Waltti router) | `ETA_DIGITRANSIT_API_KEY`, required | yes | yes | not yet verified against the live API |
-| Turku | `turku` (`foli`) | `digitransit` (Waltti router) | `ETA_DIGITRANSIT_API_KEY`, required | yes | yes | not yet verified against the live API |
-| New York City | `newyork` (`nyc`, `mta`) | `mta`, [MTA GTFS-Realtime](https://api.mta.info/) | none | yes, no timetable fallback | yes | subway only; first run downloads the 5 MB static timetable |
+| Country | Cities | Provider | Key | Notes |
+|---|---|---|---|---|
+| Finland | Helsinki, Tampere, Turku | `digitransit` ([Digitransit](https://digitransit.fi/en/developers/)) | `ETA_DIGITRANSIT_API_KEY`, required | not yet verified against the live API |
+| Germany | Berlin, Potsdam | `bvg` (community-run [v6.bvg.transport.rest](https://v6.bvg.transport.rest)) | none | stop search only; the upstream service has outages |
+| Hungary | Budapest | `bkk` ([BKK FUTÁR](https://opendata.bkk.hu)) | `ETA_BKK_API_KEY`, required | |
+| Norway | Oslo, Bergen, Trondheim, Stavanger, Drammen, Fredrikstad, Sarpsborg, Kristiansand, Tromsø, Skien, Porsgrunn, Hamar, Lillehammer, Molde, Ålesund, Bodø | `entur` ([Entur](https://developer.entur.no) national API) | none | routes scoped to each city's county operator; stop search covers all Norway |
+| Sweden | Stockholm (the whole SL region) | `sl` ([SL Transport](https://www.trafiklab.se/api/our-apis/sl/transport/)) | none | stop list downloaded on first run; stop search only |
+| Switzerland | Zürich, Geneva, Basel, Bern, Lausanne, Winterthur, Lucerne, St. Gallen, Lugano, Biel/Bienne, Thun, Fribourg, Schaffhausen, Chur, Neuchâtel, Sion | `opendatach` ([transport.opendata.ch](https://transport.opendata.ch)) | none | whole of Switzerland; stop search only |
+| United Kingdom | London | `tfl` ([TfL Unified API](https://api-portal.tfl.gov.uk)) | `ETA_TFL_API_KEY`, optional | tube, bus, DLR, Overground lines by name, Elizabeth line, tram |
+| United States | Boston | `mbta` ([MBTA v3](https://api-v3.mbta.com)) | `ETA_MBTA_API_KEY`, optional | keyless is ~20 req/min; without a route, stop search covers stations only |
+| United States | New York City | `mta` ([MTA GTFS-Realtime](https://api.mta.info/)) | none | subway only; first run downloads the 5 MB static timetable; no timetable fallback |
 
-`eta cities` prints this table for the build you have, with the live key status. `eta cities --check` additionally makes one real request per city.
+"Stop search only" means the API has no route → stops call, so `-l` is unavailable there and a route is matched against the stop's board instead.
 
 Planned next: Paris, Prague, Washington DC, Chicago, Portland, Vancouver, Singapore, Melbourne, Tokyo, Sydney, SF Bay Area, Los Angeles.
 
@@ -147,7 +137,7 @@ eta work -c 2
 
 ### Key setup and health check
 
-`eta cities` lists every city with its provider, whether it is ready and where to get a key; `eta cities --check` makes one real request per city. `eta <city> --setup` prompts for the key and writes it to the keys file.
+`eta countries` summarises coverage per country and `eta cities <country>` lists a country's cities with their ids, provider, readiness and where to get a key; `eta cities --check` makes one real request per city. `eta <city> --setup` prompts for the key and writes it to the keys file.
 
 ```sh
 eta cities --check
@@ -179,7 +169,7 @@ eta <city> <route> -l [-j]                             the route's stops
 eta <stop-query> | eta <route> <stop-query>            (with default_city set)
 eta <alias> [flags]
 eta <city> --setup                                     save the city's API key
-eta cities [--check]
+eta countries | eta cities [<country>] [--check]
 ```
 
 After the city, one positional is a stop query and two are a route and a stop.
@@ -234,9 +224,9 @@ If both set, the environment variable wins. Providers with several keys use `ETA
 | `mbta` | Boston | `ETA_MBTA_API_KEY` | `mbta` | optional | https://api-v3.mbta.com/register |
 | `bkk` | Budapest | `ETA_BKK_API_KEY` | `bkk` | required | https://opendata.bkk.hu |
 | `tfl` | London | `ETA_TFL_API_KEY` | `tfl` | optional | https://api-portal.tfl.gov.uk |
-| `entur` | Oslo, Bergen, Trondheim, Stavanger | none | | no | |
+| `entur` | Norway (16 cities) | none | | no | |
 | `sl` | Stockholm | none | | no | |
-| `opendatach` | Zürich, Bern, Basel, Geneva, Lausanne | none | | no | |
+| `opendatach` | Switzerland (16 cities) | none | | no | |
 | `digitransit` | Helsinki, Tampere, Turku | `ETA_DIGITRANSIT_API_KEY` | `digitransit` | required | https://portal-api.digitransit.fi |
 | `mta` | New York City | none | | no | |
 

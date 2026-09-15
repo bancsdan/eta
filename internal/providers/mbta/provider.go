@@ -31,6 +31,7 @@ const stationsCacheKey = "stations-all"
 var info = transit.Info{
 	ID:       "boston",
 	Provider: "mbta",
+	Country:  "United States",
 	Name:     "Boston (MBTA)",
 	TZ:       "America/New_York",
 	Keys: []transit.KeySpec{{

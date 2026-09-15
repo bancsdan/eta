@@ -68,7 +68,7 @@ func TestMapping(t *testing.T) {
 }
 
 func TestCitiesRegistered(t *testing.T) {
-	for _, id := range []string{"zurich", "bern", "basel", "geneva", "lausanne", "ch", "genf"} {
+	for _, id := range []string{"zurich", "bern", "basel", "geneva", "lausanne", "ch", "genf", "lucerne", "luzern", "stgallen", "lugano", "biel", "sion"} {
 		e, ok := registry.Lookup(id)
 		if !ok || e.Info.Provider != "opendatach" {
 			t.Errorf("%s: %v %+v", id, ok, e.Info)

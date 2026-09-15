@@ -82,6 +82,7 @@ func (k KeySpec) ConfigName() string {
 type Info struct {
 	ID       string
 	Name     string
+	Country  string // "Norway"; listings group by it
 	Provider string // data source id, "entur"; one provider can serve many cities
 	TZ       string // IANA zone, "Europe/Berlin"
 	Keys     []KeySpec

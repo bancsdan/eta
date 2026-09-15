@@ -26,6 +26,7 @@ var info = transit.Info{
 	ID:       "stockholm",
 	Name:     "Stockholm (SL)",
 	Provider: "sl",
+	Country:  "Sweden",
 	TZ:       "Europe/Stockholm",
 	Realtime: true,
 	Notes:    "first run downloads the stop list; stop search only, -l not available",

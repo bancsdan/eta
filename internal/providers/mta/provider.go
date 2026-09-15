@@ -29,6 +29,7 @@ var info = transit.Info{
 	ID:       "newyork",
 	Name:     "New York City Subway (MTA)",
 	Provider: "mta",
+	Country:  "United States",
 	TZ:       "America/New_York",
 	Realtime: true,
 	Notes:    "subway only; first run downloads the static timetable (5 MB); no scheduled fallback",

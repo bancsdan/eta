@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sort"
 	"strings"
 	"sync"
 	"text/tabwriter"
@@ -12,17 +13,74 @@ import (
 
 	"github.com/bancsdan/eta/internal/cache"
 	"github.com/bancsdan/eta/internal/config"
+	"github.com/bancsdan/eta/internal/match"
 	"github.com/bancsdan/eta/internal/registry"
 	"github.com/bancsdan/eta/internal/transit"
 )
 
-const citiesUsage = `usage: eta cities [--check]
+const citiesUsage = `usage: eta cities [<country>] [--check]
+       eta countries
 
-List the supported cities, whether each is ready to use and where to get a
-key for the ones that need one. --check makes one real request per city.`
+"eta countries" lists the covered countries with their providers and how
+many cities each has. "eta cities" lists every city grouped by country;
+give a country to list just that one. --check makes one real request per
+listed city and reports ok or the error.`
 
+// runCountries prints one line per country: cities, providers, key status.
+func runCountries(out io.Writer) error {
+	type agg struct {
+		cities    int
+		providers map[string]bool
+		needKey   int
+		ready     int
+	}
+	byCountry := map[string]*agg{}
+	for _, e := range registry.All() {
+		a := byCountry[e.Info.Country]
+		if a == nil {
+			a = &agg{providers: map[string]bool{}}
+			byCountry[e.Info.Country] = a
+		}
+		a.cities++
+		a.providers[e.Info.Provider] = true
+		if _, missing := missingKey(e.Info); missing {
+			a.needKey++
+		} else {
+			a.ready++
+		}
+	}
+	names := make([]string, 0, len(byCountry))
+	for n := range byCountry {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	tw := tabwriter.NewWriter(out, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(tw, "COUNTRY\tCITIES\tPROVIDERS\tSTATUS")
+	for _, n := range names {
+		a := byCountry[n]
+		provs := make([]string, 0, len(a.providers))
+		for p := range a.providers {
+			provs = append(provs, p)
+		}
+		sort.Strings(provs)
+		status := "ready"
+		if a.needKey > 0 {
+			status = fmt.Sprintf("%d ready, %d need a key", a.ready, a.needKey)
+		}
+		fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", n, a.cities, strings.Join(provs, ", "), status)
+	}
+	if err := tw.Flush(); err != nil {
+		return err
+	}
+	fmt.Fprintf(out, "\n%d cities in %d countries. \"eta cities <country>\" lists one country.\n", len(registry.All()), len(names))
+	return nil
+}
+
+// runCities prints the cities grouped by country, optionally one country
+// only. With --check every city that has its keys performs one live lookup.
 func runCities(args []string, out io.Writer) error {
 	check := false
+	var country string
 	for _, a := range args {
 		switch a {
 		case "--check", "-c":
@@ -31,10 +89,23 @@ func runCities(args []string, out io.Writer) error {
 			fmt.Fprintln(out, citiesUsage)
 			return nil
 		default:
-			return fmt.Errorf("cities: unknown argument %q\n%s", a, citiesUsage)
+			if strings.HasPrefix(a, "-") {
+				return fmt.Errorf("cities: unknown flag %q\n%s", a, citiesUsage)
+			}
+			country += " " + a
 		}
 	}
-	entries := registry.All()
+	country = strings.TrimSpace(country)
+	var entries []registry.Entry
+	for _, e := range registry.All() {
+		if country != "" && !countryMatches(e.Info.Country, country) {
+			continue
+		}
+		entries = append(entries, e)
+	}
+	if len(entries) == 0 {
+		return fmt.Errorf("no cities in %q (run \"eta countries\")", country)
+	}
 	results := make([]string, len(entries))
 	if check {
 		var wg sync.WaitGroup
@@ -51,13 +122,27 @@ func runCities(args []string, out io.Writer) error {
 		}
 		wg.Wait()
 	}
+	sort.SliceStable(entries, func(i, j int) bool {
+		if entries[i].Info.Country != entries[j].Info.Country {
+			return entries[i].Info.Country < entries[j].Info.Country
+		}
+		return entries[i].Info.ID < entries[j].Info.ID
+	})
 	tw := tabwriter.NewWriter(out, 0, 0, 2, ' ', 0)
 	header := "CITY\tNAME\tPROVIDER\tSTATUS\tKEY"
 	if check {
 		header += "\tCHECK"
 	}
-	fmt.Fprintln(tw, header)
+	last := ""
 	for i, e := range entries {
+		if e.Info.Country != last {
+			if last != "" {
+				fmt.Fprintln(tw, "\t\t\t\t")
+			}
+			fmt.Fprintf(tw, "%s\t\t\t\t\n", strings.ToUpper(e.Info.Country))
+			fmt.Fprintln(tw, header)
+			last = e.Info.Country
+		}
 		row := fmt.Sprintf("%s\t%s\t%s\t%s\t%s", cityLabel(e), e.Info.Name, e.Info.Provider, status(e.Info), keyHelp(e.Info))
 		if check {
 			row += "\t" + results[i]
@@ -69,6 +154,11 @@ func runCities(args []string, out io.Writer) error {
 	}
 	fmt.Fprintf(out, "\nKeys: export ETA_<PROVIDER>_API_KEY=..., add \"<provider> = <key>\" lines to %s, or run eta <city> --setup\n", config.KeysFile())
 	return nil
+}
+
+func countryMatches(have, want string) bool {
+	h, w := match.Normalize(have), match.Normalize(want)
+	return h == w || strings.HasPrefix(h, w)
 }
 
 func cityLabel(e registry.Entry) string {
