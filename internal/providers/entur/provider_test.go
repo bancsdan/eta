@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bancsdan/eta/internal/cache"
 	"github.com/bancsdan/eta/internal/registry"
 	"github.com/bancsdan/eta/internal/transit"
 	"github.com/bancsdan/eta/internal/transit/transittest"
@@ -380,6 +381,9 @@ func TestLive(t *testing.T) {
 
 func TestEachCitySendsItsAuthority(t *testing.T) {
 	for _, c := range cities {
+		if len(c.authorities) == 0 {
+			continue // the country-wide entry declines route lookups
+		}
 		var captured []string
 		srv := serve(t, &captured)
 		p := New(registry.Deps{Now: func() time.Time { return fixtureNow }}, c.info).(*Provider)
@@ -393,5 +397,44 @@ func TestEachCitySendsItsAuthority(t *testing.T) {
 		if p.Info().ID != c.info.ID || p.Info().Provider != "entur" {
 			t.Errorf("%s: Info = %+v", c.info.ID, p.Info())
 		}
+	}
+}
+
+func TestAnyTownScopesByLocalityAndDistance(t *testing.T) {
+	srv := serve(t, nil)
+	c := cache.Cache{Dir: t.TempDir(), TTL: time.Hour, Now: func() time.Time { return fixtureNow }}
+	p := NewTown(registry.Deps{Now: func() time.Time { return fixtureNow }, Cache: &c}, "Oslo").(*Provider)
+	p.BaseURL, p.GeocoderURL = srv.URL, srv.URL
+	if p.Info().ID != "oslo" || p.Info().Country != "norway" || p.Info().Provider != "entur" {
+		t.Fatalf("info: %+v", p.Info())
+	}
+	// The grorud fixture has a Grorud in Oslo and one in Tønsberg; only the
+	// Oslo one belongs to the town.
+	stops, err := p.SearchStops(context.Background(), "grorud")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(stops) != 2 {
+		t.Fatalf("stops = %+v", stops)
+	}
+	for _, st := range stops {
+		if !strings.HasSuffix(st.Name, ", Oslo") {
+			t.Errorf("stop outside the town kept: %+v", st)
+		}
+	}
+	// Lines are matched nationwide and kept when a quay is near the town.
+	rs, err := p.FindRoutes(context.Background(), "31")
+	if err != nil || len(rs) == 0 {
+		t.Fatalf("FindRoutes: %+v %v", rs, err)
+	}
+	if ps, err := p.RouteStops(context.Background(), rs[0]); err != nil || len(ps) == 0 {
+		t.Errorf("RouteStops: %v", err)
+	}
+	// A town nowhere near the fixture's quays keeps no line.
+	far := NewTown(registry.Deps{Now: func() time.Time { return fixtureNow }, Cache: &cache.Cache{Dir: t.TempDir(), TTL: time.Hour}}, "Tromsø").(*Provider)
+	far.BaseURL, far.GeocoderURL = srv.URL, srv.URL
+	_ = far.cache.Store("place", place{Lat: 69.65, Lon: 18.96, Locality: "Tromsø"})
+	if _, err := far.FindRoutes(context.Background(), "31"); !errors.Is(err, transit.ErrUnknownRoute) {
+		t.Errorf("far town should not see Oslo's line 31: %v", err)
 	}
 }

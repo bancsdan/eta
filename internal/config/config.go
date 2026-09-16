@@ -15,8 +15,9 @@ import (
 )
 
 type Config struct {
-	DefaultCity string
-	Aliases     map[string]string
+	DefaultCountry string
+	DefaultTown    string
+	Aliases        map[string]string
 }
 
 func Dir() string {
@@ -35,8 +36,8 @@ func ConfigFile() string { return filepath.Join(Dir(), "config") }
 
 func KeysFile() string { return filepath.Join(Dir(), "keys") }
 
-// "default_city" is reserved; every other name is an alias whose value is
-// re-parsed as command-line arguments.
+// "default_country" and "default_town" are reserved; every other name is an
+// alias whose value is re-parsed as command-line arguments.
 func Load(path string) (*Config, error) {
 	kv, err := parseKV(path)
 	if err != nil {
@@ -44,11 +45,14 @@ func Load(path string) (*Config, error) {
 	}
 	c := &Config{Aliases: map[string]string{}}
 	for k, v := range kv {
-		if k == "default_city" {
-			c.DefaultCity = strings.ToLower(v)
-			continue
+		switch k {
+		case "default_country":
+			c.DefaultCountry = strings.ToLower(v)
+		case "default_town":
+			c.DefaultTown = v
+		default:
+			c.Aliases[k] = v
 		}
-		c.Aliases[k] = v
 	}
 	return c, nil
 }
@@ -69,8 +73,9 @@ func SetKey(name, value string) error { return setKV(KeysFile(), name, value) }
 // SetAlias writes name = args into the config file; "default_city" is
 // reserved and refused.
 func SetAlias(name, args string) error {
-	if strings.ToLower(strings.TrimSpace(name)) == "default_city" {
-		return errors.New(`"default_city" is not an alias name`)
+	switch strings.ToLower(strings.TrimSpace(name)) {
+	case "default_country", "default_town":
+		return fmt.Errorf("%q is a setting, not an alias name", name)
 	}
 	return setKV(ConfigFile(), name, args)
 }

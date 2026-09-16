@@ -91,7 +91,7 @@ func newApp(t *testing.T, p transit.Provider) (*App, *bytes.Buffer) {
 func TestRunRouteListerGroupsAndCaches(t *testing.T) {
 	f := &fake{board: board()}
 	a, buf := newApp(t, routeFake{f})
-	opts := Options{City: "test", Route: "155", Query: "zugligeti", Count: 2}
+	opts := Options{Country: "testland", Town: "test", Route: "155", Query: "zugligeti", Count: 2}
 	for i := 0; i < 2; i++ {
 		buf.Reset()
 		if err := a.Run(context.Background(), opts); err != nil {
@@ -121,14 +121,14 @@ func TestRunList(t *testing.T) {
 func TestRunStopSearcherDisambiguatesByRoute(t *testing.T) {
 	f := &fake{board: board()}
 	a, buf := newApp(t, searchFake{f})
-	if err := a.Run(context.Background(), Options{City: "test", Route: "M5", Query: "alexanderplatz"}); err != nil {
+	if err := a.Run(context.Background(), Options{Country: "testland", Town: "test", Route: "M5", Query: "alexanderplatz"}); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.HasPrefix(buf.String(), "Alexanderplatz/Dircksenstr.\nM5 → Zingster Str.\n  4m0s\n") {
 		t.Errorf("output:\n%s", buf.String())
 	}
 	buf.Reset()
-	if err := a.Run(context.Background(), Options{City: "test", Route: "M4", Query: "alexanderplatz"}); err != nil {
+	if err := a.Run(context.Background(), Options{Country: "testland", Town: "test", Route: "M4", Query: "alexanderplatz"}); err != nil {
 		t.Fatal(err)
 	}
 	if buf.String() != "S+U Alexanderplatz\nM4 → Falkenberg\n  2m0s\n" {
@@ -140,7 +140,7 @@ func TestRunStopSearcherDisambiguatesByRoute(t *testing.T) {
 	buf.Reset()
 	var hint bytes.Buffer
 	a.Err = &hint
-	if err := a.Run(context.Background(), Options{City: "test", Route: "M6", Query: "alexanderplatz"}); err != nil {
+	if err := a.Run(context.Background(), Options{Country: "testland", Town: "test", Route: "M6", Query: "alexanderplatz"}); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.HasPrefix(buf.String(), "S+U Alexanderplatz\nM6 → Hackescher Markt\n") {
@@ -154,7 +154,7 @@ func TestRunStopSearcherDisambiguatesByRoute(t *testing.T) {
 func TestRunBoardWithoutRoute(t *testing.T) {
 	f := &fake{board: board()}
 	a, buf := newApp(t, searchFake{f})
-	if err := a.Run(context.Background(), Options{City: "test", Query: "alexanderplatz", Count: 2}); err != nil {
+	if err := a.Run(context.Background(), Options{Country: "testland", Town: "test", Query: "alexanderplatz", Count: 2}); err != nil {
 		t.Fatal(err)
 	}
 	want := "S+U Alexanderplatz\nM4 → Falkenberg\n  2m0s\nM6 → Hackescher Markt\n  1m0s\n"
@@ -171,7 +171,7 @@ func TestRunBoardWithoutRoute(t *testing.T) {
 		}
 		return 1
 	}
-	if err := a.Run(context.Background(), Options{City: "test", Query: "alexanderplatz"}); err != nil {
+	if err := a.Run(context.Background(), Options{Country: "testland", Town: "test", Query: "alexanderplatz"}); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.HasPrefix(buf.String(), "Alexanderplatz/Dircksenstr.\nM5 → Zingster Str.\n") {
@@ -179,7 +179,7 @@ func TestRunBoardWithoutRoute(t *testing.T) {
 	}
 	buf.Reset()
 	a.Pick = nil
-	if err := a.Run(context.Background(), Options{City: "test", Query: "alexanderplatz", JSON: true}); err != nil {
+	if err := a.Run(context.Background(), Options{Country: "testland", Town: "test", Query: "alexanderplatz", JSON: true}); err != nil {
 		t.Fatal(err)
 	}
 	var got DeparturesJSON
@@ -194,6 +194,54 @@ func TestRunBoardWithoutRoute(t *testing.T) {
 	var ue *UsageError
 	if !errors.As(err, &ue) || !strings.Contains(ue.Msg, "give a route") {
 		t.Errorf("err = %v", err)
+	}
+}
+
+// bothFake lists routes and searches stops; with declineRoutes it behaves
+// like an unscoped national provider that cannot resolve routes by name.
+type bothFake struct {
+	*fake
+	declineRoutes bool
+}
+
+func (f bothFake) FindRoutes(ctx context.Context, short string) ([]transit.Route, error) {
+	if f.declineRoutes {
+		return nil, transit.ErrNoRouteLookup
+	}
+	return routeFake{f.fake}.FindRoutes(ctx, short)
+}
+func (f bothFake) RouteStops(ctx context.Context, r transit.Route) ([]transit.Pattern, error) {
+	return routeFake{f.fake}.RouteStops(ctx, r)
+}
+func (f bothFake) SearchStops(ctx context.Context, q string) ([]transit.Stop, error) {
+	return searchFake{f.fake}.SearchStops(ctx, q)
+}
+
+func TestFallsBackToSearchOnlyWhenLookupUnavailable(t *testing.T) {
+	a, buf := newApp(t, bothFake{fake: &fake{board: board()}, declineRoutes: true})
+	if err := a.Run(context.Background(), Options{Country: "testland", Town: "test", Route: "M5", Query: "alexanderplatz"}); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.HasPrefix(buf.String(), "Alexanderplatz/Dircksenstr.\nM5 → Zingster Str.\n") {
+		t.Errorf("output:\n%s", buf.String())
+	}
+	err := a.Run(context.Background(), Options{Country: "testland", Town: "test", Route: "M5", List: true})
+	var ue *UsageError
+	if !errors.As(err, &ue) || !strings.Contains(ue.Msg, "-l is not supported") {
+		t.Errorf("-l with search fallback: %v", err)
+	}
+	// A scoped provider that simply doesn't know the route must still say so,
+	// not silently fall back and blame the stop.
+	a2, buf2 := newApp(t, bothFake{fake: &fake{board: board()}})
+	err = a2.Run(context.Background(), Options{Country: "testland", Town: "test", Route: "9999", Query: "zugligeti"})
+	if !errors.As(err, &ue) || !strings.Contains(ue.Msg, `unknown route "9999"`) {
+		t.Errorf("typo in route: %v", err)
+	}
+	if err := a2.Run(context.Background(), Options{Country: "testland", Town: "test", Route: "155", Query: "zugligeti"}); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.HasPrefix(buf2.String(), "Zugligeti út\n155 → Zugliget\n") {
+		t.Errorf("output:\n%s", buf2.String())
 	}
 }
 
@@ -261,14 +309,14 @@ func TestRunNoUpcoming(t *testing.T) {
 
 func TestRunJSON(t *testing.T) {
 	a, buf := newApp(t, routeFake{&fake{board: board()}})
-	if err := a.Run(context.Background(), Options{City: "test", Route: "155", Query: "zugligeti", JSON: true, Count: 5}); err != nil {
+	if err := a.Run(context.Background(), Options{Country: "testland", Town: "test", Route: "155", Query: "zugligeti", JSON: true, Count: 5}); err != nil {
 		t.Fatal(err)
 	}
 	var got DeparturesJSON
 	if err := json.Unmarshal(buf.Bytes(), &got); err != nil {
 		t.Fatal(err)
 	}
-	if got.City != "test" || got.Stop != "Zugligeti út" || got.Route != "155" || !got.GeneratedAt.Equal(now) {
+	if got.Town != "test" || got.Country != "testland" || got.Stop != "Zugligeti út" || got.Route != "155" || !got.GeneratedAt.Equal(now) {
 		t.Errorf("header: %+v", got)
 	}
 	if len(got.Directions) != 2 || len(got.Directions[0].Departures) != 2 || got.Directions[0].Departures[0].InSeconds != 192 || got.Directions[1].Departures[0].Live {
@@ -292,5 +340,23 @@ func TestFormatArrival(t *testing.T) {
 		if got := formatArrival(c.ar, now, c.clock); got != c.want {
 			t.Errorf("formatArrival(%v) = %q, want %q", c.ar, got, c.want)
 		}
+	}
+}
+
+func TestTownBreaksStopTies(t *testing.T) {
+	f := &fake{board: board()}
+	a, buf := newApp(t, routeFake{f})
+	// "t" matches both stops on 155; the town "zugliget" picks Zugligeti út.
+	if err := a.Run(context.Background(), Options{Country: "testland", Town: "zugliget", Route: "155", Query: "t"}); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.HasPrefix(buf.String(), "Zugligeti út\n") {
+		t.Errorf("output:\n%s", buf.String())
+	}
+	// A town no candidate mentions changes nothing: still ambiguous.
+	err := a.Run(context.Background(), Options{Country: "testland", Town: "elsewhere", Route: "155", Query: "t"})
+	var ue *UsageError
+	if !errors.As(err, &ue) || !strings.Contains(ue.Msg, "matches several stops") {
+		t.Errorf("err = %v", err)
 	}
 }

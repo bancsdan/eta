@@ -17,13 +17,14 @@ import (
 type stub struct{}
 
 func (stub) Info() transit.Info {
-	return transit.Info{ID: "stubcity", Name: "Stub", Provider: "stub", TZ: "UTC"}
+	return transit.Info{ID: "stubcity", Name: "Stub", Country: "Stubland", Provider: "stub", TZ: "UTC"}
 }
 func (stub) Departures(context.Context, []string, []transit.Route, time.Duration) (*transit.Departures, error) {
 	return &transit.Departures{}, nil
 }
 
 func init() {
+	registry.RegisterCountry(registry.Country{ID: "stubland", Name: "Stubland", Aliases: []string{"sb"}, Providers: []string{"stub"}})
 	registry.Register(registry.Entry{
 		Info:    stub{}.Info(),
 		Aliases: []string{"sc"},
@@ -32,29 +33,38 @@ func init() {
 }
 
 func TestParseArgs(t *testing.T) {
-	cfg := &config.Config{Aliases: map[string]string{"home": "stubcity 155 viranyos -c 3", "default": "home", "noCity": "4 moricz"}}
+	cfg := &config.Config{Aliases: map[string]string{"home": "stubland stubcity 155 viranyos -c 3", "default": "home", "noCountry": "4 moricz"}}
+	withCountry := &config.Config{DefaultCountry: "stubland"}
+	withBoth := &config.Config{DefaultCountry: "stubland", DefaultTown: "stubcity"}
 	cases := []struct {
 		args    []string
 		cfg     *config.Config
 		want    app.Options
 		wantErr string
 	}{
-		{[]string{"stubcity", "155", "viranyos"}, cfg, app.Options{City: "stubcity", Route: "155", Query: "viranyos", Count: 1}, ""},
-		{[]string{"sc", "155", "Virányos", "út", "-c", "3", "-t"}, cfg, app.Options{City: "sc", Route: "155", Query: "Virányos út", Count: 3, ShowClock: true}, ""},
-		{[]string{"-j", "stubcity", "155", "x", "-c=2"}, cfg, app.Options{City: "stubcity", Route: "155", Query: "x", Count: 2, JSON: true}, ""},
-		{[]string{"stubcity", "155", "-l"}, cfg, app.Options{City: "stubcity", Route: "155", Count: 1, List: true}, ""},
-		{[]string{"home"}, cfg, app.Options{City: "stubcity", Route: "155", Query: "viranyos", Count: 3}, ""},
-		{[]string{"home", "-c", "1"}, cfg, app.Options{City: "stubcity", Route: "155", Query: "viranyos", Count: 1}, ""},
-		{[]string{}, cfg, app.Options{City: "stubcity", Route: "155", Query: "viranyos", Count: 3}, ""},
-		{[]string{"4", "moricz"}, &config.Config{DefaultCity: "stubcity"}, app.Options{City: "stubcity", Route: "4", Query: "moricz", Count: 1}, ""},
-		{[]string{"noCity"}, cfg, app.Options{}, "unknown city \"4\""},
-		{[]string{"4", "moricz"}, &config.Config{}, app.Options{}, "unknown city \"4\""},
-		{[]string{"stubcity", "155"}, cfg, app.Options{City: "stubcity", Query: "155", Count: 1}, ""},
-		{[]string{"stubcity", "-w", "--every", "10", "alex"}, cfg, app.Options{City: "stubcity", Query: "alex", Count: 1}, ""},
-		{[]string{"stubcity"}, cfg, app.Options{}, "usage:"},
-		{[]string{"stubcity", "x", "--every", "1"}, cfg, app.Options{}, "minimum 5"},
-		{[]string{"stubcity", "155", "x", "-c", "0"}, cfg, app.Options{}, "not a positive number"},
-		{[]string{"stubcity", "155", "x", "--bogus"}, cfg, app.Options{}, "unknown flag"},
+		{[]string{"stubland", "stubcity", "155", "viranyos"}, cfg, app.Options{Country: "stubland", Town: "stubcity", Route: "155", Query: "viranyos", Count: 1}, ""},
+		{[]string{"sb", "sc", "155", "Virányos", "út", "-c", "3", "-t"}, cfg, app.Options{Country: "stubland", Town: "sc", Route: "155", Query: "Virányos út", Count: 3, ShowClock: true}, ""},
+		{[]string{"-j", "stubland", "stubcity", "155", "x", "-c=2"}, cfg, app.Options{Country: "stubland", Town: "stubcity", Route: "155", Query: "x", Count: 2, JSON: true}, ""},
+		{[]string{"stubland", "stubcity", "155", "-l"}, cfg, app.Options{Country: "stubland", Town: "stubcity", Route: "155", Count: 1, List: true}, ""},
+		{[]string{"stubland", "stubcity", "alex"}, cfg, app.Options{Country: "stubland", Town: "stubcity", Query: "alex", Count: 1}, ""},
+		// An unregistered town is passed through; the registry decides later.
+		{[]string{"stubland", "elsewhere", "1", "stop"}, cfg, app.Options{Country: "stubland", Town: "elsewhere", Route: "1", Query: "stop", Count: 1}, ""},
+		{[]string{"home"}, cfg, app.Options{Country: "stubland", Town: "stubcity", Route: "155", Query: "viranyos", Count: 3}, ""},
+		{[]string{"home", "-c", "1"}, cfg, app.Options{Country: "stubland", Town: "stubcity", Route: "155", Query: "viranyos", Count: 1}, ""},
+		{[]string{}, cfg, app.Options{Country: "stubland", Town: "stubcity", Route: "155", Query: "viranyos", Count: 3}, ""},
+		// default_country: the first word is the town.
+		{[]string{"stubcity", "4", "moricz"}, withCountry, app.Options{Country: "stubland", Town: "stubcity", Route: "4", Query: "moricz", Count: 1}, ""},
+		{[]string{"elsewhere", "moricz"}, withCountry, app.Options{Country: "stubland", Town: "elsewhere", Query: "moricz", Count: 1}, ""},
+		// default_town too: the first word is a route unless it names a registered town.
+		{[]string{"4", "moricz"}, withBoth, app.Options{Country: "stubland", Town: "stubcity", Route: "4", Query: "moricz", Count: 1}, ""},
+		{[]string{"moricz"}, withBoth, app.Options{Country: "stubland", Town: "stubcity", Query: "moricz", Count: 1}, ""},
+		{[]string{"sc", "4", "moricz"}, withBoth, app.Options{Country: "stubland", Town: "sc", Route: "4", Query: "moricz", Count: 1}, ""},
+		{[]string{"noCountry"}, cfg, app.Options{}, "unknown country \"4\""},
+		{[]string{"4", "moricz"}, &config.Config{}, app.Options{}, "unknown country \"4\""},
+		{[]string{"stubland"}, cfg, app.Options{}, "usage:"},
+		{[]string{"stubland", "stubcity"}, cfg, app.Options{}, "usage:"},
+		{[]string{"stubland", "stubcity", "x", "-c", "0"}, cfg, app.Options{}, "not a positive number"},
+		{[]string{"stubland", "stubcity", "x", "--bogus"}, cfg, app.Options{}, "unknown flag"},
 	}
 	for _, c := range cases {
 		got, err := parseArgs(c.args, c.cfg)
@@ -76,16 +86,16 @@ func TestParseArgs(t *testing.T) {
 
 func TestParseWatchAndSetup(t *testing.T) {
 	cfg := &config.Config{}
-	got, err := parseArgs([]string{"stubcity", "alex", "-w", "--every=45"}, cfg)
+	got, err := parseArgs([]string{"stubland", "stubcity", "alex", "-w", "--every=45"}, cfg)
 	if err != nil || !got.watch || got.every != 45*time.Second {
 		t.Errorf("watch: %+v %v", got, err)
 	}
-	got, err = parseArgs([]string{"stubcity", "--setup"}, cfg)
-	if err != nil || !got.setup || got.City != "stubcity" {
+	got, err = parseArgs([]string{"stubland", "stubcity", "--setup"}, cfg)
+	if err != nil || !got.setup || got.Town != "stubcity" || got.Country != "stubland" {
 		t.Errorf("setup: %+v %v", got, err)
 	}
 	if _, err = parseArgs([]string{"--setup"}, cfg); err == nil {
-		t.Errorf("setup without city should fail")
+		t.Errorf("setup without country should fail")
 	}
 }
 
@@ -120,30 +130,30 @@ func TestRunSetupWritesKeys(t *testing.T) {
 
 func TestSaveFlagAndAliasValue(t *testing.T) {
 	cfg := &config.Config{}
-	got, err := parseArgs([]string{"stubcity", "Red", "park", "street", "-c", "2", "-t", "--save", "home"}, cfg)
+	got, err := parseArgs([]string{"stubland", "stubcity", "Red", "park", "street", "-c", "2", "-t", "--save", "home"}, cfg)
 	if err != nil || got.save != "home" {
 		t.Fatalf("parse: %+v %v", got, err)
 	}
-	if v := aliasValue(got); v != "stubcity Red 'park street' -c 2 -t" {
+	if v := aliasValue(got); v != "stubland stubcity Red 'park street' -c 2 -t" {
 		t.Errorf("aliasValue = %q", v)
 	}
-	got, _ = parseArgs([]string{"stubcity", "alex", "-j", "--save=board"}, cfg)
-	if v := aliasValue(got); v != "stubcity alex -j" {
+	got, _ = parseArgs([]string{"stubland", "new town", "alex", "-j", "--save=board"}, cfg)
+	if v := aliasValue(got); v != "stubland 'new town' alex -j" {
 		t.Errorf("board aliasValue = %q", v)
 	}
-	got, _ = parseArgs([]string{"stubcity", "Red", "-l", "--save", "x"}, cfg)
-	if v := aliasValue(got); v != "stubcity Red -l" {
+	got, _ = parseArgs([]string{"stubland", "stubcity", "Red", "-l", "--save", "x"}, cfg)
+	if v := aliasValue(got); v != "stubland stubcity Red -l" {
 		t.Errorf("list aliasValue = %q", v)
 	}
-	for _, bad := range [][]string{{"stubcity", "x", "--save"}, {"stubcity", "x", "--save", "-t"}} {
+	for _, bad := range [][]string{{"stubland", "stubcity", "x", "--save"}, {"stubland", "stubcity", "x", "--save", "-t"}} {
 		if _, err := parseArgs(bad, cfg); err == nil {
 			t.Errorf("%v should fail", bad)
 		}
 	}
 	// The saved value round-trips through alias expansion, quotes included.
-	cfg = &config.Config{Aliases: map[string]string{"home": "stubcity Red 'park street' -c 2 -t"}}
+	cfg = &config.Config{Aliases: map[string]string{"home": "stubland stubcity Red 'park street' -c 2 -t"}}
 	got, err = parseArgs([]string{"home"}, cfg)
-	if err != nil || got.Route != "Red" || got.Query != "park street" || got.Count != 2 || !got.ShowClock {
+	if err != nil || got.Town != "stubcity" || got.Route != "Red" || got.Query != "park street" || got.Count != 2 || !got.ShowClock {
 		t.Errorf("round trip: %+v %v", got, err)
 	}
 }
@@ -168,7 +178,7 @@ func TestSetAlias(t *testing.T) {
 	if err := os.MkdirAll(config.Dir(), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(config.ConfigFile(), []byte("# mine\ndefault_city = oslo\nhome = old\n"), 0o600); err != nil {
+	if err := os.WriteFile(config.ConfigFile(), []byte("# mine\ndefault_country = norway\nhome = old\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if err := config.SetAlias("home", "oslo 31 jernbanetorget -c 2"); err != nil {
@@ -177,16 +187,16 @@ func TestSetAlias(t *testing.T) {
 	if err := config.SetAlias("work", "london Central bank"); err != nil {
 		t.Fatal(err)
 	}
-	if err := config.SetAlias("default_city", "x"); err == nil {
-		t.Errorf("default_city must be refused")
+	if err := config.SetAlias("default_town", "x"); err == nil {
+		t.Errorf("default_town must be refused as an alias name")
 	}
 	b, _ := os.ReadFile(config.ConfigFile())
-	want := "# mine\ndefault_city = oslo\nhome = oslo 31 jernbanetorget -c 2\nwork = london Central bank\n"
+	want := "# mine\ndefault_country = norway\nhome = oslo 31 jernbanetorget -c 2\nwork = london Central bank\n"
 	if string(b) != want {
 		t.Errorf("file:\n%s\nwant:\n%s", b, want)
 	}
 	cfg, err := config.Load(config.ConfigFile())
-	if err != nil || cfg.DefaultCity != "oslo" || cfg.Aliases["home"] != "oslo 31 jernbanetorget -c 2" {
+	if err != nil || cfg.DefaultCountry != "norway" || cfg.Aliases["home"] != "oslo 31 jernbanetorget -c 2" {
 		t.Errorf("reload: %+v %v", cfg, err)
 	}
 }
@@ -211,22 +221,33 @@ func TestCitiesTable(t *testing.T) {
 		t.Fatal(err)
 	}
 	out := sb.String()
-	if !strings.Contains(out, "stubcity (sc)") || !strings.Contains(out, "ready") || !strings.Contains(out, "CITY") {
+	if !strings.Contains(out, "STUBLAND") || !strings.Contains(out, "stubcity (sc)") || !strings.Contains(out, "ready") {
 		t.Errorf("output:\n%s", out)
+	}
+	sb.Reset()
+	if err := runCities([]string{"sb"}, &sb); err != nil || !strings.Contains(sb.String(), "stubcity") {
+		t.Errorf("country alias filter: %v\n%s", err, sb.String())
+	}
+	if err := runCities([]string{"atlantis"}, &sb); err == nil {
+		t.Errorf("unknown country should fail")
+	}
+	sb.Reset()
+	if err := runCountries(&sb); err != nil || !strings.Contains(sb.String(), "Stubland") || !strings.Contains(sb.String(), "stub") {
+		t.Errorf("countries: %v\n%s", err, sb.String())
 	}
 }
 
 func TestConfigLoad(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "config")
-	if err := os.WriteFile(path, []byte("# comment\ndefault_city = Berlin\nhome = M4 alex -c 2\n"), 0o600); err != nil {
+	if err := os.WriteFile(path, []byte("# comment\ndefault_country = Germany\ndefault_town = Berlin\nhome = M4 alex -c 2\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	cfg, err := config.Load(path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cfg.DefaultCity != "berlin" || cfg.Aliases["home"] != "M4 alex -c 2" || len(cfg.Aliases) != 1 {
+	if cfg.DefaultCountry != "germany" || cfg.DefaultTown != "Berlin" || cfg.Aliases["home"] != "M4 alex -c 2" || len(cfg.Aliases) != 1 {
 		t.Errorf("cfg = %+v", cfg)
 	}
 	if err := os.WriteFile(path, []byte("bad line\n"), 0o600); err != nil {
@@ -235,7 +256,7 @@ func TestConfigLoad(t *testing.T) {
 	if _, err := config.Load(path); err == nil || !strings.Contains(err.Error(), "config:1") {
 		t.Errorf("err = %v", err)
 	}
-	if cfg, err := config.Load(filepath.Join(dir, "missing")); err != nil || cfg.DefaultCity != "" {
+	if cfg, err := config.Load(filepath.Join(dir, "missing")); err != nil || cfg.DefaultCountry != "" {
 		t.Errorf("missing file: %v %+v", err, cfg)
 	}
 }

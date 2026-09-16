@@ -30,3 +30,13 @@ func TestHelpers(t *testing.T) {
 		t.Error("WindowMinutes")
 	}
 }
+
+func TestDistanceKm(t *testing.T) {
+	// Oslo S to Bergen station is about 305 km as the crow flies.
+	if d := DistanceKm(59.911, 10.750, 60.393, 5.324); d < 300 || d > 310 {
+		t.Errorf("Oslo-Bergen = %.1f km", d)
+	}
+	if d := DistanceKm(1, 2, 1, 2); d != 0 {
+		t.Errorf("same point = %v", d)
+	}
+}

@@ -27,6 +27,7 @@ var directions = []string{"inbound", "outbound"}
 var info = transit.Info{
 	ID:       "london",
 	Provider: "tfl",
+	Country:  "uk",
 	Name:     "London (TfL)",
 	TZ:       "Europe/London",
 	Keys: []transit.KeySpec{{
@@ -40,6 +41,7 @@ var info = transit.Info{
 }
 
 func init() {
+	registry.RegisterCountry(registry.Country{ID: "uk", Name: "United Kingdom", Aliases: []string{"gb", "britain", "united-kingdom"}, Providers: []string{"tfl"}})
 	registry.Register(registry.Entry{Info: info, Aliases: []string{"tfl"}, New: New})
 }
 

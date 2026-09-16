@@ -36,8 +36,8 @@ func Conform(t *testing.T, p transit.Provider, c Case) {
 	if info.ID == "" || info.ID != strings.ToLower(info.ID) || strings.ContainsAny(info.ID, " /") {
 		t.Fatalf("Info().ID %q must be a lowercase slug", info.ID)
 	}
-	if info.Name == "" || info.Provider == "" {
-		t.Fatalf("Info() needs Name and Provider: %+v", info)
+	if info.Name == "" || info.Provider == "" || info.Country == "" {
+		t.Fatalf("Info() needs Name, Provider and Country: %+v", info)
 	}
 	if _, err := time.LoadLocation(info.TZ); err != nil {
 		t.Fatalf("Info().TZ %q: %v", info.TZ, err)
