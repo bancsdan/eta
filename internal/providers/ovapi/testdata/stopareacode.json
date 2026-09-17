@@ -1,0 +1,65 @@
+{
+ "RtCS": {
+  "TimingPointTown": "Rotterdam",
+  "TimingPointName": "Rotterdam, Centraal Station halte HH",
+  "StopAreaCode": "RtCS",
+  "Longitude": 3.3135424,
+  "Latitude": 47.974766
+ },
+ "C.S.": {
+  "TimingPointTown": "Rotterdam",
+  "TimingPointName": "Rotterdam Centraal perron F",
+  "StopAreaCode": "C.S.",
+  "Longitude": 4.472339,
+  "Latitude": 51.92331
+ },
+ "05003": {
+  "TimingPointTown": "Amsterdam",
+  "TimingPointName": "Centraal Station",
+  "StopAreaCode": "05003",
+  "Longitude": 4.9020486,
+  "Latitude": 52.377132
+ },
+ "05031": {
+  "TimingPointTown": "Amsterdam",
+  "TimingPointName": "Dam",
+  "StopAreaCode": "05031",
+  "Longitude": 4.894869,
+  "Latitude": 52.374344
+ },
+ "4862": {
+  "TimingPointTown": "Rotterdam",
+  "TimingPointName": "Rotterdam Centraal perron B",
+  "StopAreaCode": "4862",
+  "Longitude": 4.470737,
+  "Latitude": 51.92346
+ },
+ "4867": {
+  "TimingPointTown": "Rotterdam",
+  "TimingPointName": "Rotterdam Centraal Blijdorpzijde",
+  "StopAreaCode": "4867",
+  "Longitude": 4.468981,
+  "Latitude": 51.92615
+ },
+ "09500": {
+  "TimingPointTown": "Amsterdam",
+  "TimingPointName": "Centraal Station",
+  "StopAreaCode": "09500",
+  "Longitude": 4.9007816,
+  "Latitude": 52.377495
+ },
+ "09575": {
+  "TimingPointTown": "Amsterdam",
+  "TimingPointName": "Centraal Station",
+  "StopAreaCode": "09575",
+  "Longitude": 4.90335,
+  "Latitude": 52.379005
+ },
+ "05104": {
+  "TimingPointTown": "Amsterdam",
+  "TimingPointName": "Centraal Station",
+  "StopAreaCode": "05104",
+  "Longitude": 4.9016433,
+  "Latitude": 52.37925
+ }
+}

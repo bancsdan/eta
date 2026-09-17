@@ -53,6 +53,7 @@ Every command names a country and a town: `eta norway halden 34 bussterminal`. T
 | Finland (`finland`, `fi`) | every town | `digitransit` ([Digitransit](https://digitransit.fi/en/developers/)) | `ETA_DIGITRANSIT_API_KEY`, required | not yet verified against the live API |
 | Germany (`germany`, `de`) | every town in Berlin and Brandenburg | `bvg` (community-run [v6.bvg.transport.rest](https://v6.bvg.transport.rest)) | none | stop search only; the upstream service has outages |
 | Hungary (`hungary`, `hu`) | Budapest | `bkk` ([BKK FUTÁR](https://opendata.bkk.hu)) | `ETA_BKK_API_KEY`, required | |
+| Netherlands (`netherlands`, `nl`) | every town | `ovapi` (community-run [OVapi](http://v0.ovapi.nl), all Dutch operators) | none | stations and interchanges only: OVapi's stop-area index has no plain tram or bus stops; national stop list downloaded on first run; stop search only |
 | Norway (`norway`, `no`) | every town | `entur` ([Entur](https://developer.entur.no) national API) | none | routes are matched to the town's operator, so `-l` works anywhere |
 | Sweden (`sweden`, `se`) | Stockholm and the SL region | `sl` ([SL Transport](https://www.trafiklab.se/api/our-apis/sl/transport/)) | none | stop list downloaded on first run; stop search only |
 | Switzerland (`switzerland`, `ch`) | every town | `opendatach` ([transport.opendata.ch](https://transport.opendata.ch)) | none | stop search only |
@@ -229,6 +230,7 @@ If both set, the environment variable wins. Providers with several keys use `ETA
 | `entur` | Norway (16 cities) | none | | no | |
 | `sl` | Stockholm | none | | no | |
 | `opendatach` | Switzerland (16 cities) | none | | no | |
+| `ovapi` | Netherlands | none | | no | |
 | `digitransit` | Helsinki, Tampere, Turku | `ETA_DIGITRANSIT_API_KEY` | `digitransit` | required | https://portal-api.digitransit.fi |
 | `mta` | New York City | none | | no | |
 
