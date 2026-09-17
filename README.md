@@ -57,7 +57,7 @@ Every command names a country and a town: `eta norway halden 34 bussterminal`. T
 | Sweden (`sweden`, `se`) | Stockholm and the SL region | `sl` ([SL Transport](https://www.trafiklab.se/api/our-apis/sl/transport/)) | none | stop list downloaded on first run; stop search only |
 | Switzerland (`switzerland`, `ch`) | every town | `opendatach` ([transport.opendata.ch](https://transport.opendata.ch)) | none | stop search only |
 | United Kingdom (`uk`, `gb`) | London | `tfl` ([TfL Unified API](https://api-portal.tfl.gov.uk)) | `ETA_TFL_API_KEY`, optional | tube, bus, DLR, Overground lines by name, Elizabeth line, tram |
-| United States (`usa`, `us`) | Boston, New York City | `mbta` ([MBTA v3](https://api-v3.mbta.com)), `mta` ([MTA GTFS-Realtime](https://api.mta.info/)) | `ETA_MBTA_API_KEY` optional; MTA none | Boston: keyless is ~20 req/min. New York: subway only, 5 MB timetable download on first run, no timetable fallback |
+| United States (`usa`, `us`) | Boston; New York City, Long Island, the Hudson Valley and Connecticut (any town with an MTA station) | `mbta` ([MBTA v3](https://api-v3.mbta.com)), `mta` ([MTA GTFS-Realtime](https://api.mta.info/)) | `ETA_MBTA_API_KEY` optional; MTA none | Boston: keyless is ~20 req/min. `newyork` is the subway; any other town searches the subway, LIRR and Metro-North stations (first run downloads their timetables, 13 MB); real-time only, no timetable fallback |
 
 "Stop search only" means the API has no route → stops call, so `-l` is unavailable there and a route is matched against the stop's board instead.
 
@@ -298,7 +298,7 @@ ETA_BKK_API_KEY=... go test ./internal/providers/budapest -run TestLive -v
 golangci-lint run
 ```
 
-Adding a town: if its data provider already exists, add a row to that package's `cities` table (metadata, probe, any operator scoping); providers with an `AnyTown` constructor already serve every town in their country. Otherwise create `internal/providers/<provider>` implementing `transit.Provider` plus `RouteLister` and/or `StopSearcher`, register its cities in `init()`, blank-import it from `internal/providers/all`, and make `transittest.Conform` pass against captured fixtures. See `entur` for a multi-city provider and `tfl` for a single-city one.
+Adding a town: if its data provider already exists, add a row to that package's `cities` table (metadata, probe, any operator scoping); providers with an `AnyTown` constructor already serve every town in their coverage. Otherwise create `internal/providers/<provider>` implementing `transit.Provider` plus `RouteLister` and/or `StopSearcher`, register its cities in `init()`, blank-import it from `internal/providers/all`, and make `transittest.Conform` pass against captured fixtures. See `entur` for a multi-city provider and `tfl` for a single-city one.
 
 ## License
 

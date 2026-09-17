@@ -28,12 +28,13 @@ func Fetch(ctx context.Context, c *httpx.Client, url string) (*gtfs.FeedMessage,
 
 // Update is one predicted call at a stop of interest.
 type Update struct {
-	TripID     string
-	RouteID    string
-	StopID     string
-	At         time.Time
-	Cancelled  bool
-	LastStopID string // final stop of the trip update, a headsign fallback
+	TripID      string
+	RouteID     string
+	DirectionID string // "0"/"1" when the feed sets direction_id, else ""
+	StopID      string
+	At          time.Time
+	Cancelled   bool
+	LastStopID  string // final stop of the trip update, a headsign fallback
 }
 
 // Timestamp returns the feed header's generation time, or zero.
@@ -56,6 +57,10 @@ func StopUpdates(m *gtfs.FeedMessage, stopIDs map[string]bool) []Update {
 		}
 		trip := tu.GetTrip()
 		tripCancelled := trip.GetScheduleRelationship() == gtfs.TripDescriptor_CANCELED
+		dir := ""
+		if trip.DirectionId != nil {
+			dir = fmt.Sprint(trip.GetDirectionId())
+		}
 		stus := tu.GetStopTimeUpdate()
 		last := ""
 		if len(stus) > 0 {
@@ -76,12 +81,13 @@ func StopUpdates(m *gtfs.FeedMessage, stopIDs map[string]bool) []Update {
 				continue
 			}
 			out = append(out, Update{
-				TripID:     trip.GetTripId(),
-				RouteID:    trip.GetRouteId(),
-				StopID:     sid,
-				At:         time.Unix(secs, 0),
-				Cancelled:  tripCancelled || stu.GetScheduleRelationship() == gtfs.TripUpdate_StopTimeUpdate_SKIPPED,
-				LastStopID: last,
+				TripID:      trip.GetTripId(),
+				RouteID:     trip.GetRouteId(),
+				DirectionID: dir,
+				StopID:      sid,
+				At:          time.Unix(secs, 0),
+				Cancelled:   tripCancelled || stu.GetScheduleRelationship() == gtfs.TripUpdate_StopTimeUpdate_SKIPPED,
+				LastStopID:  last,
 			})
 		}
 	}
