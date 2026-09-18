@@ -54,6 +54,7 @@ Every command names a country and a town: `eta norway halden 34 bussterminal`. T
 | Finland (`finland`, `fi`) | every town | `digitransit` ([Digitransit](https://digitransit.fi/en/developers/)) | `ETA_DIGITRANSIT_API_KEY`, required | not yet verified against the live API |
 | Germany (`germany`, `de`) | every town in Berlin and Brandenburg | `bvg` (community-run [v6.bvg.transport.rest](https://v6.bvg.transport.rest)) | none | stop search only; the upstream service has outages |
 | Hungary (`hungary`, `hu`) | Budapest | `bkk` ([BKK FUTÁR](https://opendata.bkk.hu)) | `ETA_BKK_API_KEY`, required | |
+| Ireland (`ireland`, `ie`) | every town | `tfi` ([Transport for Ireland GTFS-Realtime](https://developer.nationaltransport.ie), all operators with real time) | `ETA_TFI_API_KEY`, required (free) | Dublin Bus, Go-Ahead, Bus Éireann, Luas, DART and Irish Rail; first run downloads the national timetable (144 MB) and indexes it; scheduled times shown until a trip reports a delay; towns other than the five cities are located with OpenStreetMap |
 | Netherlands (`netherlands`, `nl`) | every town | `ovapi` (community-run [OVapi](http://v0.ovapi.nl), all Dutch operators) | none | stations and interchanges only: OVapi's stop-area index has no plain tram or bus stops; national stop list downloaded on first run; stop search only |
 | Norway (`norway`, `no`) | every town | `entur` ([Entur](https://developer.entur.no) national API) | none | routes are matched to the town's operator, so `-l` works anywhere |
 | Sweden (`sweden`, `se`) | Stockholm and the SL region | `sl` ([SL Transport](https://www.trafiklab.se/api/our-apis/sl/transport/)) | none | stop list downloaded on first run; stop search only |
@@ -227,6 +228,7 @@ If both set, the environment variable wins. Providers with several keys use `ETA
 | `bvg` | Berlin, Potsdam | none | | no | |
 | `mbta` | Boston | `ETA_MBTA_API_KEY` | `mbta` | optional | https://api-v3.mbta.com/register |
 | `bkk` | Budapest | `ETA_BKK_API_KEY` | `bkk` | required | https://opendata.bkk.hu |
+| `tfi` | Ireland | `ETA_TFI_API_KEY` | `tfi` | required | https://developer.nationaltransport.ie (free, subscribe to the GTFS-R API) |
 | `tfl` | London | `ETA_TFL_API_KEY` | `tfl` | optional | https://api-portal.tfl.gov.uk |
 | `entur` | Norway (16 cities) | none | | no | |
 | `sl` | Stockholm | none | | no | |
@@ -286,12 +288,12 @@ $ eta germany berlin M4 "alexanderplatz bhf" -j -c 2
 
 ## How it works
 
-1. **Scoping.** The town narrows everything that follows: verified towns carry an operator scope or a map focus; any other town is geocoded once (cached) and stops and lines are kept by locality or distance where the data has no locality.
-2. **Route resolution.** With a route, providers whose API can list a route's stops (`RouteLister`: `bkk`, `tfl`, `entur`, `mbta`, `digitransit`, `mta`) resolve the short name, fetch the stops per direction (cached 24h under `~/.cache/eta/<provider>/<town>`), and fuzzy-match your query locally, exactly like GoKK.
+1. **Scoping.** The town narrows everything that follows: verified towns carry an operator scope or a map focus; any other town is geocoded once (cached) and stops and lines are kept by locality or distance where the data has no locality. Where the provider's own API cannot locate a town (Ireland), `internal/geocode` asks OpenStreetMap's Nominatim once and caches the answer for a month.
+2. **Route resolution.** With a route, providers whose API can list a route's stops (`RouteLister`: `bkk`, `tfl`, `entur`, `mbta`, `digitransit`, `mta`, `tfi`) resolve the short name, fetch the stops per direction (cached 24h under `~/.cache/eta/<provider>/<town>`), and fuzzy-match your query locally, exactly like GoKK.
 3. **Stop search.** Without a route, or with providers lacking that call (`StopSearcher`: `bvg`, `sl`, `opendatach`, and all of the above), stops are searched by name through the API or a cached stop list. With a route, ambiguous hits are probed with one departures call each and only stops actually served by the route survive.
 4. **One departures call** for the matched stop, filtered by route client-side when one was given, grouped by line, direction and headsign, `count` per group.
 
-Live departures are never cached. Every invocation has a 10 s budget, extended on a first run that downloads bulk data. GTFS-based providers (`mta`) read stops and routes straight out of the operator's static GTFS zip (`internal/gtfs`, cached for a week) and decode the GTFS-Realtime protobuf feeds (`internal/gtfsrt`); those two packages are the only reason the module has dependencies. Each data provider lives in `internal/providers/<provider>` and registers every city it serves (Entur registers Oslo, Bergen, Trondheim and Stavanger with their operator scoping); the shared pieces are `internal/transit` (domain model and interfaces), `internal/app` (resolution, grouping, rendering), `internal/httpx`, `internal/cache`, `internal/match` and `internal/xutil`.
+Live departures are never cached. Every invocation has a 10 s budget, extended on a first run that downloads bulk data. GTFS-based providers (`mta`, `tfi`) read stops and routes straight out of the operator's static GTFS zip (`internal/gtfs`, cached for a week) and decode the GTFS-Realtime protobuf feeds (`internal/gtfsrt`); those two packages are the only reason the module has dependencies. A national feed's stop times run to millions of rows, so `internal/gtfs` digests them once per download into a per-stop index and one pattern per route direction; feeds that report delays rather than times (Ireland) are then the timetable plus the latest delay. Each data provider lives in `internal/providers/<provider>` and registers every city it serves (Entur registers Oslo, Bergen, Trondheim and Stavanger with their operator scoping); the shared pieces are `internal/transit` (domain model and interfaces), `internal/app` (resolution, grouping, rendering), `internal/httpx`, `internal/cache`, `internal/match` and `internal/xutil`.
 
 ## Development
 

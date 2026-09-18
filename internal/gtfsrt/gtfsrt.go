@@ -5,6 +5,7 @@ package gtfsrt
 import (
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/MobilityData/gtfs-realtime-bindings/golang/gtfs"
@@ -92,4 +93,97 @@ func StopUpdates(m *gtfs.FeedMessage, stopIDs map[string]bool) []Update {
 		}
 	}
 	return out
+}
+
+// TripUpdate is one trip's realtime state, for feeds that report delays
+// against the static schedule rather than absolute times.
+type TripUpdate struct {
+	TripID    string
+	RouteID   string
+	StartDate string // YYYYMMDD when the feed sets it
+	Cancelled bool
+	Calls     []Call // by stop sequence
+}
+
+// Call is one stop-time update.
+type Call struct {
+	Seq      int
+	StopID   string
+	Delay    int   // seconds; valid when HasDelay
+	Time     int64 // unix seconds; 0 when absent
+	HasDelay bool
+	Skipped  bool
+}
+
+// TripUpdates indexes the feed by trip id. ADDED trips without a static
+// counterpart are included too; callers match on TripID (and StartDate).
+func TripUpdates(m *gtfs.FeedMessage) map[string]*TripUpdate {
+	out := map[string]*TripUpdate{}
+	for _, e := range m.GetEntity() {
+		tu := e.GetTripUpdate()
+		if tu == nil {
+			continue
+		}
+		trip := tu.GetTrip()
+		t := &TripUpdate{
+			TripID:    trip.GetTripId(),
+			RouteID:   trip.GetRouteId(),
+			StartDate: trip.GetStartDate(),
+			Cancelled: trip.GetScheduleRelationship() == gtfs.TripDescriptor_CANCELED,
+		}
+		for _, stu := range tu.GetStopTimeUpdate() {
+			c := Call{Seq: int(stu.GetStopSequence()), StopID: stu.GetStopId(), Skipped: stu.GetScheduleRelationship() == gtfs.TripUpdate_StopTimeUpdate_SKIPPED}
+			ev := stu.GetDeparture()
+			if ev == nil {
+				ev = stu.GetArrival()
+			}
+			if ev != nil {
+				if ev.Time != nil {
+					c.Time = ev.GetTime()
+				}
+				if ev.Delay != nil {
+					c.Delay, c.HasDelay = int(ev.GetDelay()), true
+				}
+			}
+			t.Calls = append(t.Calls, c)
+		}
+		sort.SliceStable(t.Calls, func(i, j int) bool { return t.Calls[i].Seq < t.Calls[j].Seq })
+		out[t.TripID] = t
+	}
+	return out
+}
+
+// Predict applies the trip's updates to the scheduled call at seq/stopID:
+// an update at the stop itself wins, else the latest earlier delay carries
+// forward (the GTFS-RT propagation rule). ok is false when no update
+// covers the stop yet, in which case the schedule stands.
+func (t *TripUpdate) Predict(seq int, stopID string, scheduled time.Time) (at time.Time, ok, skipped bool) {
+	var atStop, lastDelay *Call
+	for i := range t.Calls {
+		c := &t.Calls[i]
+		if c.StopID == stopID || (c.StopID == "" && c.Seq == seq) {
+			atStop = c
+			break
+		}
+		if c.Seq != 0 && c.Seq > seq {
+			break
+		}
+		if c.HasDelay {
+			lastDelay = c
+		}
+	}
+	if atStop != nil {
+		switch {
+		case atStop.Skipped:
+			return scheduled, true, true
+		case atStop.Time != 0:
+			return time.Unix(atStop.Time, 0), true, false
+		case atStop.HasDelay:
+			return scheduled.Add(time.Duration(atStop.Delay) * time.Second), true, false
+		}
+	}
+	if lastDelay != nil {
+		return scheduled.Add(time.Duration(lastDelay.Delay) * time.Second), true, false
+	}
+	return scheduled, false, false
 }

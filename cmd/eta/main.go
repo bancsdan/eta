@@ -87,7 +87,7 @@ var (
 const (
 	cacheTTL    = 24 * time.Hour
 	timeout     = 10 * time.Second
-	coldTimeout = 90 * time.Second
+	coldTimeout = 3 * time.Minute
 )
 
 func main() {
@@ -145,7 +145,7 @@ func run(args []string) error {
 	budget := timeout
 	if cs, ok := p.(transit.ColdStarter); ok && cs.Cold() {
 		budget = coldTimeout
-		fmt.Fprintf(os.Stderr, "eta: first run for %s downloads its stop list; this can take a minute\n", info.Name)
+		fmt.Fprintf(os.Stderr, "eta: first run for %s downloads its timetable; this can take a few minutes\n", info.Name)
 	}
 
 	interactive := isTTY(os.Stdin) && isTTY(os.Stdout) && !opts.JSON

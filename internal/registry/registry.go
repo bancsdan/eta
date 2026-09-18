@@ -174,12 +174,12 @@ func Resolve(country, town string) (transit.Info, func(Deps) transit.Provider, e
 		return transit.Info{}, nil, fmt.Errorf("%s has no data for %q; covered: %s", c.Name, town, strings.Join(names, ", "))
 	}
 	t := strings.TrimSpace(town)
-	info := transit.Info{
-		ID:       strings.ReplaceAll(match.Normalize(t), " ", "-"),
-		Name:     t,
-		Country:  c.ID,
-		Provider: c.AnyTown(Deps{}, t).Info().Provider,
-	}
+	// The provider's own Info carries the key requirements, zone and
+	// notes; only the identity is the registry's.
+	info := c.AnyTown(Deps{}, t).Info()
+	info.ID = strings.ReplaceAll(match.Normalize(t), " ", "-")
+	info.Name = t
+	info.Country = c.ID
 	return info, func(d Deps) transit.Provider { return c.AnyTown(d, t) }, nil
 }
 

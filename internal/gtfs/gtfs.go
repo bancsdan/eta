@@ -31,14 +31,16 @@ type Feed struct {
 	Progress io.Writer // "downloading…" note on a cold start; nil is silent
 	Now      func() time.Time
 
-	mu    sync.Mutex
-	stops []transit.Stop
-	trips map[string]Trip
+	mu       sync.Mutex
+	stops    []transit.Stop
+	trips    map[string]Trip
+	calendar *Calendar
 }
 
 // Trip is the per-trip metadata departures need to label a board.
 type Trip struct {
 	RouteID     string
+	ServiceID   string
 	DirectionID string
 	Headsign    string
 }
@@ -70,27 +72,27 @@ func (f *Feed) Ensure(ctx context.Context) error {
 	if err := os.MkdirAll(filepath.Dir(f.Path), 0o700); err != nil {
 		return err
 	}
-	body, err := f.HTTP.GetBytes(ctx, f.URL)
-	if err != nil {
-		return err
-	}
-	if _, err := zip.NewReader(strings.NewReader(string(body)), int64(len(body))); err != nil {
-		return fmt.Errorf("gtfs: %s is not a zip: %v", f.URL, err)
-	}
 	tmp, err := os.CreateTemp(filepath.Dir(f.Path), ".gtfs-*")
 	if err != nil {
 		return err
 	}
-	if _, err := tmp.Write(body); err != nil {
+	if err := f.HTTP.Download(ctx, f.URL, tmp); err != nil {
 		_ = tmp.Close()
 		_ = os.Remove(tmp.Name())
 		return err
 	}
 	if err := tmp.Close(); err != nil {
+		_ = os.Remove(tmp.Name())
 		return err
 	}
+	if zr, err := zip.OpenReader(tmp.Name()); err != nil {
+		_ = os.Remove(tmp.Name())
+		return fmt.Errorf("gtfs: %s is not a zip: %v", f.URL, err)
+	} else {
+		_ = zr.Close()
+	}
 	f.mu.Lock()
-	f.stops, f.trips = nil, nil
+	f.stops, f.trips, f.calendar = nil, nil, nil
 	f.mu.Unlock()
 	return os.Rename(tmp.Name(), f.Path)
 }
@@ -164,7 +166,7 @@ func (f *Feed) Trips(ctx context.Context) (map[string]Trip, error) {
 	}
 	out := map[string]Trip{}
 	err := f.each("trips.txt", func(rec map[string]string) error {
-		out[rec["trip_id"]] = Trip{RouteID: rec["route_id"], DirectionID: rec["direction_id"], Headsign: rec["trip_headsign"]}
+		out[rec["trip_id"]] = Trip{RouteID: rec["route_id"], ServiceID: rec["service_id"], DirectionID: rec["direction_id"], Headsign: rec["trip_headsign"]}
 		return nil
 	})
 	if err != nil {
@@ -253,39 +255,11 @@ func (f *Feed) Patterns(ctx context.Context, routeID string) ([]transit.Pattern,
 // each streams one CSV file of the zip, calling fn with a header-keyed
 // record per row.
 func (f *Feed) each(name string, fn func(map[string]string) error) error {
-	zr, err := zip.OpenReader(f.Path)
-	if err != nil {
-		return fmt.Errorf("gtfs: %s: %v", f.Path, err)
-	}
-	defer func() { _ = zr.Close() }()
-	var file *zip.File
-	for _, zf := range zr.File {
-		if filepath.Base(zf.Name) == name {
-			file = zf
-			break
-		}
-	}
-	if file == nil {
-		return fmt.Errorf("gtfs: %s has no %s", filepath.Base(f.Path), name)
-	}
-	rc, err := file.Open()
+	r, header, closeFn, err := f.open(name)
 	if err != nil {
 		return err
 	}
-	defer func() { _ = rc.Close() }()
-	r := csv.NewReader(rc)
-	r.ReuseRecord = true
-	r.FieldsPerRecord = -1
-	first, err := r.Read()
-	if err != nil {
-		return fmt.Errorf("gtfs: %s: %v", name, err)
-	}
-	// ReuseRecord recycles the returned slice on the next Read, so the
-	// header must be copied before the rows overwrite it.
-	header := append([]string(nil), first...)
-	if len(header) > 0 {
-		header[0] = strings.TrimPrefix(header[0], "\ufeff")
-	}
+	defer closeFn()
 	rec := make(map[string]string, len(header))
 	for {
 		row, err := r.Read()
@@ -306,6 +280,86 @@ func (f *Feed) each(name string, fn func(map[string]string) error) error {
 			return err
 		}
 	}
+}
+
+// rows streams one CSV file handing fn only the named columns, in order,
+// which is several times faster than each on the multi-million-row
+// stop_times.txt of a national feed. Missing columns read as "".
+func (f *Feed) rows(name string, cols []string, fn func(vals []string) error) error {
+	r, header, closeFn, err := f.open(name)
+	if err != nil {
+		return err
+	}
+	defer closeFn()
+	idx := make([]int, len(cols))
+	for i, c := range cols {
+		idx[i] = -1
+		for j, h := range header {
+			if h == c {
+				idx[i] = j
+				break
+			}
+		}
+	}
+	vals := make([]string, len(cols))
+	for {
+		row, err := r.Read()
+		if errors.Is(err, io.EOF) {
+			return nil
+		}
+		if err != nil {
+			return fmt.Errorf("gtfs: %s: %v", name, err)
+		}
+		for i, j := range idx {
+			if j >= 0 && j < len(row) {
+				vals[i] = row[j]
+			} else {
+				vals[i] = ""
+			}
+		}
+		if err := fn(vals); err != nil {
+			return err
+		}
+	}
+}
+
+func (f *Feed) open(name string) (*csv.Reader, []string, func(), error) {
+	zr, err := zip.OpenReader(f.Path)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("gtfs: %s: %v", f.Path, err)
+	}
+	var file *zip.File
+	for _, zf := range zr.File {
+		if filepath.Base(zf.Name) == name {
+			file = zf
+			break
+		}
+	}
+	if file == nil {
+		_ = zr.Close()
+		return nil, nil, nil, fmt.Errorf("gtfs: %s has no %s", filepath.Base(f.Path), name)
+	}
+	rc, err := file.Open()
+	if err != nil {
+		_ = zr.Close()
+		return nil, nil, nil, err
+	}
+	r := csv.NewReader(rc)
+	r.ReuseRecord = true
+	r.FieldsPerRecord = -1
+	first, err := r.Read()
+	if err != nil {
+		_ = rc.Close()
+		_ = zr.Close()
+		return nil, nil, nil, fmt.Errorf("gtfs: %s: %v", name, err)
+	}
+	// ReuseRecord recycles the returned slice on the next Read, so the
+	// header must be copied before the rows overwrite it.
+	header := append([]string(nil), first...)
+	if len(header) > 0 {
+		header[0] = strings.TrimPrefix(header[0], "\ufeff")
+	}
+	return r, header, func() { _ = rc.Close(); _ = zr.Close() }, nil
 }
 
 // Client is a helper to build a Feed's HTTP client with the provider's name.

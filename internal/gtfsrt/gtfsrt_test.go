@@ -69,3 +69,51 @@ func TestFetchAndStopUpdates(t *testing.T) {
 		t.Errorf("garbage should not decode")
 	}
 }
+
+func TestTripUpdatesPredict(t *testing.T) {
+	delay := func(secs int32) *gtfs.TripUpdate_StopTimeEvent { return &gtfs.TripUpdate_StopTimeEvent{Delay: &secs} }
+	skipped := gtfs.TripUpdate_StopTimeUpdate_SKIPPED
+	canceled := gtfs.TripDescriptor_CANCELED
+	msg := &gtfs.FeedMessage{
+		Header: &gtfs.FeedHeader{GtfsRealtimeVersion: proto.String("2.0")},
+		Entity: []*gtfs.FeedEntity{
+			{Id: proto.String("1"), TripUpdate: &gtfs.TripUpdate{
+				Trip: &gtfs.TripDescriptor{TripId: proto.String("t1"), RouteId: proto.String("R"), StartDate: proto.String("20260922")},
+				StopTimeUpdate: []*gtfs.TripUpdate_StopTimeUpdate{
+					{StopSequence: proto.Uint32(5), StopId: proto.String("S5"), Departure: delay(300)},
+					{StopSequence: proto.Uint32(2), StopId: proto.String("S2"), Departure: delay(120)},
+					{StopSequence: proto.Uint32(7), StopId: proto.String("S7"), ScheduleRelationship: &skipped},
+					{StopSequence: proto.Uint32(9), StopId: proto.String("S9"), Arrival: &gtfs.TripUpdate_StopTimeEvent{Time: proto.Int64(1_789_500_000)}},
+				},
+			}},
+			{Id: proto.String("2"), TripUpdate: &gtfs.TripUpdate{Trip: &gtfs.TripDescriptor{TripId: proto.String("t2"), ScheduleRelationship: &canceled}}},
+		},
+	}
+	tus := TripUpdates(msg)
+	if len(tus) != 2 || !tus["t2"].Cancelled || tus["t1"].StartDate != "20260922" || tus["t1"].Calls[0].Seq != 2 {
+		t.Fatalf("TripUpdates: %+v", tus)
+	}
+	sched := time.Date(2026, 9, 22, 8, 0, 0, 0, time.UTC)
+	cases := []struct {
+		seq  int
+		stop string
+		want time.Time
+		ok   bool
+		skip bool
+	}{
+		{1, "S1", sched, false, false},                       // before the first update: schedule stands
+		{2, "S2", sched.Add(2 * time.Minute), true, false},   // update at the stop
+		{3, "S3", sched.Add(2 * time.Minute), true, false},   // delay carries forward
+		{5, "S5", sched.Add(5 * time.Minute), true, false},   // next update replaces it
+		{7, "S7", sched, true, true},                         // skipped
+		{8, "S8", sched.Add(5 * time.Minute), true, false},   // a skip does not change the delay
+		{9, "S9", time.Unix(1_789_500_000, 0), true, false},  // absolute time at the stop
+		{10, "S10", sched.Add(5 * time.Minute), true, false}, // absolute times do not carry forward, the last delay does
+	}
+	for _, c := range cases {
+		at, ok, skip := tus["t1"].Predict(c.seq, c.stop, sched)
+		if !at.Equal(c.want) || ok != c.ok || skip != c.skip {
+			t.Errorf("Predict(%d,%s) = %v,%v,%v want %v,%v,%v", c.seq, c.stop, at, ok, skip, c.want, c.ok, c.skip)
+		}
+	}
+}

@@ -12,6 +12,7 @@ import (
 	_ "github.com/bancsdan/eta/internal/providers/opendatach"
 	_ "github.com/bancsdan/eta/internal/providers/ovapi"
 	_ "github.com/bancsdan/eta/internal/providers/sl"
+	_ "github.com/bancsdan/eta/internal/providers/tfi"
 	_ "github.com/bancsdan/eta/internal/providers/tfl"
 	_ "github.com/bancsdan/eta/internal/providers/wienerlinien"
 )

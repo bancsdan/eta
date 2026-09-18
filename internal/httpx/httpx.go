@@ -98,6 +98,41 @@ func (c *Client) GetBytes(ctx context.Context, u string) ([]byte, error) {
 }
 
 func (c *Client) Do(ctx context.Context, method, u string, body []byte, contentType string) ([]byte, error) {
+	resp, err := c.send(ctx, method, u, body, contentType)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+	b, err := io.ReadAll(io.LimitReader(resp.Body, MaxBody))
+	if err != nil {
+		return nil, c.netErr(err)
+	}
+	b = bytes.TrimPrefix(b, []byte("\xef\xbb\xbf"))
+	if err := c.statusErr(resp, b); err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+// Download streams a GET response body into w without the MaxBody cap, for
+// bulk files such as a national GTFS zip.
+func (c *Client) Download(ctx context.Context, u string, w io.Writer) error {
+	resp, err := c.send(ctx, http.MethodGet, u, nil, "")
+	if err != nil {
+		return err
+	}
+	defer func() { _ = resp.Body.Close() }()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		b, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
+		return c.statusErr(resp, b)
+	}
+	if _, err := io.Copy(w, resp.Body); err != nil {
+		return c.netErr(err)
+	}
+	return nil
+}
+
+func (c *Client) send(ctx context.Context, method, u string, body []byte, contentType string) (*http.Response, error) {
 	if len(c.Query) > 0 {
 		pu, err := url.Parse(u)
 		if err != nil {
@@ -140,27 +175,25 @@ func (c *Client) Do(ctx context.Context, method, u string, body []byte, contentT
 	if err != nil {
 		return nil, c.netErr(err)
 	}
-	defer func() { _ = resp.Body.Close() }()
 	if c.Debug {
 		fmt.Fprintln(os.Stderr, "   ", resp.Status)
 	}
-	b, err := io.ReadAll(io.LimitReader(resp.Body, MaxBody))
-	if err != nil {
-		return nil, c.netErr(err)
-	}
-	b = bytes.TrimPrefix(b, []byte("\xef\xbb\xbf"))
-	path := req.URL.Path
+	return resp, nil
+}
+
+func (c *Client) statusErr(resp *http.Response, b []byte) error {
+	path := resp.Request.URL.Path
 	switch {
 	case resp.StatusCode >= 200 && resp.StatusCode < 300:
-		return b, nil
+		return nil
 	case resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden:
-		return nil, fmt.Errorf("%s %s: %w (HTTP %d)", c.Name, path, transit.ErrUnauthorized, resp.StatusCode)
+		return fmt.Errorf("%s %s: %w (HTTP %d)", c.Name, path, transit.ErrUnauthorized, resp.StatusCode)
 	case resp.StatusCode == http.StatusNotFound:
-		return nil, fmt.Errorf("%s %s: %w (HTTP 404): %s", c.Name, path, transit.ErrNotFound, Trim(b))
+		return fmt.Errorf("%s %s: %w (HTTP 404): %s", c.Name, path, transit.ErrNotFound, Trim(b))
 	case resp.StatusCode == http.StatusTooManyRequests:
-		return nil, fmt.Errorf("%s %s: %w (HTTP 429)", c.Name, path, transit.ErrRateLimited)
+		return fmt.Errorf("%s %s: %w (HTTP 429)", c.Name, path, transit.ErrRateLimited)
 	default:
-		return nil, fmt.Errorf("%s %s: HTTP %d: %s", c.Name, path, resp.StatusCode, Trim(b))
+		return fmt.Errorf("%s %s: HTTP %d: %s", c.Name, path, resp.StatusCode, Trim(b))
 	}
 }
 

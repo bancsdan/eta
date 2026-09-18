@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -31,6 +32,9 @@ func synthZip(t *testing.T) []byte {
 			"t2,P2N,09:05:00,09:05:00,1\nt2,P3N,09:10:00,09:10:00,2\n" +
 			"t3,P3S,08:00:00,08:00:00,1\nt3,P2S,08:05:00,08:05:00,2\nt3,P1S,08:10:00,08:10:00,3\n" +
 			"t4,P1N,08:00:00,08:00:00,1\n",
+		"calendar.txt": "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\n" +
+			"wk,1,1,1,1,1,0,0,20260901,20261231\n",
+		"calendar_dates.txt": "service_id,date,exception_type\nwk,20260916,2\nwk,20260919,1\n",
 	}
 	for name, body := range files {
 		w, err := zw.Create(name)
@@ -97,5 +101,92 @@ func TestFeed(t *testing.T) {
 	}
 	if err := f.Ensure(ctx); err != nil || hits != 2 {
 		t.Errorf("re-download: hits=%d err=%v", hits, err)
+	}
+}
+
+func TestCalendar(t *testing.T) {
+	data := synthZip(t)
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { _, _ = w.Write(data) }))
+	defer srv.Close()
+	f := &Feed{URL: srv.URL, Path: filepath.Join(t.TempDir(), "x.zip"), HTTP: httpx.New("test", srv.Client())}
+	c, err := f.Calendar(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	cases := map[time.Time]bool{
+		time.Date(2026, 9, 15, 0, 0, 0, 0, time.UTC): true,  // Tuesday
+		time.Date(2026, 9, 16, 0, 0, 0, 0, time.UTC): false, // removed by exception
+		time.Date(2026, 9, 19, 0, 0, 0, 0, time.UTC): true,  // Saturday, added
+		time.Date(2026, 9, 20, 0, 0, 0, 0, time.UTC): false, // Sunday
+		time.Date(2027, 1, 4, 0, 0, 0, 0, time.UTC):  false, // after end_date
+	}
+	for day, want := range cases {
+		if got := c.Active(day)["wk"]; got != want {
+			t.Errorf("%s: active=%v want %v", day.Format("2006-01-02 Mon"), got, want)
+		}
+	}
+}
+
+func TestIndex(t *testing.T) {
+	data := synthZip(t)
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { _, _ = w.Write(data) }))
+	defer srv.Close()
+	dir := t.TempDir()
+	f := &Feed{URL: srv.URL, Path: filepath.Join(dir, "x.zip"), HTTP: httpx.New("test", srv.Client())}
+	var progress bytes.Buffer
+	x := &Index{Feed: f, Progress: &progress}
+	if !x.Cold() {
+		t.Fatal("index should be cold before the download")
+	}
+	ctx := context.Background()
+	sts, err := x.StopTimes(ctx, "P2N")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(sts) != 2 || sts[0].TripID != "t1" || sts[0].Departure != 8*3600+300 || sts[0].Seq != 2 || sts[1].TripID != "t2" {
+		t.Errorf("P2N stop times: %+v", sts)
+	}
+	if sts, _ := x.StopTimes(ctx, "nope"); len(sts) != 0 {
+		t.Errorf("unknown stop: %+v", sts)
+	}
+	ps, err := x.Patterns(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	l := ps["L"]
+	if len(l) != 2 || l[0].DirectionID != "0" || len(l[0].Stops) != 3 || l[0].Stops[2].Name != "Gamma" || l[1].Headsign != "Alpha" {
+		t.Errorf("L patterns: %+v", l)
+	}
+	if !strings.Contains(progress.String(), "indexing") {
+		t.Errorf("progress: %q", progress.String())
+	}
+	if x.Cold() {
+		t.Error("index should be warm after the build")
+	}
+	y := &Index{Feed: &Feed{URL: srv.URL, Path: f.Path, HTTP: httpx.New("test", srv.Client())}}
+	if y.Cold() {
+		t.Error("a fresh Index over the same zip should reuse the digest")
+	}
+	if sts, err := y.StopTimes(ctx, "P1S"); err != nil || len(sts) != 1 || sts[0].TripID != "t3" {
+		t.Errorf("reused digest: %+v %v", sts, err)
+	}
+	for _, c := range []struct {
+		in   string
+		want uint32
+		ok   bool
+	}{{"08:05:00", 29100, true}, {"25:00:30", 90030, true}, {"7:00:00", 25200, true}, {"", 0, false}, {"08:05", 0, false}, {"x", 0, false}} {
+		if got, ok := parseClock(c.in); got != c.want || ok != c.ok {
+			t.Errorf("parseClock(%q) = %d,%v want %d,%v", c.in, got, ok, c.want, c.ok)
+		}
+	}
+	loc, _ := time.LoadLocation("Europe/Dublin")
+	// DST ends at 02:00 on 2026-10-25: the service day is 25 hours long
+	// and 08:00:00 in the timetable still means 08:00 on the wall clock.
+	sd := ServiceDay(time.Date(2026, 10, 25, 3, 0, 0, 0, loc), loc)
+	if at := sd.Add(8 * time.Hour); at.Hour() != 8 || at.Day() != 25 {
+		t.Errorf("ServiceDay+8h = %v", at)
+	}
+	if at := ServiceDay(time.Date(2026, 3, 29, 12, 0, 0, 0, loc), loc).Add(8 * time.Hour); at.Hour() != 8 {
+		t.Errorf("DST start: ServiceDay+8h = %v", at)
 	}
 }
