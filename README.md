@@ -50,6 +50,7 @@ Every command names a country and a town: `eta norway halden 34 bussterminal`. T
 
 | Country (id) | Towns | Provider | Key | Notes |
 |---|---|---|---|---|
+| Austria (`austria`, `at`) | Vienna and the towns Wiener Linien reaches (Schwechat, Gerasdorf, Baden…) | `wienerlinien` ([Wiener Linien open data](https://www.wienerlinien.at/ogd_realtime/doku/)) | none | metro, tram, bus with real time; `-l` from the open-data platform sequences; 2 MB of tables downloaded on first run |
 | Finland (`finland`, `fi`) | every town | `digitransit` ([Digitransit](https://digitransit.fi/en/developers/)) | `ETA_DIGITRANSIT_API_KEY`, required | not yet verified against the live API |
 | Germany (`germany`, `de`) | every town in Berlin and Brandenburg | `bvg` (community-run [v6.bvg.transport.rest](https://v6.bvg.transport.rest)) | none | stop search only; the upstream service has outages |
 | Hungary (`hungary`, `hu`) | Budapest | `bkk` ([BKK FUTÁR](https://opendata.bkk.hu)) | `ETA_BKK_API_KEY`, required | |
@@ -231,6 +232,7 @@ If both set, the environment variable wins. Providers with several keys use `ETA
 | `sl` | Stockholm | none | | no | |
 | `opendatach` | Switzerland (16 cities) | none | | no | |
 | `ovapi` | Netherlands | none | | no | |
+| `wienerlinien` | Vienna | none | | no | |
 | `digitransit` | Helsinki, Tampere, Turku | `ETA_DIGITRANSIT_API_KEY` | `digitransit` | required | https://portal-api.digitransit.fi |
 | `mta` | New York City | none | | no | |
 

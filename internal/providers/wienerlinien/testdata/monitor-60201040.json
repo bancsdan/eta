@@ -1,0 +1,768 @@
+{
+ "data": {
+  "monitors": [
+   {
+    "locationStop": {
+     "type": "Feature",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       16.3916039,
+       48.2182083
+      ]
+     },
+     "properties": {
+      "name": "60201040",
+      "title": "Praterstern S U",
+      "municipality": "Wien",
+      "municipalityId": 49000001,
+      "type": "stop",
+      "coordName": "WGS84",
+      "attributes": {
+       "rbl": 345
+      }
+     }
+    },
+    "lines": [
+     {
+      "name": "5",
+      "towards": "Westbahnhof S U",
+      "direction": "H",
+      "platform": "1",
+      "richtungsId": "1",
+      "barrierFree": true,
+      "realtimeSupported": true,
+      "trafficjam": false,
+      "departures": {
+       "departure": [
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:00:00.000+0200",
+          "timeReal": "2026-09-18T10:00:00.000+0200",
+          "countdown": 1
+         },
+         "vehicle": {
+          "name": "5",
+          "towards": "Westbahnhof S U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 105
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:07:30.000+0200",
+          "timeReal": "2026-09-18T10:07:30.000+0200",
+          "countdown": 8
+         },
+         "vehicle": {
+          "name": "5",
+          "towards": "Westbahnhof S U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 105
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:15:00.000+0200",
+          "timeReal": "2026-09-18T10:15:00.000+0200",
+          "countdown": 16
+         },
+         "vehicle": {
+          "name": "5",
+          "towards": "Westbahnhof S U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 105
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:22:30.000+0200",
+          "timeReal": "2026-09-18T10:22:30.000+0200",
+          "countdown": 23
+         },
+         "vehicle": {
+          "name": "5",
+          "towards": "Westbahnhof S U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": false,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 105
+         }
+        }
+       ]
+      },
+      "type": "ptTram",
+      "lineId": 105
+     }
+    ],
+    "attributes": {}
+   },
+   {
+    "locationStop": {
+     "type": "Feature",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       16.3916039,
+       48.2181784
+      ]
+     },
+     "properties": {
+      "name": "60201040",
+      "title": "Praterstern S U",
+      "municipality": "Wien",
+      "municipalityId": 49000001,
+      "type": "stop",
+      "coordName": "WGS84",
+      "attributes": {
+       "rbl": 2100
+      }
+     }
+    },
+    "lines": [
+     {
+      "name": "5B",
+      "towards": "Bhf. Heiligenstadt S U",
+      "direction": "H",
+      "platform": "1",
+      "richtungsId": "1",
+      "barrierFree": true,
+      "realtimeSupported": true,
+      "trafficjam": false,
+      "departures": {
+       "departure": [
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:01:00.000+0200",
+          "timeReal": "2026-09-18T10:01:00.000+0200",
+          "countdown": 2
+         },
+         "vehicle": {
+          "name": "5B",
+          "towards": "Bhf. Heiligenstadt S U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 205
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:11:00.000+0200",
+          "timeReal": "2026-09-18T10:11:00.000+0200",
+          "countdown": 12
+         },
+         "vehicle": {
+          "name": "5B",
+          "towards": "Bhf. Heiligenstadt S U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 205
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:21:00.000+0200",
+          "timeReal": "2026-09-18T10:21:00.000+0200",
+          "countdown": 22
+         },
+         "vehicle": {
+          "name": "5B",
+          "towards": "Bhf. Heiligenstadt S U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 205
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:31:00.000+0200",
+          "timeReal": "2026-09-18T10:31:00.000+0200",
+          "countdown": 32
+         },
+         "vehicle": {
+          "name": "5B",
+          "towards": "Bhf. Heiligenstadt S U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 205
+         }
+        }
+       ]
+      },
+      "type": "ptBusCity",
+      "lineId": 205
+     }
+    ],
+    "attributes": {}
+   },
+   {
+    "locationStop": {
+     "type": "Feature",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       16.391532,
+       48.2181724
+      ]
+     },
+     "properties": {
+      "name": "60201040",
+      "title": "Praterstern SU",
+      "municipality": "Wien",
+      "municipalityId": 49000001,
+      "type": "stop",
+      "coordName": "WGS84",
+      "attributes": {
+       "rbl": 3886
+      }
+     }
+    },
+    "lines": [
+     {
+      "name": "80A",
+      "towards": "Schlachthausgasse U",
+      "direction": "H",
+      "platform": "1",
+      "richtungsId": "1",
+      "barrierFree": true,
+      "realtimeSupported": true,
+      "trafficjam": false,
+      "departures": {
+       "departure": [
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:07:00.000+0200",
+          "timeReal": "2026-09-18T10:07:00.000+0200",
+          "countdown": 8
+         },
+         "vehicle": {
+          "name": "80A",
+          "towards": "Schlachthausgasse U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 480
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:17:00.000+0200",
+          "timeReal": "2026-09-18T10:17:00.000+0200",
+          "countdown": 18
+         },
+         "vehicle": {
+          "name": "80A",
+          "towards": "Schlachthausgasse U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 480
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:27:00.000+0200",
+          "timeReal": "2026-09-18T10:27:00.000+0200",
+          "countdown": 28
+         },
+         "vehicle": {
+          "name": "80A",
+          "towards": "Schlachthausgasse U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 480
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:37:00.000+0200",
+          "timeReal": "2026-09-18T10:37:00.000+0200",
+          "countdown": 38
+         },
+         "vehicle": {
+          "name": "80A",
+          "towards": "Schlachthausgasse U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 480
+         }
+        }
+       ]
+      },
+      "type": "ptBusCity",
+      "lineId": 480
+     }
+    ],
+    "attributes": {}
+   },
+   {
+    "locationStop": {
+     "type": "Feature",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       16.3932478,
+       48.2200518
+      ]
+     },
+     "properties": {
+      "name": "60201040",
+      "title": "Praterstern S U",
+      "municipality": "Wien",
+      "municipalityId": 49000001,
+      "type": "stop",
+      "coordName": "WGS84",
+      "gate": "D",
+      "attributes": {
+       "rbl": 2704
+      }
+     }
+    },
+    "lines": [
+     {
+      "name": "82A",
+      "towards": "Krieau U",
+      "direction": "H",
+      "platform": "1",
+      "richtungsId": "1",
+      "barrierFree": true,
+      "realtimeSupported": true,
+      "trafficjam": false,
+      "departures": {
+       "departure": [
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:12:00.000+0200",
+          "timeReal": "2026-09-18T10:12:00.000+0200",
+          "countdown": 13
+         },
+         "vehicle": {
+          "name": "82A",
+          "towards": "Krieau U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 482
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:27:00.000+0200",
+          "timeReal": "2026-09-18T10:27:00.000+0200",
+          "countdown": 28
+         },
+         "vehicle": {
+          "name": "82A",
+          "towards": "Krieau U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 482
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:42:00.000+0200",
+          "timeReal": "2026-09-18T10:42:00.000+0200",
+          "countdown": 43
+         },
+         "vehicle": {
+          "name": "82A",
+          "towards": "Krieau U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 482
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:57:00.000+0200",
+          "timeReal": "2026-09-18T10:57:00.000+0200",
+          "countdown": 58
+         },
+         "vehicle": {
+          "name": "82A",
+          "towards": "Krieau U",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptBusCity",
+          "attributes": {},
+          "linienId": 482
+         }
+        }
+       ]
+      },
+      "type": "ptBusCity",
+      "lineId": 482
+     }
+    ],
+    "attributes": {}
+   },
+   {
+    "locationStop": {
+     "type": "Feature",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       16.3916039,
+       48.2183579
+      ]
+     },
+     "properties": {
+      "name": "60201040",
+      "title": "Praterstern S U",
+      "municipality": "Wien",
+      "municipalityId": 49000001,
+      "type": "stop",
+      "coordName": "WGS84",
+      "attributes": {
+       "rbl": 311
+      }
+     }
+    },
+    "lines": [
+     {
+      "name": "O",
+      "towards": "Bruno-Marek-Allee",
+      "direction": "H",
+      "platform": "1",
+      "richtungsId": "1",
+      "barrierFree": true,
+      "realtimeSupported": true,
+      "trafficjam": false,
+      "departures": {
+       "departure": [
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:02:00.000+0200",
+          "timeReal": "2026-09-18T10:02:18.000+0200",
+          "countdown": 3
+         },
+         "vehicle": {
+          "name": "O",
+          "towards": "Bruno-Marek-Allee",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 170
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:08:40.000+0200",
+          "timeReal": "2026-09-18T10:07:57.000+0200",
+          "countdown": 9
+         },
+         "vehicle": {
+          "name": "O",
+          "towards": "Bruno-Marek-Allee",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 170
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:15:20.000+0200",
+          "timeReal": "2026-09-18T10:17:44.000+0200",
+          "countdown": 18
+         },
+         "vehicle": {
+          "name": "O",
+          "towards": "Bruno-Marek-Allee",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": false,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 170
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:22:00.000+0200",
+          "timeReal": "2026-09-18T10:21:24.000+0200",
+          "countdown": 22
+         },
+         "vehicle": {
+          "name": "O",
+          "towards": "Bruno-Marek-Allee",
+          "direction": "H",
+          "platform": "1",
+          "richtungsId": "1",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 170
+         }
+        }
+       ]
+      },
+      "type": "ptTram",
+      "lineId": 170
+     }
+    ],
+    "attributes": {}
+   },
+   {
+    "locationStop": {
+     "type": "Feature",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       16.3913614,
+       48.2182682
+      ]
+     },
+     "properties": {
+      "name": "60201040",
+      "title": "Praterstern",
+      "municipality": "Wien",
+      "municipalityId": 49000001,
+      "type": "stop",
+      "coordName": "WGS84",
+      "attributes": {
+       "rbl": 3450
+      }
+     }
+    },
+    "lines": [
+     {
+      "name": "O",
+      "towards": "Raxstraße",
+      "direction": "R",
+      "platform": "2",
+      "richtungsId": "2",
+      "barrierFree": true,
+      "realtimeSupported": true,
+      "trafficjam": false,
+      "departures": {
+       "departure": [
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T09:59:40.000+0200",
+          "timeReal": "2026-09-18T09:58:20.000+0200",
+          "countdown": 0
+         },
+         "vehicle": {
+          "name": "O",
+          "towards": "Raxstraße",
+          "direction": "R",
+          "platform": "2",
+          "richtungsId": "2",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 170
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:06:20.000+0200",
+          "timeReal": "2026-09-18T10:06:20.000+0200",
+          "countdown": 7
+         },
+         "vehicle": {
+          "name": "O",
+          "towards": "Raxstraße",
+          "direction": "R",
+          "platform": "2",
+          "richtungsId": "2",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 170
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:13:00.000+0200",
+          "timeReal": "2026-09-18T10:13:00.000+0200",
+          "countdown": 14
+         },
+         "vehicle": {
+          "name": "O",
+          "towards": "Raxstraße",
+          "direction": "R",
+          "platform": "2",
+          "richtungsId": "2",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 170
+         }
+        },
+        {
+         "departureTime": {
+          "timePlanned": "2026-09-18T10:19:40.000+0200",
+          "timeReal": "2026-09-18T10:19:40.000+0200",
+          "countdown": 20
+         },
+         "vehicle": {
+          "name": "O",
+          "towards": "Raxstraße",
+          "direction": "R",
+          "platform": "2",
+          "richtungsId": "2",
+          "barrierFree": true,
+          "cooling": true,
+          "realtimeSupported": true,
+          "trafficjam": false,
+          "type": "ptTram",
+          "attributes": {},
+          "linienId": 170
+         }
+        }
+       ]
+      },
+      "type": "ptTram",
+      "lineId": 170
+     }
+    ],
+    "attributes": {}
+   }
+  ]
+ },
+ "message": {
+  "value": "OK",
+  "messageCode": 1,
+  "serverTime": "2026-09-18T09:58:50.000+0200"
+ }
+}
