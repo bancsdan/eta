@@ -26,7 +26,7 @@ func Normalize(s string) string {
 		if a, ok := accents[r]; ok {
 			r = a
 		}
-		if unicode.IsSpace(r) || r == '-' || r == '/' || r == ',' || r == '.' {
+		if unicode.IsSpace(r) || r == '-' || r == '/' || r == ',' || r == '.' || r == '(' || r == ')' {
 			if !space {
 				sb.WriteByte(' ')
 				space = true

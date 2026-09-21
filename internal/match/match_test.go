@@ -81,3 +81,13 @@ func TestLevenshtein(t *testing.T) {
 		}
 	}
 }
+
+func TestNormalizeParentheses(t *testing.T) {
+	if got := Normalize("Estoril (Estação)"); got != "estoril estacao" {
+		t.Errorf("Normalize = %q", got)
+	}
+	stops := []Stop{{"1", "Estoril (Estação CP)"}, {"2", "Estoril (Estação)"}}
+	if got := Find("estoril estação", stops); len(got) != 1 || got[0].Name != "Estoril (Estação)" {
+		t.Errorf("Find = %+v", got)
+	}
+}

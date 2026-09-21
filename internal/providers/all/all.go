@@ -5,6 +5,7 @@ package all
 import (
 	_ "github.com/bancsdan/eta/internal/providers/bkk"
 	_ "github.com/bancsdan/eta/internal/providers/bvg"
+	_ "github.com/bancsdan/eta/internal/providers/cmet"
 	_ "github.com/bancsdan/eta/internal/providers/digitransit"
 	_ "github.com/bancsdan/eta/internal/providers/entur"
 	_ "github.com/bancsdan/eta/internal/providers/mbta"

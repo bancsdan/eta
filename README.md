@@ -57,6 +57,7 @@ Every command names a country and a town: `eta norway halden 34 bussterminal`. T
 | Ireland (`ireland`, `ie`) | every town | `tfi` ([Transport for Ireland GTFS-Realtime](https://developer.nationaltransport.ie), all operators with real time) | `ETA_TFI_API_KEY`, required (free) | Dublin Bus, Go-Ahead, Bus Éireann, Luas, DART and Irish Rail; first run downloads the national timetable (144 MB) and indexes it; scheduled times shown until a trip reports a delay; towns other than the five cities are located with OpenStreetMap |
 | Netherlands (`netherlands`, `nl`) | every town | `ovapi` (community-run [OVapi](http://v0.ovapi.nl), all Dutch operators) | none | stations and interchanges only: OVapi's stop-area index has no plain tram or bus stops; national stop list downloaded on first run; stop search only |
 | Norway (`norway`, `no`) | every town | `entur` ([Entur](https://developer.entur.no) national API) | none | routes are matched to the town's operator, so `-l` works anywhere |
+| Portugal (`portugal`, `pt`) | the Lisbon metropolitan area: its 23 municipalities (Lisbon, Sintra, Cascais, Almada, Setúbal, Amadora, Oeiras…) and any locality in them (Estoril, Queluz…) | `cmet` ([Carris Metropolitana API](https://api.carrismetropolitana.pt)) | none | suburban buses with real-time estimates; inside Lisbon only Carris Metropolitana's own stops (the city's Carris buses and the Metro have no open API); stop list (7 MB) downloaded on first run |
 | Sweden (`sweden`, `se`) | Stockholm and the SL region | `sl` ([SL Transport](https://www.trafiklab.se/api/our-apis/sl/transport/)) | none | stop list downloaded on first run; stop search only |
 | Switzerland (`switzerland`, `ch`) | every town | `opendatach` ([transport.opendata.ch](https://transport.opendata.ch)) | none | stop search only |
 | United Kingdom (`uk`, `gb`) | London | `tfl` ([TfL Unified API](https://api-portal.tfl.gov.uk)) | `ETA_TFL_API_KEY`, optional | tube, bus, DLR, Overground lines by name, Elizabeth line, tram |
@@ -234,6 +235,7 @@ If both set, the environment variable wins. Providers with several keys use `ETA
 | `sl` | Stockholm | none | | no | |
 | `opendatach` | Switzerland (16 cities) | none | | no | |
 | `ovapi` | Netherlands | none | | no | |
+| `cmet` | Lisbon area | none | | no | |
 | `wienerlinien` | Vienna | none | | no | |
 | `digitransit` | Helsinki, Tampere, Turku | `ETA_DIGITRANSIT_API_KEY` | `digitransit` | required | https://portal-api.digitransit.fi |
 | `mta` | New York City | none | | no | |
@@ -289,7 +291,7 @@ $ eta germany berlin M4 "alexanderplatz bhf" -j -c 2
 ## How it works
 
 1. **Scoping.** The town narrows everything that follows: verified towns carry an operator scope or a map focus; any other town is geocoded once (cached) and stops and lines are kept by locality or distance where the data has no locality. Where the provider's own API cannot locate a town (Ireland), `internal/geocode` asks OpenStreetMap's Nominatim once and caches the answer for a month.
-2. **Route resolution.** With a route, providers whose API can list a route's stops (`RouteLister`: `bkk`, `tfl`, `entur`, `mbta`, `digitransit`, `mta`, `tfi`) resolve the short name, fetch the stops per direction (cached 24h under `~/.cache/eta/<provider>/<town>`), and fuzzy-match your query locally, exactly like GoKK.
+2. **Route resolution.** With a route, providers whose API can list a route's stops (`RouteLister`: `bkk`, `tfl`, `entur`, `mbta`, `digitransit`, `mta`, `tfi`, `cmet`) resolve the short name, fetch the stops per direction (cached 24h under `~/.cache/eta/<provider>/<town>`), and fuzzy-match your query locally, exactly like GoKK.
 3. **Stop search.** Without a route, or with providers lacking that call (`StopSearcher`: `bvg`, `sl`, `opendatach`, and all of the above), stops are searched by name through the API or a cached stop list. With a route, ambiguous hits are probed with one departures call each and only stops actually served by the route survive.
 4. **One departures call** for the matched stop, filtered by route client-side when one was given, grouped by line, direction and headsign, `count` per group.
 
